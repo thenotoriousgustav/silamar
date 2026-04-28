@@ -1,7 +1,35 @@
 "use client";
 
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
 import type { ResumeContent } from "@/types/resume";
+
+// Register custom fonts
+Font.register({
+  family: "Calibri",
+  src: "/fonts/calibri.ttf",
+});
+
+Font.register({
+  family: "Georgia",
+  src: "/fonts/georgia.ttf",
+});
+
+Font.register({
+  family: "Times New Roman",
+  src: "/fonts/times.ttf",
+});
+
+Font.register({
+  family: "Helvetica",
+  src: "/fonts/helvetica.ttf",
+});
 
 interface ResumeTemplateProps {
   data: ResumeContent;
@@ -15,17 +43,11 @@ const colors = {
 };
 
 const getStyles = (fontFamily: string = "Helvetica") => {
-  // Map custom fonts to standard PDF fonts if needed
-  let pdfFont = fontFamily;
-  if (fontFamily === "Times New Roman" || fontFamily === "Georgia") {
-    pdfFont = "Times-Roman";
-  } else if (fontFamily === "Calibri") {
-    pdfFont = "Helvetica";
-  }
+  const pdfFont = fontFamily;
 
-  const boldFont = pdfFont === "Times-Roman" ? "Times-Bold" : "Helvetica-Bold";
-  const italicFont =
-    pdfFont === "Times-Roman" ? "Times-Italic" : "Helvetica-Oblique";
+  // Use the same font for bold/italic if separate files aren't provided
+  const boldFont = pdfFont;
+  const italicFont = pdfFont;
 
   return StyleSheet.create({
     page: {
@@ -104,7 +126,7 @@ const getStyles = (fontFamily: string = "Helvetica") => {
     },
     experienceCompany: {
       fontSize: 10,
-      fontFamily: italicFont,
+      fontFamily: pdfFont,
       color: colors.secondary,
     },
     experienceLocation: {
@@ -137,7 +159,7 @@ const getStyles = (fontFamily: string = "Helvetica") => {
     },
     educationSchool: {
       fontSize: 10,
-      fontFamily: italicFont,
+      fontFamily: pdfFont,
       color: colors.secondary,
     },
     educationDetails: {

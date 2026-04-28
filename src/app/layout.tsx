@@ -57,7 +57,11 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className="antialiased" suppressHydrationWarning>
+      <body
+        className="antialiased"
+        vaul-drawer-wrapper=""
+        suppressHydrationWarning
+      >
         <NextThemesProvider
           attribute="class"
           defaultTheme="system"
