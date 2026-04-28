@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { jobApplications } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -94,7 +94,10 @@ export async function PATCH(req: NextRequest) {
     const { id, ...updates } = body;
 
     if (!id) {
-      return NextResponse.json({ error: "Job ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Job ID is required" },
+        { status: 400 },
+      );
     }
 
     // Convert string dates to Date objects if they exist
@@ -110,7 +113,10 @@ export async function PATCH(req: NextRequest) {
         updatedAt: new Date(),
       })
       .where(
-        eq(jobApplications.id, id) && eq(jobApplications.userId, session.user.id),
+        and(
+          eq(jobApplications.id, id),
+          eq(jobApplications.userId, session.user.id),
+        ),
       )
       .returning();
 
