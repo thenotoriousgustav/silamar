@@ -10,6 +10,7 @@ import {
   GripVertical,
   Building2,
   Clock,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -21,6 +22,7 @@ import {
 import { formatDate } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { AddJobDrawer } from "@/components/dashboard/job-tracker/add-job-drawer";
+import { JobDetailDrawer } from "@/components/dashboard/job-tracker/job-detail-drawer";
 import { Button } from "@/components/ui/button";
 import {
   Kanban,
@@ -53,6 +55,10 @@ export default function JobTrackerPage() {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddOpen, setIsAddOpen] = useState(false);
+
+  // Detail Drawer State
+  const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   // Group jobs by status for the new Kanban API
   const [columns, setColumns] = useState<Record<string, JobApplication[]>>({
@@ -113,8 +119,15 @@ export default function JobTrackerPage() {
     fetchJobs();
   }, []);
 
+  const handleOpenDetail = (job: JobApplication) => {
+    setSelectedJob(job);
+    setIsDetailOpen(true);
+  };
+
   // Save order when columns state changes (only if it's a structural change like dragging columns)
-  const handleColumnsChange = (newColumns: Record<string, JobApplication[]>) => {
+  const handleColumnsChange = (
+    newColumns: Record<string, JobApplication[]>,
+  ) => {
     setColumns(newColumns);
     const newOrder = Object.keys(newColumns);
     localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(newOrder));
@@ -245,6 +258,7 @@ export default function JobTrackerPage() {
                   value={status}
                   label={colInfo?.label || status}
                   tasks={columns[status] || []}
+                  onItemClick={handleOpenDetail}
                 />
               );
             })}
@@ -304,7 +318,7 @@ export default function JobTrackerPage() {
                   ].map((h) => (
                     <th
                       key={h}
-                      className="text-surface-300 px-4 py-3 text-left text-xs font-semibold"
+                      className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase"
                     >
                       {h}
                     </th>
@@ -315,29 +329,37 @@ export default function JobTrackerPage() {
                 {jobs.map((job) => (
                   <tr
                     key={job.id}
-                    className="hover:bg-surface-800/30 border-b border-white/5 transition-colors"
+                    onClick={() => handleOpenDetail(job)}
+                    className="hover:bg-muted/50 border-border/50 cursor-pointer border-b transition-colors"
                   >
-                    <td className="px-4 py-3 font-medium text-white">
+                    <td className="text-foreground px-4 py-3 font-medium">
                       {job.position}
                     </td>
-                    <td className="text-surface-300 px-4 py-3">
+                    <td className="text-muted-foreground px-4 py-3">
                       {job.company}
                     </td>
-                    <td className="text-surface-300 px-4 py-3">{job.type}</td>
+                    <td className="text-muted-foreground px-4 py-3 capitalize">
+                      {job.type}
+                    </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_BADGE[job.status as JobStatus]}`}
+                        className={cn(
+                          "rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase",
+                          STATUS_BADGE[job.status as JobStatus],
+                        )}
                       >
                         {JOB_STATUS_LABELS[job.status as JobStatus]}
                       </span>
                     </td>
-                    <td className="text-surface-300 px-4 py-3">
-                      {job.appliedDate ? formatDate(job.appliedDate) : "-"}
+                    <td className="text-muted-foreground px-4 py-3">
+                      {job.appliedDate
+                        ? formatDate(job.appliedDate, "d MMM yyyy")
+                        : "-"}
                     </td>
-                    <td className="px-4 py-3">
-                      <button className="text-surface-300 text-xs hover:text-white">
-                        Edit
-                      </button>
+                    <td className="px-4 py-3 text-right">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -352,19 +374,35 @@ export default function JobTrackerPage() {
         onOpenChange={setIsAddOpen}
         onSuccess={fetchJobs}
       />
+
+      <JobDetailDrawer
+        job={selectedJob}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        onSuccess={fetchJobs}
+      />
     </div>
   );
 }
 
 // Sub-components for Kanban
-interface JobCardProps
-  extends Omit<React.ComponentProps<typeof KanbanItem>, "value"> {
+interface JobCardProps extends Omit<
+  React.ComponentProps<typeof KanbanItem>,
+  "value"
+> {
   job: JobApplication;
+  onClick?: (job: JobApplication) => void;
 }
 
-function JobCard({ job, ...props }: JobCardProps) {
+function JobCard({ job, onClick, ...props }: JobCardProps) {
   return (
-    <KanbanItem key={job.id} value={job.id} asChild {...props}>
+    <KanbanItem
+      key={job.id}
+      value={job.id}
+      asChild
+      {...props}
+      onClick={() => onClick?.(job)}
+    >
       <div className="glass hover:border-primary/20 border-border/50 cursor-pointer rounded-xl border p-4 shadow-sm transition-all">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
@@ -395,13 +433,22 @@ function JobCard({ job, ...props }: JobCardProps) {
   );
 }
 
-interface JobColumnProps
-  extends Omit<React.ComponentProps<typeof KanbanColumn>, "children"> {
+interface JobColumnProps extends Omit<
+  React.ComponentProps<typeof KanbanColumn>,
+  "children"
+> {
   tasks: JobApplication[];
   label: string;
+  onItemClick?: (job: JobApplication) => void;
 }
 
-function JobColumn({ value, tasks, label, ...props }: JobColumnProps) {
+function JobColumn({
+  value,
+  tasks,
+  label,
+  onItemClick,
+  ...props
+}: JobColumnProps) {
   const statusId = value as JobStatus;
 
   return (
@@ -441,7 +488,7 @@ function JobColumn({ value, tasks, label, ...props }: JobColumnProps) {
           </div>
         )}
         {tasks.map((job) => (
-          <JobCard key={job.id} job={job} asHandle />
+          <JobCard key={job.id} job={job} asHandle onClick={onItemClick} />
         ))}
       </div>
     </KanbanColumn>

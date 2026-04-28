@@ -220,8 +220,17 @@ function Kanban<T>(props: KanbanProps<T>) {
   const lastOverIdRef = React.useRef<UniqueIdentifier | null>(null);
   const hasMovedRef = React.useRef(false);
   const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor),
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter,
     }),
@@ -973,7 +982,7 @@ function KanbanItem(props: KanbanItemProps) {
         ref={composedRef}
         style={composedStyle}
         className={cn(
-          "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+          "focus-visible:ring-ring focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden",
           {
             "touch-none select-none": asHandle,
             "cursor-default": context.flatCursor,
@@ -1043,8 +1052,10 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-interface KanbanOverlayProps
-  extends Omit<React.ComponentProps<typeof DragOverlay>, "children"> {
+interface KanbanOverlayProps extends Omit<
+  React.ComponentProps<typeof DragOverlay>,
+  "children"
+> {
   container?: Element | DocumentFragment | null;
   children?:
     | React.ReactNode

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { jobApplications } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,10 +16,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const jobs = await db.query.jobApplications.findMany({
-      where: eq(jobApplications.userId, session.user.id),
-      orderBy: [desc(jobApplications.createdAt)],
-    });
+    const jobs = await db
+      .select()
+      .from(jobApplications)
+      .where(eq(jobApplications.userId, session.user.id))
+      .orderBy(desc(jobApplications.createdAt));
 
     return NextResponse.json(jobs);
   } catch (error) {
@@ -40,36 +41,33 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
-      company,
       position,
-      status,
+      company,
+      location,
       type,
+      status,
       jobUrl,
       salary,
       appliedDate,
       notes,
     } = body;
 
-    if (!company || !position) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
-
     const newJob = await db
       .insert(jobApplications)
       .values({
         id: uuidv4(),
         userId: session.user.id,
-        company,
         position,
-        status,
+        company,
+        location,
         type,
+        status,
         jobUrl,
         salary,
-        appliedDate: appliedDate ? new Date(appliedDate) : null,
+        appliedDate: appliedDate ? new Date(appliedDate) : new Date(),
         notes,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       .returning();
 
@@ -127,6 +125,47 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(updatedJob[0]);
   } catch (error) {
     console.error("[JOBS_PATCH]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Job ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const deletedJob = await db
+      .delete(jobApplications)
+      .where(
+        and(
+          eq(jobApplications.id, id),
+          eq(jobApplications.userId, session.user.id),
+        ),
+      )
+      .returning();
+
+    if (!deletedJob.length) {
+      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("[JOBS_DELETE]", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
