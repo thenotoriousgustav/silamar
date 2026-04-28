@@ -12,6 +12,7 @@ import {
   DollarSign,
   Calendar as CalendarDays,
   Loader2,
+  MapPin,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -44,6 +45,7 @@ import {
 const formSchema = z.object({
   company: z.string().min(1, "Nama perusahaan wajib diisi"),
   position: z.string().min(1, "Posisi pekerjaan wajib diisi"),
+  location: z.string().optional(),
   status: z.enum(["dilamar", "interview", "penawaran", "ditolak"]),
   type: z.enum([
     "full-time",
@@ -78,6 +80,7 @@ export function AddJobDrawer({
     defaultValues: {
       company: "",
       position: "",
+      location: "",
       status: "dilamar",
       type: "full-time",
       jobUrl: "",
@@ -144,6 +147,21 @@ export function AddJobDrawer({
                   {form.formState.errors.company.message}
                 </p>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="location"
+                className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase"
+              >
+                <MapPin className="h-3.5 w-3.5" /> Lokasi (Opsional)
+              </Label>
+              <Input
+                id="location"
+                placeholder="Misal: Jakarta, Remote..."
+                {...form.register("location")}
+                className="bg-background"
+              />
             </div>
 
             <div className="space-y-2">

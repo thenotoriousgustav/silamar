@@ -17,7 +17,22 @@ export async function GET(req: NextRequest) {
     }
 
     const jobs = await db
-      .select()
+      .select({
+        id: jobApplications.id,
+        userId: jobApplications.userId,
+        company: jobApplications.company,
+        position: jobApplications.position,
+        location: jobApplications.location,
+        logoUrl: jobApplications.logoUrl,
+        salary: jobApplications.salary,
+        type: jobApplications.type,
+        status: jobApplications.status,
+        appliedDate: jobApplications.appliedDate,
+        notes: jobApplications.notes,
+        jobUrl: jobApplications.jobUrl,
+        createdAt: jobApplications.createdAt,
+        updatedAt: jobApplications.updatedAt,
+      })
       .from(jobApplications)
       .where(eq(jobApplications.userId, session.user.id))
       .orderBy(desc(jobApplications.createdAt));

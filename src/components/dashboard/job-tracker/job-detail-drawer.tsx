@@ -52,7 +52,13 @@ const formSchema = z.object({
   position: z.string().min(1, "Posisi pekerjaan wajib diisi"),
   location: z.string().optional(),
   status: z.enum(["dilamar", "interview", "penawaran", "ditolak"]),
-  type: z.enum(["full-time", "part-time", "internship", "contract", "freelance"]),
+  type: z.enum([
+    "full-time",
+    "part-time",
+    "internship",
+    "contract",
+    "freelance",
+  ]),
   jobUrl: z.string().url("URL tidak valid").optional().or(z.literal("")),
   salary: z.string().optional(),
   appliedDate: z.date().optional(),
@@ -176,7 +182,7 @@ export function JobDetailDrawer({
                 size="icon"
                 onClick={onDelete}
                 disabled={isDeleting}
-                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                className="text-destructive hover:bg-destructive/10 h-8 w-8"
               >
                 {isDeleting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -194,18 +200,25 @@ export function JobDetailDrawer({
         >
           {/* Status Badge (Static View) */}
           {!isEditing && (
-            <div className="flex items-center justify-between rounded-2xl bg-muted/30 p-4 border border-border/50">
+            <div className="bg-muted/30 border-border/50 flex items-center justify-between rounded-2xl border p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
                   <Info className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status Lamaran</p>
-                  <p className="text-sm font-semibold capitalize">{JOB_STATUS_LABELS[job.status as JobStatus]}</p>
+                  <p className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+                    Status Lamaran
+                  </p>
+                  <p className="text-sm font-semibold capitalize">
+                    {JOB_STATUS_LABELS[job.status as JobStatus]}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground text-xs">
-                Terakhir diupdate: {job.updatedAt ? format(new Date(job.updatedAt), "d MMM yyyy") : "-"}
+              <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                Terakhir diupdate:{" "}
+                {job.updatedAt
+                  ? format(new Date(job.updatedAt), "d MMM yyyy")
+                  : "-"}
               </div>
             </div>
           )}
@@ -329,14 +342,19 @@ export function JobDetailDrawer({
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "d MMM yyyy", { locale: id })
+                                format(field.value, "d MMM yyyy", {
+                                  locale: id,
+                                })
                               ) : (
                                 <span>Pilih tanggal</span>
                               )}
                             </Button>
                           }
                         />
-                        <PopoverContent className="z-[100] w-auto p-0 pointer-events-auto" align="start">
+                        <PopoverContent
+                          className="pointer-events-auto z-100 w-auto p-0"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             selected={field.value}
@@ -351,7 +369,11 @@ export function JobDetailDrawer({
                   />
                 ) : (
                   <div className="text-sm">
-                    {job.appliedDate ? format(new Date(job.appliedDate), "d MMMM yyyy", { locale: id }) : "-"}
+                    {job.appliedDate
+                      ? format(new Date(job.appliedDate), "d MMMM yyyy", {
+                          locale: id,
+                        })
+                      : "-"}
                   </div>
                 )}
               </div>
@@ -369,7 +391,7 @@ export function JobDetailDrawer({
                 />
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="text-sm truncate max-w-[200px] text-muted-foreground">
+                  <div className="text-muted-foreground max-w-50 truncate text-sm">
                     {job.jobUrl || "-"}
                   </div>
                   {job.jobUrl && (
@@ -377,7 +399,7 @@ export function JobDetailDrawer({
                       href={job.jobUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:underline flex items-center gap-1 text-xs font-medium"
+                      className="text-primary flex items-center gap-1 text-xs font-medium hover:underline"
                     >
                       Buka Lowongan <ExternalLink className="h-3 w-3" />
                     </a>
@@ -396,7 +418,7 @@ export function JobDetailDrawer({
                   className="bg-background min-h-32"
                 />
               ) : (
-                <div className="text-sm whitespace-pre-wrap rounded-xl bg-muted/50 p-4 border border-border/50 italic text-muted-foreground">
+                <div className="bg-muted/50 border-border/50 text-muted-foreground rounded-xl border p-4 text-sm whitespace-pre-wrap italic">
                   {job.notes || "Tidak ada catatan."}
                 </div>
               )}
@@ -405,7 +427,7 @@ export function JobDetailDrawer({
 
           {/* Sticky Bottom Actions when editing */}
           {isEditing && (
-            <div className="sticky bottom-0 bg-background border-t pt-4 flex gap-3">
+            <div className="bg-background sticky bottom-0 flex gap-3 border-t pt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -416,7 +438,7 @@ export function JobDetailDrawer({
               </Button>
               <Button
                 type="submit"
-                className="flex-[2] font-bold"
+                className="flex-2 font-bold"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

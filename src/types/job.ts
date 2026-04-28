@@ -14,6 +14,7 @@ export interface JobApplication {
   position: string;
   logoUrl?: string | null;
   salary?: string | null;
+  location?: string | null;
   type: JobType;
   status: JobStatus;
   appliedDate?: Date | null;

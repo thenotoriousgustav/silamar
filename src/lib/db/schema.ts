@@ -149,6 +149,7 @@ export const jobApplications = pgTable("job_applications", {
     .references(() => users.id, { onDelete: "cascade" }),
   company: text("company").notNull(),
   position: text("position").notNull(),
+  location: text("location"),
   logoUrl: text("logo_url"),
   salary: text("salary"),
   type: jobTypeEnum("type").notNull().default("full-time"),

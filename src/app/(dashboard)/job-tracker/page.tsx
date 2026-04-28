@@ -391,17 +391,17 @@ interface JobCardProps extends Omit<
   "value"
 > {
   job: JobApplication;
-  onClick?: (job: JobApplication) => void;
+  onItemClick?: (job: JobApplication) => void;
 }
 
-function JobCard({ job, onClick, ...props }: JobCardProps) {
+function JobCard({ job, onItemClick, ...props }: JobCardProps) {
   return (
     <KanbanItem
       key={job.id}
       value={job.id}
       asChild
       {...props}
-      onClick={() => onClick?.(job)}
+      onClick={() => onItemClick?.(job)}
     >
       <div className="glass hover:border-primary/20 border-border/50 cursor-pointer rounded-xl border p-4 shadow-sm transition-all">
         <div className="flex flex-col gap-2">
@@ -488,7 +488,7 @@ function JobColumn({
           </div>
         )}
         {tasks.map((job) => (
-          <JobCard key={job.id} job={job} asHandle onClick={onItemClick} />
+          <JobCard key={job.id} job={job} asHandle onItemClick={onItemClick} />
         ))}
       </div>
     </KanbanColumn>
