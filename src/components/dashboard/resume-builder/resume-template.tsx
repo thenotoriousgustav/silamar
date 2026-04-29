@@ -94,7 +94,7 @@ const getStyles = (fontFamily: string = "Helvetica") => {
       textTransform: "uppercase",
       letterSpacing: 1,
     },
-    headline: {
+    jobTitle: {
       fontSize: 11,
       color: colors.secondary,
       marginBottom: 6,
@@ -310,6 +310,9 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
           <Text style={styles.name}>
             {personalInfo.fullName || "NAMA LENGKAP"}
           </Text>
+          {personalInfo.title && (
+            <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+          )}
           <Text style={styles.contactInfo}>
             {[
               personalInfo.email,
@@ -331,11 +334,7 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
         {personalInfo.summary && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t.professionalSummary}</Text>
-            <Text style={styles.summary}>
-              {lang === "en"
-                ? personalInfo.summaryEn || personalInfo.summary
-                : personalInfo.summaryId || personalInfo.summary}
-            </Text>
+            <Text style={styles.summary}>{personalInfo.summary}</Text>
           </View>
         )}
 
@@ -364,10 +363,7 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                     )}
                   </View>
                 </View>
-                <BulletList
-                  items={exp.description}
-                  styles={styles}
-                />
+                <BulletList items={exp.description} styles={styles} />
               </View>
             ))}
           </View>
@@ -436,10 +432,7 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                     {cleanUrl(project.link)}
                   </Text>
                 )}
-                <BulletList
-                  items={project.description}
-                  styles={styles}
-                />
+                <BulletList items={project.description} styles={styles} />
               </View>
             ))}
           </View>

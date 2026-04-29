@@ -36,6 +36,7 @@ import {
   Languages,
   ChevronUp,
   ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
@@ -111,8 +112,10 @@ export function ResumeForm({
     readabilityScore: number;
   } | null>(null);
 
-  const score = calculateCompleteness(content);
+  const completeness = calculateCompleteness(content);
+  const score = completeness.score;
   const feedback = getCompletenessFeedback(score);
+  const [isCompletenessOpen, setIsCompletenessOpen] = useState(false);
   const lang = content.style?.language || "id";
 
   const handleOptimize = async (
@@ -179,68 +182,197 @@ export function ResumeForm({
   return (
     <div className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6">
       {/* Completeness Dashboard - Wrapped to ensure visibility */}
-      <div className="shrink-0">
-        <Card className="border-primary/20 bg-card overflow-hidden rounded-2xl border shadow-sm">
-          <CardContent className="p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 items-center justify-center rounded-xl border">
-                  <Zap className="h-5 w-5" />
+      <Dialog open={isCompletenessOpen} onOpenChange={setIsCompletenessOpen}>
+        <div className="shrink-0" onClick={() => setIsCompletenessOpen(true)}>
+          <Card className="group border-primary/20 bg-card hover:border-primary/50 relative cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all hover:shadow-md active:scale-[0.98]">
+            {/* Click Indicator */}
+            <div className="bg-primary/5 absolute top-2 right-2 flex items-center gap-1 rounded-full px-2 py-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="text-primary text-[9px] font-bold uppercase">
+                Lihat Detail
+              </span>
+              <ChevronRight className="text-primary h-2.5 w-2.5" />
+            </div>
+
+            <CardContent className="p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-xl border transition-colors">
+                    <Zap className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-foreground text-sm font-bold">
+                      Kesiapan Resume
+                    </h3>
+                    <p
+                      className={cn(
+                        "text-[10px] font-medium tracking-wider uppercase",
+                        feedback.color,
+                      )}
+                    >
+                      {feedback.message}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-foreground text-2xl font-black">
+                    {score}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
+                <div
+                  className={cn(
+                    "h-full transition-all duration-1000 ease-out",
+                    feedback.bg,
+                  )}
+                  style={{ width: `${score}%` }}
+                />
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRunATSAnalysis();
+                  }}
+                  disabled={isAnalyzingATS}
+                  className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-full text-[10px] font-bold transition-all"
+                >
+                  {isAnalyzingATS ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <BarChart3 className="text-brand-500 h-3 w-3" />
+                  )}
+                  {isAnalyzingATS ? "Menganalisis..." : "Analisis Skor ATS"}
+                </Button>
+                <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                  ATS Format Validated
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <DialogContent className="overflow-hidden rounded-3xl border-none p-0 shadow-2xl sm:max-w-2xl">
+          <div className="from-primary/10 via-background to-background bg-linear-to-br p-8">
+            <div className="mb-8 flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg">
+                  <Zap className="h-7 w-7" />
                 </div>
                 <div>
-                  <h3 className="text-foreground text-sm font-bold">
-                    Kesiapan Resume
-                  </h3>
-                  <p
-                    className={cn(
-                      "text-[10px] font-medium tracking-wider uppercase",
-                      feedback.color,
-                    )}
-                  >
-                    {feedback.message}
-                  </p>
+                  <h2 className="text-foreground text-2xl font-black tracking-tight italic">
+                    RESUME READINESS
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 flex h-1.5 w-24 overflow-hidden rounded-full">
+                      <div
+                        className={cn("h-full", feedback.bg)}
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                    <span className="text-muted-foreground text-[10px] font-black tracking-widest uppercase">
+                      {score}% COMPLETED
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-foreground text-2xl font-black">
-                  {score}%
-                </span>
+                <p
+                  className={cn(
+                    "text-sm font-black tracking-tighter uppercase italic",
+                    feedback.color,
+                  )}
+                >
+                  {feedback.message}
+                </p>
+                <p className="text-muted-foreground text-[10px] font-medium tracking-widest uppercase">
+                  Current Status
+                </p>
               </div>
             </div>
 
-            <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
-              <div
-                className={cn(
-                  "h-full transition-all duration-1000 ease-out",
-                  feedback.bg,
-                )}
-                style={{ width: `${score}%` }}
-              />
+            <div className="custom-scrollbar grid max-h-[60vh] grid-cols-1 gap-6 overflow-y-auto pr-2 md:grid-cols-2">
+              {Array.from(
+                new Set(completeness.suggestions.map((s) => s.category)),
+              ).map((category) => (
+                <div key={category} className="space-y-3">
+                  <div className="flex items-center gap-2 px-1">
+                    <div className="bg-primary h-1 w-1 rounded-full" />
+                    <h4 className="text-muted-foreground text-[10px] font-black tracking-[0.2em] uppercase">
+                      {category}
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {completeness.suggestions
+                      .filter((s) => s.category === category)
+                      .map((s, idx) => (
+                        <div
+                          key={idx}
+                          className={cn(
+                            "group flex items-center gap-3 rounded-2xl border p-3 transition-all",
+                            s.completed
+                              ? "border-emerald-500/10 bg-emerald-500/5 opacity-60"
+                              : "bg-background border-border hover:border-primary/30 shadow-sm",
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "flex h-7 w-7 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110",
+                              s.completed
+                                ? "bg-emerald-500/20 text-emerald-600"
+                                : "bg-muted text-muted-foreground",
+                            )}
+                          >
+                            {s.completed ? (
+                              <CheckCircle2 className="h-4 w-4" />
+                            ) : (
+                              <Plus className="h-3.5 w-3.5" />
+                            )}
+                          </div>
+                          <div className="flex flex-col">
+                            <span
+                              className={cn(
+                                "text-[11px] leading-tight font-bold tracking-tight",
+                                s.completed
+                                  ? "text-emerald-700/70 line-through"
+                                  : "text-foreground",
+                              )}
+                            >
+                              {s.text}
+                            </span>
+                            {!s.completed && (
+                              <span className="text-primary/60 text-[9px] font-black uppercase">
+                                Impact: +{s.weight}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="border-primary/5 mt-8 flex items-center justify-between border-t pt-6">
+              <p className="text-muted-foreground max-w-[200px] text-[10px] font-medium">
+                Lengkapi semua poin di atas untuk mendapatkan skor maksimal dan
+                meningkatkan peluang ATS.
+              </p>
               <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRunATSAnalysis}
-                disabled={isAnalyzingATS}
-                className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-full text-[10px] font-bold transition-all"
+                className="shadow-primary/20 h-12 rounded-2xl px-8 font-black tracking-tighter uppercase italic shadow-xl transition-all hover:scale-105 active:scale-95"
+                onClick={() => setIsCompletenessOpen(false)}
               >
-                {isAnalyzingATS ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <BarChart3 className="text-brand-500 h-3 w-3" />
-                )}
-                {isAnalyzingATS ? "Menganalisis..." : "Analisis Skor ATS"}
+                GOT IT, LETS GO!
               </Button>
-              <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
-                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                ATS Format Validated
-              </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* ATS Result Dialog */}
       <Dialog

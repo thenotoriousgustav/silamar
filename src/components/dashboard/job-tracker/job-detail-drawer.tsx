@@ -72,6 +72,7 @@ interface JobDetailDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  onDelete?: (job: JobApplication) => void;
 }
 
 export function JobDetailDrawer({
@@ -79,6 +80,7 @@ export function JobDetailDrawer({
   open,
   onOpenChange,
   onSuccess,
+  onDelete: onDeleteProp,
 }: JobDetailDrawerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -130,25 +132,9 @@ export function JobDetailDrawer({
 
   const onDelete = async () => {
     if (!job) return;
-    if (!confirm("Apakah Anda yakin ingin menghapus lamaran ini?")) return;
-
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`/api/jobs?id=${job.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Gagal menghapus lamaran");
-
-      toast.success("Lamaran berhasil dihapus");
-      onOpenChange(false);
-      onSuccess?.();
-    } catch (error) {
-      console.error(error);
-      toast.error("Terjadi kesalahan saat menghapus data");
-    } finally {
-      setIsDeleting(false);
-    }
+    // We'll let the parent handle the actual deletion for consistency with the Kanban/Table view
+    // or we can keep it here but use a proper UI.
+    // For now, let's just use the same confirmation logic if possible.
   };
 
   if (!job) return null;
@@ -180,15 +166,10 @@ export function JobDetailDrawer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onDelete}
-                disabled={isDeleting}
+                onClick={() => job && onDeleteProp?.(job)}
                 className="text-destructive hover:bg-destructive/10 h-8 w-8"
               >
-                {isDeleting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4" />
-                )}
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>

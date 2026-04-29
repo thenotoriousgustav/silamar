@@ -11,7 +11,20 @@ import {
   Building2,
   Clock,
   ExternalLink,
+  Trash2,
+  PencilLine,
+  AlertTriangle,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
   JOB_STATUS_LABELS,
@@ -59,6 +72,8 @@ export default function JobTrackerPage() {
   // Detail Drawer State
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<JobApplication | null>(null);
+  const [isDeletingJob, setIsDeletingJob] = useState(false);
 
   // Group jobs by status for the new Kanban API
   const [columns, setColumns] = useState<Record<string, JobApplication[]>>({
@@ -112,6 +127,27 @@ export default function JobTrackerPage() {
       toast.error("Gagal memuat data lamaran");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteJob = async () => {
+    if (!jobToDelete) return;
+    setIsDeletingJob(true);
+    try {
+      const response = await fetch(`/api/jobs?id=${jobToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Gagal menghapus lamaran");
+
+      toast.success("Lamaran berhasil dihapus");
+      setJobToDelete(null);
+      fetchJobs();
+    } catch (error) {
+      console.error(error);
+      toast.error("Terjadi kesalahan saat menghapus data");
+    } finally {
+      setIsDeletingJob(false);
     }
   };
 
@@ -259,6 +295,7 @@ export default function JobTrackerPage() {
                   label={colInfo?.label || status}
                   tasks={columns[status] || []}
                   onItemClick={handleOpenDetail}
+                  onItemDelete={(job) => setJobToDelete(job)}
                 />
               );
             })}
@@ -357,9 +394,30 @@ export default function JobTrackerPage() {
                         : "-"}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDetail(job);
+                          }}
+                        >
+                          <PencilLine className="text-muted-foreground h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="hover:bg-destructive/10 h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setJobToDelete(job);
+                          }}
+                        >
+                          <Trash2 className="text-destructive h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -380,7 +438,57 @@ export default function JobTrackerPage() {
         open={isDetailOpen}
         onOpenChange={setIsDetailOpen}
         onSuccess={fetchJobs}
+        onDelete={(job) => {
+          setIsDetailOpen(false);
+          setJobToDelete(job);
+        }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!jobToDelete}
+        onOpenChange={(open) => !open && setJobToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="bg-destructive/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+              <AlertTriangle className="text-destructive h-6 w-6" />
+            </div>
+            <AlertDialogTitle className="text-xl font-bold">
+              Hapus Lamaran?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Tindakan ini tidak dapat dibatalkan. Lamaran kamu di{" "}
+              <span className="text-foreground font-semibold">
+                {jobToDelete?.company}
+              </span>{" "}
+              akan dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="bg-muted border-none">
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteJob();
+              }}
+              disabled={isDeletingJob}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold"
+            >
+              {isDeletingJob ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Ya, Hapus Lamaran"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -392,9 +500,10 @@ interface JobCardProps extends Omit<
 > {
   job: JobApplication;
   onItemClick?: (job: JobApplication) => void;
+  onItemDelete?: (job: JobApplication) => void;
 }
 
-function JobCard({ job, onItemClick, ...props }: JobCardProps) {
+function JobCard({ job, onItemClick, onItemDelete, ...props }: JobCardProps) {
   return (
     <KanbanItem
       key={job.id}
@@ -403,7 +512,7 @@ function JobCard({ job, onItemClick, ...props }: JobCardProps) {
       {...props}
       onClick={() => onItemClick?.(job)}
     >
-      <div className="glass hover:border-primary/20 border-border/50 cursor-pointer rounded-xl border p-4 shadow-sm transition-all">
+      <div className="group glass hover:border-primary/20 border-border/50 relative cursor-pointer rounded-xl border p-4 shadow-sm transition-all">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -414,6 +523,18 @@ function JobCard({ job, onItemClick, ...props }: JobCardProps) {
                 <Building2 className="h-3 w-3" /> {job.company}
               </div>
             </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-destructive/10 absolute top-2 right-2 h-7 w-7 opacity-0 transition-all group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onItemDelete?.(job);
+              }}
+            >
+              <Trash2 className="text-destructive h-3.5 w-3.5" />
+            </Button>
           </div>
 
           <div className="flex items-center justify-between pt-1">
@@ -440,6 +561,7 @@ interface JobColumnProps extends Omit<
   tasks: JobApplication[];
   label: string;
   onItemClick?: (job: JobApplication) => void;
+  onItemDelete?: (job: JobApplication) => void;
 }
 
 function JobColumn({
@@ -447,6 +569,7 @@ function JobColumn({
   tasks,
   label,
   onItemClick,
+  onItemDelete,
   ...props
 }: JobColumnProps) {
   const statusId = value as JobStatus;
@@ -488,7 +611,13 @@ function JobColumn({
           </div>
         )}
         {tasks.map((job) => (
-          <JobCard key={job.id} job={job} asHandle onItemClick={onItemClick} />
+          <JobCard
+            key={job.id}
+            job={job}
+            asHandle
+            onItemClick={onItemClick}
+            onItemDelete={onItemDelete}
+          />
         ))}
       </div>
     </KanbanColumn>

@@ -195,14 +195,14 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                     Kelengkapan Data
                   </span>
                   <span className="text-primary">
-                    {calculateCompleteness(resume.content as any)}%
+                    {calculateCompleteness(resume.content as any).score}%
                   </span>
                 </div>
                 <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
                   <div
                     className="bg-primary h-full transition-all"
                     style={{
-                      width: `${calculateCompleteness(resume.content as any)}%`,
+                      width: `${calculateCompleteness(resume.content as any).score}%`,
                     }}
                   />
                 </div>
