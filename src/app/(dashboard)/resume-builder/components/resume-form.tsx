@@ -113,7 +113,17 @@ export function ResumeForm({
   const [optimizingId, setOptimizingId] = useState<string | null>(null);
 
   const optimizeMutation = useMutation({
-    mutationFn: async ({ expId, idx, text, type }: { expId: string; idx: number; text: string; type: string }) => {
+    mutationFn: async ({
+      expId,
+      idx,
+      text,
+      type,
+    }: {
+      expId: string;
+      idx: number;
+      text: string;
+      type: string;
+    }) => {
       const res = await fetch("/api/resume/optimize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -250,7 +260,9 @@ export function ResumeForm({
                   ) : (
                     <BarChart3 className="text-brand-500 h-3 w-3" />
                   )}
-                  {analyzeMutation.isPending ? "Menganalisis..." : "Analisis Skor ATS"}
+                  {analyzeMutation.isPending
+                    ? "Menganalisis..."
+                    : "Analisis Skor ATS"}
                 </Button>
                 <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
                   <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -363,7 +375,7 @@ export function ResumeForm({
             </div>
 
             <div className="border-primary/5 mt-8 flex items-center justify-between border-t pt-6">
-              <p className="text-muted-foreground max-w-[200px] text-[10px] font-medium">
+              <p className="text-muted-foreground max-w-50 text-[10px] font-medium">
                 Lengkapi semua poin di atas untuk mendapatkan skor maksimal dan
                 meningkatkan peluang ATS.
               </p>
@@ -387,7 +399,9 @@ export function ResumeForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-bold">
               <Sparkles className="text-brand-500 h-6 w-6" />
-              {analyzeMutation.isPending ? "Menganalisis..." : "Analisis ATS AI"}
+              {analyzeMutation.isPending
+                ? "Menganalisis..."
+                : "Analisis ATS AI"}
             </DialogTitle>
             <DialogDescription>
               Hasil analisis mendalam untuk mengoptimalkan peluang Anda lolos

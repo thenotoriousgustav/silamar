@@ -7,10 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryProvider } from "@/components/providers/query-provider";
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 

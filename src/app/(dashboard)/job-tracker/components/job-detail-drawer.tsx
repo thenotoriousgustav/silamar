@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -82,9 +83,30 @@ export function JobDetailDrawer({
   onSuccess,
   onDelete: onDeleteProp,
 }: JobDetailDrawerProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      if (!job) return;
+      const response = await fetch("/api/jobs", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: job.id, ...values }),
+      });
+
+      if (!response.ok) throw new Error("Gagal memperbarui lamaran");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast.success("Lamaran berhasil diperbarui");
+      setIsEditing(false);
+      onSuccess?.();
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Terjadi kesalahan saat memperbarui data");
+    },
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -107,27 +129,8 @@ export function JobDetailDrawer({
     }
   }, [job, form]);
 
-  const onSubmit = async (values: FormValues) => {
-    if (!job) return;
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/jobs", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: job.id, ...values }),
-      });
-
-      if (!response.ok) throw new Error("Gagal memperbarui lamaran");
-
-      toast.success("Lamaran berhasil diperbarui");
-      setIsEditing(false);
-      onSuccess?.();
-    } catch (error) {
-      console.error(error);
-      toast.error("Terjadi kesalahan saat memperbarui data");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (values: FormValues) => {
+    mutation.mutate(values);
   };
 
   const onDelete = async () => {
@@ -420,9 +423,9 @@ export function JobDetailDrawer({
               <Button
                 type="submit"
                 className="flex-2 font-bold"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
               >
-                {isSubmitting ? (
+                {mutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Menyimpan...

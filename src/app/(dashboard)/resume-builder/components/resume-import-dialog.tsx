@@ -38,7 +38,9 @@ export function ResumeImportDialog({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.details || "Gagal menganalisis resume");
+        throw new Error(
+          errorData.error || errorData.details || "Gagal menganalisis resume",
+        );
       }
 
       return response.json();
@@ -51,7 +53,9 @@ export function ResumeImportDialog({
     onError: (error) => {
       console.error("Import error:", error);
       toast.error(
-        error instanceof Error ? error.message : "Terjadi kesalahan saat mengimpor",
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengimpor",
       );
     },
   });

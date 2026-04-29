@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -73,7 +73,23 @@ export function AddJobDrawer({
   onOpenChange,
   onSuccess,
 }: AddJobDrawerProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const mutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error("Gagal menyimpan lamaran");
+      return response.json();
+    },
+    onSuccess: () => {
+      form.reset();
+      onOpenChange(false);
+      onSuccess?.();
+    },
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -90,25 +106,8 @@ export function AddJobDrawer({
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) throw new Error("Gagal menyimpan lamaran");
-
-      form.reset();
-      onOpenChange(false);
-      onSuccess?.();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (values: FormValues) => {
+    mutation.mutate(values);
   };
 
   return (
@@ -322,9 +321,9 @@ export function AddJobDrawer({
             <Button
               type="submit"
               className="h-11 w-full text-sm font-bold"
-              disabled={isSubmitting}
+              disabled={mutation.isPending}
             >
-              {isSubmitting ? (
+              {mutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Menyimpan...

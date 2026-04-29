@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -21,7 +22,25 @@ type FormData = z.infer<typeof schema>;
 export default function CoverLetterPage() {
   const [result, setResult] = useState<CoverLetterResult | null>(null);
   const [copied, setCopied] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const mutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const res = await fetch("/api/cover-letter/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, saveLetter: true }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Gagal generate cover letter");
+      return json.data;
+    },
+    onSuccess: (data) => {
+      setResult(data);
+      toast.success("Cover letter berhasil dibuat! ✍️");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Terjadi kesalahan. Coba lagi.");
+    },
+  });
 
   const {
     register,
@@ -33,24 +52,7 @@ export default function CoverLetterPage() {
   });
 
   const onSubmit = (data: FormData) => {
-    startTransition(async () => {
-      try {
-        const res = await fetch("/api/cover-letter/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, saveLetter: true }),
-        });
-        const json = await res.json();
-        if (!res.ok) {
-          toast.error(json.error ?? "Gagal generate cover letter");
-          return;
-        }
-        setResult(json.data);
-        toast.success("Cover letter berhasil dibuat! ✍️");
-      } catch {
-        toast.error("Terjadi kesalahan. Coba lagi.");
-      }
-    });
+    mutation.mutate(data);
   };
 
   const handleCopy = () => {
@@ -160,10 +162,10 @@ export default function CoverLetterPage() {
             <button
               type="submit"
               id="btn-generate-cover-letter"
-              disabled={isPending}
+              disabled={mutation.isPending}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-bold text-white transition-all hover:bg-brand-500 disabled:opacity-50"
             >
-              {isPending ? (
+              {mutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" /> Generating...
                 </>
@@ -179,7 +181,7 @@ export default function CoverLetterPage() {
 
         {/* Result */}
         <div className="space-y-4">
-          {!result && !isPending && (
+          {!result && !mutation.isPending && (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 py-20 text-center">
               <Mail className="mb-3 h-10 w-10 text-surface-400" />
               <p className="text-sm text-surface-300">
@@ -188,7 +190,7 @@ export default function CoverLetterPage() {
             </div>
           )}
 
-          {isPending && (
+          {mutation.isPending && (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-brand-500/30 bg-brand-500/5 py-20 text-center">
               <Loader2 className="mb-3 h-10 w-10 animate-spin text-brand-400" />
               <p className="text-sm text-brand-400">

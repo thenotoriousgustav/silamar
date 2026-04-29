@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -28,7 +29,25 @@ export default function SkillGapPage() {
   const [result, setResult] = useState<SkillGapResult | null>(null);
   const [skillInput, setSkillInput] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
+  const mutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const res = await fetch("/api/skill-gap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Gagal menganalisis skill gap");
+      return json.data;
+    },
+    onSuccess: (data) => {
+      setResult(data);
+      toast.success("Analisis selesai! 🎯");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Terjadi kesalahan. Coba lagi.");
+    },
+  });
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -52,24 +71,7 @@ export default function SkillGapPage() {
   };
 
   const onSubmit = (data: FormData) => {
-    startTransition(async () => {
-      try {
-        const res = await fetch("/api/skill-gap", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const json = await res.json();
-        if (!res.ok) {
-          toast.error(json.error ?? "Gagal menganalisis skill gap");
-          return;
-        }
-        setResult(json.data);
-        toast.success("Analisis selesai! 🎯");
-      } catch {
-        toast.error("Terjadi kesalahan. Coba lagi.");
-      }
-    });
+    mutation.mutate(data);
   };
 
   const gapColor = (score: number) =>
@@ -157,10 +159,10 @@ export default function SkillGapPage() {
             <button
               type="submit"
               id="btn-analyze-skill-gap"
-              disabled={isPending}
+              disabled={mutation.isPending}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 text-sm font-bold text-white transition-all hover:bg-brand-500 disabled:opacity-50"
             >
-              {isPending ? (
+              {mutation.isPending ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Menganalisis...</>
               ) : (
                 <><Sparkles className="h-4 w-4" /> Analisis Skill Gap (1 Kredit)</>
@@ -171,14 +173,14 @@ export default function SkillGapPage() {
 
         {/* Results */}
         <div className="space-y-4">
-          {!result && !isPending && (
+          {!result && !mutation.isPending && (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 py-20 text-center">
               <Target className="mb-3 h-10 w-10 text-surface-400" />
               <p className="text-sm text-surface-300">Hasil analisis akan muncul di sini</p>
             </div>
           )}
 
-          {isPending && (
+          {mutation.isPending && (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-brand-500/30 bg-brand-500/5 py-20 text-center">
               <Loader2 className="mb-3 h-10 w-10 animate-spin text-brand-400" />
               <p className="text-sm text-brand-400">AI sedang menganalisis...</p>

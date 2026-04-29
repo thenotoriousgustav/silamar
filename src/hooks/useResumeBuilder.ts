@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { updateResumeAction } from "@/app/(dashboard)/resume-builder/server";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -215,22 +216,15 @@ export function useResumeBuilder(
   const save = useCallback(
     async (idToSave?: string, title?: string) => {
       const activeId = idToSave || resumeId;
-      if (!activeId || !isDirty) return;
+      if (!activeId || !isDirtyRef.current) return;
 
       setIsSaving(true);
       try {
-        const res = await fetch(`/api/resumes/${activeId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: contentRef.current,
-            title: title || "Untitled Resume",
-          }),
-          // Important for save-on-exit
-          keepalive: true,
+        await updateResumeAction(activeId, {
+          content: contentRef.current,
+          title: title || "Untitled Resume",
         });
 
-        if (!res.ok) throw new Error("Failed to save");
         setIsDirty(false);
         toast.success("Resume berhasil disimpan");
         // Clear local draft on successful DB save
@@ -246,7 +240,7 @@ export function useResumeBuilder(
         setIsSaving(false);
       }
     },
-    [resumeId, isDirty],
+    [resumeId],
   );
 
   return {

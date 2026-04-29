@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ResumeImportDialog } from "@/components/dashboard/resume-builder/resume-import-dialog";
+
 import type { ResumeContent } from "@/types/resume";
 import { calculateCompleteness } from "@/lib/resume/completeness";
 import {
@@ -37,6 +37,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { deleteResumeAction, createResumeAction, getResumesAction } from "../server";
+import { ResumeImportDialog } from "./resume-import-dialog";
 
 interface Resume {
   id: string;
@@ -59,21 +61,13 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
   const { data: resumesList = initialResumes } = useQuery<Resume[]>({
     queryKey: ["resumes"],
-    queryFn: async () => {
-      const res = await fetch("/api/resumes");
-      if (!res.ok) throw new Error("Gagal mengambil data resume");
-      const data = await res.json();
-      return data.resumes;
-    },
+    queryFn: () => getResumesAction() as any,
     initialData: initialResumes,
+    staleTime: 0,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/resumes/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Gagal menghapus resume");
-      return res.json();
-    },
+    mutationFn: (id: string) => deleteResumeAction(id),
     onSuccess: () => {
       toast.success("Resume berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
@@ -86,26 +80,22 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   });
 
   const createMutation = useMutation({
-    mutationFn: async ({ id, content, title }: { id: string; content: ResumeContent; title: string }) => {
-      const res = await fetch(`/api/resumes/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, title }),
-      });
-      if (!res.ok) throw new Error("Gagal membuat resume");
-      return res.json();
-    },
-    onSuccess: (_, variables) => {
-      toast.success("Resume berhasil dibuat dari impor!");
-      router.push(`/resume-builder/${variables.id}`);
+    mutationFn: (data: { id: string; content: ResumeContent; title: string }) =>
+      createResumeAction(data),
+    onSuccess: (newResume) => {
+      toast.success("Resume berhasil dibuat! 🚀");
+      setIsChoiceOpen(false);
+      setIsImportOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      router.push(`/resume-builder/${newResume.id}`);
     },
     onError: (error) => {
-      console.error("Creation error:", error);
-      toast.error("Gagal menyimpan resume hasil impor");
+      console.error("Create error:", error);
+      toast.error("Gagal membuat resume. Coba lagi.");
     },
   });
 
-  const handleImportComplete = async (content: ResumeContent) => {
+  const handleImportComplete = (content: ResumeContent) => {
     const newId = crypto.randomUUID();
     createMutation.mutate({
       id: newId,
