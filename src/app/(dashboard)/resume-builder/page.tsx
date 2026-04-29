@@ -8,6 +8,8 @@ import { eq, desc } from "drizzle-orm";
 import { ResumeListClient } from "@/components/dashboard/resume-builder/resume-list-client";
 
 export const metadata: Metadata = { title: "Resume Builder" };
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function ResumeBuilderPage() {
   const session = await auth.api.getSession({ headers: await headers() });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   FileText,
   Plus,
@@ -53,56 +54,69 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const router = useRouter();
   const [isChoiceOpen, setIsChoiceOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const handleImportComplete = async (content: ResumeContent) => {
-    setIsCreating(true);
-    const newId = crypto.randomUUID();
+  const { data: resumesList = initialResumes } = useQuery<Resume[]>({
+    queryKey: ["resumes"],
+    queryFn: async () => {
+      const res = await fetch("/api/resumes");
+      if (!res.ok) throw new Error("Gagal mengambil data resume");
+      const data = await res.json();
+      return data.resumes;
+    },
+    initialData: initialResumes,
+  });
 
-    try {
-      // Create the resume in the DB first so we can redirect to it
-      const res = await fetch(`/api/resumes/${newId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-          title: "Imported Resume",
-        }),
-      });
-
-      if (!res.ok) throw new Error("Gagal membuat resume");
-
-      router.push(`/resume-builder/${newId}`);
-      toast.success("Resume berhasil dibuat dari impor!");
-    } catch (error) {
-      console.error("Creation error:", error);
-      toast.error("Gagal menyimpan resume hasil impor");
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!resumeToDelete) return;
-
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/resumes/${resumeToDelete}`, {
-        method: "DELETE",
-      });
-
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/resumes/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Gagal menghapus resume");
-
+      return res.json();
+    },
+    onSuccess: () => {
       toast.success("Resume berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
       setResumeToDelete(null);
-      router.refresh();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Delete error:", error);
       toast.error("Terjadi kesalahan saat menghapus resume");
-    } finally {
-      setIsDeleting(false);
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async ({ id, content, title }: { id: string; content: ResumeContent; title: string }) => {
+      const res = await fetch(`/api/resumes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, title }),
+      });
+      if (!res.ok) throw new Error("Gagal membuat resume");
+      return res.json();
+    },
+    onSuccess: (_, variables) => {
+      toast.success("Resume berhasil dibuat dari impor!");
+      router.push(`/resume-builder/${variables.id}`);
+    },
+    onError: (error) => {
+      console.error("Creation error:", error);
+      toast.error("Gagal menyimpan resume hasil impor");
+    },
+  });
+
+  const handleImportComplete = async (content: ResumeContent) => {
+    const newId = crypto.randomUUID();
+    createMutation.mutate({
+      id: newId,
+      content,
+      title: "Imported Resume",
+    });
+  };
+
+  const handleDelete = () => {
+    if (resumeToDelete) {
+      deleteMutation.mutate(resumeToDelete);
     }
   };
 
@@ -124,7 +138,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         </Button>
       </div>
 
-      {initialResumes.length === 0 ? (
+      {resumesList.length === 0 ? (
         <div className="border-border flex flex-col items-center justify-center border border-dashed py-20 text-center">
           <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-xl">
             <FileText className="text-muted-foreground h-8 w-8" />
@@ -146,7 +160,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {initialResumes.map((resume) => (
+          {resumesList.map((resume) => (
             <Link
               key={resume.id}
               href={`/resume-builder/${resume.id}`}
@@ -257,9 +271,9 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                 handleDelete();
               }}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold"
-              disabled={isDeleting}
+              disabled={deleteMutation.isPending}
             >
-              {isDeleting ? (
+              {deleteMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Menghapus...
@@ -334,7 +348,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         onImportComplete={handleImportComplete}
       />
 
-      {isCreating && (
+      {createMutation.isPending && (
         <div className="bg-background/80 fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-sm">
           <Loader2 className="text-primary h-12 w-12 animate-spin" />
           <p className="text-foreground mt-4 font-medium italic">

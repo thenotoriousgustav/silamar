@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Upload, FileText, Loader2, X, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,35 @@ export function ResumeImportDialog({
   onImportComplete,
 }: ResumeImportDialogProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const importMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("pdf", file);
+      const response = await fetch("/api/resume/analyze", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || "Gagal menganalisis resume");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      onImportComplete(data);
+      toast.success("Resume berhasil diimpor!");
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      console.error("Import error:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Terjadi kesalahan saat mengimpor",
+      );
+    },
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -38,37 +67,9 @@ export function ResumeImportDialog({
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    setIsAnalyzing(true);
-    const formData = new FormData();
-    formData.append("pdf", file);
-
-    try {
-      const response = await fetch("/api/resume/analyze", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.details || "Gagal menganalisis resume");
-      }
-
-      const data = await response.json();
-      onImportComplete(data);
-      toast.success("Resume berhasil diimpor!");
-      onOpenChange(false);
-    } catch (error) {
-      console.error("Import error:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Terjadi kesalahan saat mengimpor",
-      );
-    } finally {
-      setIsAnalyzing(false);
+  const handleUpload = () => {
+    if (file) {
+      importMutation.mutate(file);
     }
   };
 
@@ -141,7 +142,7 @@ export function ResumeImportDialog({
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              {!isAnalyzing && (
+              {!importMutation.isPending && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -154,7 +155,7 @@ export function ResumeImportDialog({
             </div>
           )}
 
-          {isAnalyzing && (
+          {importMutation.isPending && (
             <div className="flex flex-col items-center gap-3 py-4">
               <Loader2 className="text-primary h-8 w-8 animate-spin" />
               <div className="text-center">
@@ -171,17 +172,17 @@ export function ResumeImportDialog({
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}
-            disabled={isAnalyzing}
+            disabled={importMutation.isPending}
             className="text-muted-foreground hover:bg-muted hover:text-foreground font-semibold"
           >
             Batal
           </Button>
           <Button
             onClick={handleUpload}
-            disabled={!file || isAnalyzing}
+            disabled={!file || importMutation.isPending}
             className="bg-primary hover:bg-primary/90 shadow-primary/20 text-primary-foreground gap-2 px-6 font-bold shadow-lg transition-all hover:scale-105 active:scale-95"
           >
-            {isAnalyzing ? (
+            {importMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <CheckCircle2 className="h-4 w-4" />

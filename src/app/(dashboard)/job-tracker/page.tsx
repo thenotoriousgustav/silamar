@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Briefcase,
   Plus,
@@ -64,109 +65,134 @@ const STATUS_BADGE: Record<JobStatus, string> = {
 const COLUMN_ORDER_KEY = "silamar-job-tracker-column-order";
 
 export default function JobTrackerPage() {
+  const queryClient = useQueryClient();
   const [view, setView] = useState<"kanban" | "table">("kanban");
-  const [jobs, setJobs] = useState<JobApplication[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isAddOpen, setIsAddOpen] = useState(false);
-
-  // Detail Drawer State
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<JobApplication | null>(null);
-  const [isDeletingJob, setIsDeletingJob] = useState(false);
-
-  // Group jobs by status for the new Kanban API
-  const [columns, setColumns] = useState<Record<string, JobApplication[]>>({
-    dilamar: [],
-    interview: [],
-    penawaran: [],
-    ditolak: [],
+  const [localJobs, setLocalJobs] = useState<JobApplication[]>([]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(COLUMN_ORDER_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse column order", e);
+        }
+      }
+    }
+    return ["dilamar", "interview", "penawaran", "ditolak"];
   });
 
   // Track original status before drag starts
   const dragStartStatusRef = useRef<string | null>(null);
 
-  const fetchJobs = async () => {
-    try {
+  // 1. Fetch Jobs Query
+  const { data: jobs = [], isLoading } = useQuery<JobApplication[]>({
+    queryKey: ["jobs"],
+    queryFn: async () => {
       const response = await fetch("/api/jobs");
       if (!response.ok) throw new Error("Gagal mengambil data lamaran");
-      const data = await response.json();
-      setJobs(data);
+      return response.json();
+    },
+  });
 
-      // Load column order from localStorage
-      let columnOrder = ["dilamar", "interview", "penawaran", "ditolak"];
-      const savedOrder = localStorage.getItem(COLUMN_ORDER_KEY);
-      if (savedOrder) {
-        try {
-          columnOrder = JSON.parse(savedOrder);
-        } catch (e) {
-          console.error("Failed to parse column order", e);
-        }
-      }
-
-      // Initialize columns based on order
-      const newColumns: Record<string, JobApplication[]> = {};
-      columnOrder.forEach((status) => {
-        newColumns[status] = [];
-      });
-
-      // Add any missing statuses (just in case)
-      ["dilamar", "interview", "penawaran", "ditolak"].forEach((status) => {
-        if (!newColumns[status]) newColumns[status] = [];
-      });
-
-      // Fill data
-      data.forEach((job: JobApplication) => {
-        if (newColumns[job.status]) {
-          newColumns[job.status].push(job);
-        }
-      });
-      setColumns(newColumns);
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal memuat data lamaran");
-    } finally {
-      setIsLoading(false);
+  // Sync localJobs with jobs from query
+  useEffect(() => {
+    if (jobs.length > 0) {
+      setLocalJobs(jobs);
     }
-  };
+  }, [jobs]);
 
-  const handleDeleteJob = async () => {
-    if (!jobToDelete) return;
-    setIsDeletingJob(true);
-    try {
-      const response = await fetch(`/api/jobs?id=${jobToDelete.id}`, {
-        method: "DELETE",
-      });
-
+  // 2. Mutations
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/jobs?id=${id}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Gagal menghapus lamaran");
-
+      return response.json();
+    },
+    onSuccess: () => {
       toast.success("Lamaran berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
       setJobToDelete(null);
-      fetchJobs();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error(error);
       toast.error("Terjadi kesalahan saat menghapus data");
-    } finally {
-      setIsDeletingJob(false);
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await fetch("/api/jobs", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      if (!response.ok) throw new Error("Gagal memperbarui status");
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      toast.success(
+        `Status diperbarui ke ${JOB_STATUS_LABELS[variables.status as JobStatus]}`,
+      );
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Gagal memperbarui status ke server");
+    },
+  });
+
+  // 3. Derived State (Columns)
+  const columns = useMemo(() => {
+    const newColumns: Record<string, JobApplication[]> = {};
+    columnOrder.forEach((status) => {
+      newColumns[status] = [];
+    });
+
+    // Add any missing statuses
+    ["dilamar", "interview", "penawaran", "ditolak"].forEach((status) => {
+      if (!newColumns[status]) newColumns[status] = [];
+    });
+
+    localJobs.forEach((job) => {
+      if (newColumns[job.status]) {
+        newColumns[job.status].push(job);
+      }
+    });
+
+    return newColumns;
+  }, [localJobs, columnOrder]);
+
+  const handleDeleteJob = () => {
+    if (jobToDelete) {
+      deleteMutation.mutate(jobToDelete.id);
     }
   };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
 
   const handleOpenDetail = (job: JobApplication) => {
     setSelectedJob(job);
     setIsDetailOpen(true);
   };
 
-  // Save order when columns state changes (only if it's a structural change like dragging columns)
   const handleColumnsChange = (
     newColumns: Record<string, JobApplication[]>,
   ) => {
-    setColumns(newColumns);
     const newOrder = Object.keys(newColumns);
+    setColumnOrder(newOrder);
     localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(newOrder));
+
+    // Update localJobs based on newColumns to reflect drag changes
+    const flattenedJobs: JobApplication[] = [];
+    Object.entries(newColumns).forEach(([status, items]) => {
+      items.forEach((item) => {
+        flattenedJobs.push({ ...item, status: status as JobStatus });
+      });
+    });
+    setLocalJobs(flattenedJobs);
   };
 
   const handleDragStart = (event: any) => {
@@ -202,22 +228,10 @@ export default function JobTrackerPage() {
         finalStatus &&
         dragStartStatusRef.current !== finalStatus
       ) {
-        try {
-          const response = await fetch("/api/jobs", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: active.id, status: finalStatus }),
-          });
-
-          if (!response.ok) throw new Error("Gagal memperbarui status");
-          toast.success(
-            `Status diperbarui ke ${JOB_STATUS_LABELS[finalStatus as JobStatus]}`,
-          );
-        } catch (error) {
-          console.error(error);
-          toast.error("Gagal memperbarui status ke server");
-          fetchJobs();
-        }
+        updateStatusMutation.mutate({
+          id: active.id as string,
+          status: finalStatus,
+        });
       }
     }
 
@@ -430,14 +444,14 @@ export default function JobTrackerPage() {
       <AddJobDrawer
         open={isAddOpen}
         onOpenChange={setIsAddOpen}
-        onSuccess={fetchJobs}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["jobs"] })}
       />
 
       <JobDetailDrawer
         job={selectedJob}
         open={isDetailOpen}
         onOpenChange={setIsDetailOpen}
-        onSuccess={fetchJobs}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["jobs"] })}
         onDelete={(job) => {
           setIsDetailOpen(false);
           setJobToDelete(job);
@@ -474,16 +488,13 @@ export default function JobTrackerPage() {
                 e.preventDefault();
                 handleDeleteJob();
               }}
-              disabled={isDeletingJob}
+              disabled={deleteMutation.isPending}
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold"
             >
-              {isDeletingJob ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Menghapus...
-                </>
+              {deleteMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Ya, Hapus Lamaran"
+                "Hapus Sekarang"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

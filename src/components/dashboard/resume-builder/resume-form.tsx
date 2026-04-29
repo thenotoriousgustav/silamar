@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -102,8 +103,6 @@ export function ResumeForm({
   updateSkills,
   updateStyle,
 }: ResumeFormProps) {
-  const [optimizingId, setOptimizingId] = useState<string | null>(null);
-  const [isAnalyzingATS, setIsAnalyzingATS] = useState(false);
   const [atsResult, setAtsResult] = useState<{
     score: number;
     feedback: string;
@@ -111,14 +110,55 @@ export function ResumeForm({
     missingKeywords: string[];
     readabilityScore: number;
   } | null>(null);
+  const [optimizingId, setOptimizingId] = useState<string | null>(null);
 
-  const completeness = calculateCompleteness(content);
-  const score = completeness.score;
-  const feedback = getCompletenessFeedback(score);
-  const [isCompletenessOpen, setIsCompletenessOpen] = useState(false);
-  const lang = content.style?.language || "id";
+  const optimizeMutation = useMutation({
+    mutationFn: async ({ expId, idx, text, type }: { expId: string; idx: number; text: string; type: string }) => {
+      const res = await fetch("/api/resume/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, type }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      return { ...data, expId, idx };
+    },
+    onSuccess: (data) => {
+      const currentExp = content.experience.find((e) => e.id === data.expId);
+      if (currentExp) {
+        const currentBullets = [...(currentExp.description || [])];
+        currentBullets[data.idx] = data.result;
+        updateExperience(data.expId, { description: currentBullets });
+        toast.success("Teks berhasil dioptimasi!");
+      }
+    },
+    onError: (error) => {
+      console.error("Optimize error:", error);
+      toast.error("Gagal mengoptimasi teks");
+    },
+  });
 
-  const handleOptimize = async (
+  const analyzeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/resume/analyze-full", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: (data) => {
+      setAtsResult(data);
+    },
+    onError: (error) => {
+      console.error("ATS Error:", error);
+      toast.error("Gagal menjalankan analisis ATS");
+    },
+  });
+
+  const handleOptimize = (
     expId: string,
     idx: number,
     text: string,
@@ -128,56 +168,20 @@ export function ResumeForm({
       toast.error("Teks terlalu pendek untuk dioptimasi");
       return;
     }
-
     const loadingId = `${expId}-${idx}`;
     setOptimizingId(loadingId);
-
-    try {
-      const res = await fetch("/api/resume/optimize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, type }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      const currentExp = content.experience.find((e) => e.id === expId);
-      if (currentExp) {
-        const currentBullets = [...(currentExp.description || [])];
-        currentBullets[idx] = data.result;
-
-        updateExperience(expId, {
-          description: currentBullets,
-        });
-        toast.success("Teks berhasil dioptimasi!");
-      }
-    } catch (error) {
-      console.error("Optimize error:", error);
-      toast.error("Gagal mengoptimasi teks");
-    } finally {
-      setOptimizingId(null);
-    }
+    optimizeMutation.mutate({ expId, idx, text, type });
   };
 
-  const handleRunATSAnalysis = async () => {
-    setIsAnalyzingATS(true);
-    try {
-      const res = await fetch("/api/resume/analyze-full", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setAtsResult(data);
-    } catch (error) {
-      console.error("ATS Error:", error);
-      toast.error("Gagal menjalankan analisis ATS");
-    } finally {
-      setIsAnalyzingATS(false);
-    }
+  const handleRunATSAnalysis = () => {
+    analyzeMutation.mutate();
   };
+
+  const completeness = calculateCompleteness(content);
+  const score = completeness.score;
+  const feedback = getCompletenessFeedback(score);
+  const [isCompletenessOpen, setIsCompletenessOpen] = useState(false);
+  const lang = content.style?.language || "id";
 
   return (
     <div className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6">
@@ -236,17 +240,17 @@ export function ResumeForm({
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleRunATSAnalysis();
+                    analyzeMutation.mutate();
                   }}
-                  disabled={isAnalyzingATS}
+                  disabled={analyzeMutation.isPending}
                   className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-full text-[10px] font-bold transition-all"
                 >
-                  {isAnalyzingATS ? (
+                  {analyzeMutation.isPending ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
                     <BarChart3 className="text-brand-500 h-3 w-3" />
                   )}
-                  {isAnalyzingATS ? "Menganalisis..." : "Analisis Skor ATS"}
+                  {analyzeMutation.isPending ? "Menganalisis..." : "Analisis Skor ATS"}
                 </Button>
                 <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
                   <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -383,7 +387,7 @@ export function ResumeForm({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-bold">
               <Sparkles className="text-brand-500 h-6 w-6" />
-              Analisis ATS AI
+              {analyzeMutation.isPending ? "Menganalisis..." : "Analisis ATS AI"}
             </DialogTitle>
             <DialogDescription>
               Hasil analisis mendalam untuk mengoptimalkan peluang Anda lolos
