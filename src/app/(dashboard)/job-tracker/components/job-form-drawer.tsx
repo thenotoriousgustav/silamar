@@ -78,6 +78,8 @@ interface JobFormDrawerProps {
   onDelete?: (job: JobApplication) => void;
 }
 
+import { triggerSuccessConfetti } from "@/lib/utils/confetti";
+
 export function JobFormDrawer({
   job,
   open,
@@ -95,8 +97,13 @@ export function JobFormDrawer({
       }
       return createJobAction(values);
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast.success(isEdit ? "Lamaran diperbarui" : "Lamaran ditambahkan");
+      
+      if (variables.status === "penawaran") {
+        triggerSuccessConfetti();
+      }
+
       if (!isEdit) form.reset();
       onSuccess?.();
       onOpenChange(false);

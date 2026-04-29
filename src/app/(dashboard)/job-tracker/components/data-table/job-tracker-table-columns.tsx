@@ -26,10 +26,11 @@ import {
   type JobStatus,
   type JobApplication,
 } from "@/types/job";
-import { formatDate } from "@/lib/utils/format";
+import { format, isToday, isAfter, addDays, startOfDay } from "date-fns";
+import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils/cn";
 import { STATUS_BADGE } from "../../constants";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 interface GetColumnsProps {
   onEdit: (job: JobApplication) => void;
@@ -44,8 +45,8 @@ export function getJobTrackerColumns({
     {
       id: "select",
       header: ({ table }) => (
-        <div
-          onClick={(e) => e.stopPropagation()}
+        <div 
+          onClick={(e) => e.stopPropagation()} 
           onMouseDown={(e) => e.stopPropagation()}
           className="flex items-center justify-center"
         >
@@ -55,17 +56,15 @@ export function getJobTrackerColumns({
               table.getIsSomePageRowsSelected() &&
               !table.getIsAllPageRowsSelected()
             }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
             className="translate-y-0.5"
           />
         </div>
       ),
       cell: ({ row }) => (
-        <div
-          onClick={(e) => e.stopPropagation()}
+        <div 
+          onClick={(e) => e.stopPropagation()} 
           onMouseDown={(e) => e.stopPropagation()}
           className="flex items-center justify-center"
         >
@@ -179,10 +178,27 @@ export function getJobTrackerColumns({
         <DataTableColumnHeader column={column} label="Interview" />
       ),
       cell: ({ row }) => {
-        const date = row.getValue("interviewDate") as string;
+        const dateStr = row.getValue("interviewDate") as string;
+        if (!dateStr) return <div className="text-muted-foreground/30 italic">-</div>;
+        
+        const date = new Date(dateStr);
+        const today = isToday(date);
+        const soon = isAfter(date, startOfDay(new Date())) && isAfter(addDays(new Date(), 3), date);
+
         return (
-          <div className="text-muted-foreground italic">
-            {date ? formatDate(date, "d MMM yyyy") : "-"}
+          <div className={cn(
+            "flex items-center gap-2 font-medium",
+            today ? "text-amber-500" : soon ? "text-blue-500" : "text-muted-foreground"
+          )}>
+            <div className="flex items-center gap-1.5">
+              {today && (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+              )}
+              {format(date, "d MMM yyyy", { locale: id })}
+            </div>
           </div>
         );
       },
@@ -200,10 +216,10 @@ export function getJobTrackerColumns({
         <DataTableColumnHeader column={column} label="Tanggal" />
       ),
       cell: ({ row }) => {
-        const date = row.getValue("appliedDate") as string;
+        const dateStr = row.getValue("appliedDate") as string;
         return (
           <div className="text-muted-foreground">
-            {date ? formatDate(date, "d MMM yyyy") : "-"}
+            {dateStr ? format(new Date(dateStr), "d MMM yyyy", { locale: id }) : "-"}
           </div>
         );
       },

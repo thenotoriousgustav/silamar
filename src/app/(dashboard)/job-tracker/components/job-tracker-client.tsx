@@ -15,16 +15,20 @@ import { JobTrackerKanban } from "./kanban/job-tracker-kanban";
 import { JobTrackerHeader } from "./job-tracker-header";
 import { JobTrackerDialogs } from "./job-tracker-dialogs";
 import { getJobTrackerColumns } from "./data-table/job-tracker-table-columns";
+import { triggerSuccessConfetti } from "@/lib/utils/confetti";
+import { JobTrackerStats } from "./job-tracker-stats";
 import { VIEW_PREFERENCE_KEY, COLUMN_ORDER_KEY } from "../constants";
 
 interface JobTrackerClientProps {
   initialJobs: JobApplication[];
   initialView?: "kanban" | "table";
+  initialColumnOrder?: string[];
 }
 
 export function JobTrackerClient({
   initialJobs,
   initialView = "table",
+  initialColumnOrder,
 }: JobTrackerClientProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -122,7 +126,11 @@ export function JobTrackerClient({
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       updateJobAction(id, { status: status as any }),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      if (variables.status === "penawaran") {
+        triggerSuccessConfetti();
+        toast.success("Selamat! Anda mendapatkan penawaran kerja!");
+      }
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
     },
     onError: (error) => {
@@ -156,13 +164,17 @@ export function JobTrackerClient({
 
   // Kanban Logic
   const [columnOrder, setColumnOrder] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(COLUMN_ORDER_KEY);
-      if (saved) {
+    if (initialColumnOrder) return initialColumnOrder;
+
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(
+        new RegExp("(^| )" + COLUMN_ORDER_KEY + "=([^;]+)"),
+      );
+      if (match && match[2]) {
         try {
-          return JSON.parse(saved);
+          return JSON.parse(decodeURIComponent(match[2]));
         } catch (e) {
-          console.error("Failed to parse column order", e);
+          console.error("Failed to parse column order cookie", e);
         }
       }
     }
@@ -185,7 +197,8 @@ export function JobTrackerClient({
   ) => {
     const newOrder = Object.keys(newColumns);
     setColumnOrder(newOrder);
-    localStorage.setItem(COLUMN_ORDER_KEY, JSON.stringify(newOrder));
+    const cookieValue = encodeURIComponent(JSON.stringify(newOrder));
+    document.cookie = `${COLUMN_ORDER_KEY}=${cookieValue}; path=/; max-age=31536000; SameSite=Lax`;
   };
 
   const dragStartStatusRef = useRef<string | null>(null);
@@ -220,6 +233,8 @@ export function JobTrackerClient({
 
   return (
     <div className="space-y-6">
+      <JobTrackerStats jobs={localJobs} />
+
       <JobTrackerHeader
         view={view}
         onViewChange={handleViewChange}
@@ -238,12 +253,12 @@ export function JobTrackerClient({
         />
       ) : (
         <JobTrackerTable
-        table={table}
-        isLoading={isLoading || isFetching}
-        onRowClick={handleOpenDetail}
-        onEditJob={handleEditJob}
-        onDeleteJob={setJobToDelete}
-      />
+          table={table}
+          isLoading={isLoading || isFetching}
+          onRowClick={handleOpenDetail}
+          onEditJob={handleEditJob}
+          onDeleteJob={setJobToDelete}
+        />
       )}
 
       <JobTrackerDialogs
