@@ -8,6 +8,8 @@ import {
   Sparkles,
   PencilLine,
   Loader2,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,8 +24,18 @@ import {
 } from "@/components/ui/dialog";
 import { ResumeImportDialog } from "@/components/dashboard/resume-builder/resume-import-dialog";
 import type { ResumeContent } from "@/types/resume";
-import { toast } from "sonner";
 import { calculateCompleteness } from "@/lib/resume/completeness";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface Resume {
   id: string;
@@ -42,6 +54,8 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const [isChoiceOpen, setIsChoiceOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
 
   const handleImportComplete = async (content: ResumeContent) => {
     setIsCreating(true);
@@ -67,6 +81,28 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
       toast.error("Gagal menyimpan resume hasil impor");
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!resumeToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/resumes/${resumeToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Gagal menghapus resume");
+
+      toast.success("Resume berhasil dihapus");
+      setResumeToDelete(null);
+      router.refresh();
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Terjadi kesalahan saat menghapus resume");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -116,8 +152,22 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
               href={`/resume-builder/${resume.id}`}
               className="glass group hover:border-primary/30 hover:shadow-primary/10 p-6 transition-all hover:shadow-lg"
             >
-              <div className="bg-primary/20 mb-4 flex h-12 w-12 items-center justify-center">
-                <FileText className="text-primary h-6 w-6" />
+              <div className="mb-4 flex items-start justify-between">
+                <div className="bg-primary/20 flex h-12 w-12 items-center justify-center">
+                  <FileText className="text-primary h-6 w-6" />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:text-destructive hover:bg-destructive/10 text-muted-foreground -mt-2 -mr-2 h-8 w-8 transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setResumeToDelete(resume.id);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
               <h3 className="group-hover:text-primary text-foreground font-semibold transition-colors">
                 {resume.title}
@@ -178,6 +228,49 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
           </button>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!resumeToDelete}
+        onOpenChange={(open) => !open && setResumeToDelete(null)}
+      >
+        <AlertDialogContent className="bg-background border-border">
+          <AlertDialogHeader>
+            <div className="bg-destructive/10 mb-2 flex h-12 w-12 items-center justify-center rounded-full">
+              <AlertTriangle className="text-destructive h-6 w-6" />
+            </div>
+            <AlertDialogTitle className="text-xl font-bold">
+              Hapus Resume?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              Tindakan ini tidak dapat dibatalkan. Resume kamu akan dihapus
+              secara permanen dari server kami.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="bg-muted border-none">
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Menghapus...
+                </>
+              ) : (
+                "Ya, Hapus Resume"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Choice Dialog */}
       <Dialog open={isChoiceOpen} onOpenChange={setIsChoiceOpen}>

@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 
@@ -16,9 +16,11 @@ export async function POST(req: Request) {
   try {
     const { content } = await req.json();
 
-    const result = await generateObject({
+    const { output: analysisResult } = await generateText({
       model: openai("gpt-4o"),
-      schema: ATSAnalysisSchema,
+      output: Output.object({
+        schema: ATSAnalysisSchema,
+      }),
       prompt: `Analyze the following resume content for ATS (Applicant Tracking System) compatibility and overall quality.
       
       Resume Content:
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
       5. Readability score from 0-100.`,
     });
 
-    return Response.json(result.object);
+    return Response.json(analysisResult);
   } catch (error) {
     console.error("ATS Analysis error:", error);
     return Response.json(

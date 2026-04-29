@@ -55,6 +55,11 @@ export function AppSidebar() {
   const { theme, setTheme } = useTheme();
   const user = session?.user;
 
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <Sidebar collapsible="offcanvas" variant="sidebar">
       <SidebarHeader className="flex h-16 items-center justify-center">
@@ -123,15 +128,15 @@ export function AppSidebar() {
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user?.name?.charAt(0) || "U"}
+                    {mounted ? user?.name?.charAt(0) : "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="text-foreground truncate font-semibold">
-                    {user?.name || "User"}
+                    {mounted ? user?.name || "User" : "User"}
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user?.email || ""}
+                    {mounted ? user?.email : ""}
                   </span>
                 </div>
                 <ChevronUp className="text-muted-foreground ml-auto h-4 w-4 group-data-[collapsible=icon]:hidden" />
@@ -148,13 +153,15 @@ export function AppSidebar() {
                       alt={user?.name || ""}
                     />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user?.name?.charAt(0) || "U"}
+                      {mounted ? user?.name?.charAt(0) : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.name}</span>
+                    <span className="truncate font-semibold">
+                      {mounted ? user?.name || "User" : "User"}
+                    </span>
                     <span className="text-muted-foreground truncate text-xs">
-                      {user?.email}
+                      {mounted ? user?.email : ""}
                     </span>
                   </div>
                 </div>

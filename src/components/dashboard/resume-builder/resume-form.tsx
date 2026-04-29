@@ -139,17 +139,13 @@ export function ResumeForm({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      const field = lang === "id" ? "descriptionId" : "descriptionEn";
       const currentExp = content.experience.find((e) => e.id === expId);
       if (currentExp) {
-        const currentBullets = Array.isArray(currentExp[field])
-          ? [...(currentExp[field] as string[])]
-          : [currentExp.description as string];
+        const currentBullets = [...(currentExp.description || [])];
         currentBullets[idx] = data.result;
 
         updateExperience(expId, {
-          [field]: currentBullets,
-          description: lang === "id" ? currentBullets : currentExp.description,
+          description: currentBullets,
         });
         toast.success("Teks berhasil dioptimasi!");
       }
@@ -289,7 +285,7 @@ export function ResumeForm({
                 </div>
 
                 <div className="glass rounded-2xl p-5">
-                  <h4 className="mb-3 text-xs font-bold tracking-widest uppercase text-muted-foreground">
+                  <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-widest uppercase">
                     Readability
                   </h4>
                   <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
@@ -300,7 +296,9 @@ export function ResumeForm({
                   </div>
                   <div className="mt-2 flex justify-between text-[10px] font-medium">
                     <span>Sulit</span>
-                    <span className="text-primary">{atsResult.readabilityScore}% Sangat Mudah</span>
+                    <span className="text-primary">
+                      {atsResult.readabilityScore}% Sangat Mudah
+                    </span>
                   </div>
                 </div>
               </div>
@@ -707,20 +705,10 @@ export function ResumeForm({
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              const field =
-                                lang === "id"
-                                  ? "descriptionId"
-                                  : "descriptionEn";
-                              const current =
-                                exp[field] || exp.description || [];
-                              const bullets = Array.isArray(current)
-                                ? [...current]
-                                : [current];
+                              const bullets = [...(exp.description || [])];
                               bullets.push("");
                               updateExperience(exp.id, {
-                                [field]: bullets,
-                                description:
-                                  lang === "id" ? bullets : exp.description,
+                                description: bullets,
                               });
                             }}
                             className="h-7 gap-1 px-2 text-[10px] font-bold"
@@ -731,15 +719,11 @@ export function ResumeForm({
 
                         <div className="space-y-2">
                           {(() => {
-                            const current =
-                              lang === "id"
-                                ? exp.descriptionId || exp.description
-                                : exp.descriptionEn || [];
-                            const bullets = Array.isArray(current)
-                              ? current
-                              : current
-                                ? [current]
-                                : [""];
+                            const bullets = Array.isArray(exp.description)
+                              ? exp.description
+                              : exp.description
+                                ? [exp.description]
+                                : [];
 
                             return bullets.map((bullet, idx) => (
                               <div
@@ -953,10 +937,12 @@ export function ResumeForm({
                             ));
                           })()}
                         </div>
-                        <p className="text-muted-foreground text-[10px] italic">
-                          * Kamu bisa memindahkan urutan atau menghapus poin
-                          pencapaian dengan tombol di samping.
-                        </p>
+                        {(exp.description || []).length > 0 && (
+                          <p className="text-muted-foreground text-[10px] italic">
+                            * Kamu bisa memindahkan urutan atau menghapus poin
+                            pencapaian dengan tombol di samping.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -1097,6 +1083,75 @@ export function ResumeForm({
                         />
                       </div>
                     </div>
+
+                    <div className="mt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-foreground text-xs font-medium uppercase">
+                          Pencapaian / Aktivitas
+                        </Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const current = edu.description || [];
+                            updateEducation(edu.id, {
+                              description: [...current, ""],
+                            });
+                          }}
+                          className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
+                        >
+                          <Plus className="h-3 w-3" />
+                          Tambah Poin
+                        </Button>
+                      </div>
+
+                      <div className="space-y-2">
+                        {(edu.description || []).map((bullet, idx) => (
+                          <div
+                            key={idx}
+                            className="group flex items-start gap-2"
+                          >
+                            <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold">
+                              {idx + 1}
+                            </div>
+                            <div className="relative flex-1">
+                              <textarea
+                                value={bullet}
+                                onChange={(e) => {
+                                  const newDesc = [...(edu.description || [])];
+                                  newDesc[idx] = e.target.value;
+                                  updateEducation(edu.id, {
+                                    description: newDesc,
+                                  });
+                                }}
+                                placeholder="Contoh: Lulus dengan predikat Cum Laude atau Aktif di organisasi mahasiswa..."
+                                className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-xl border p-3 text-sm transition-all focus:ring-0"
+                                rows={2}
+                              />
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const newDesc = [...(edu.description || [])];
+                                newDesc.splice(idx, 1);
+                                updateEducation(edu.id, {
+                                  description: newDesc,
+                                });
+                              }}
+                              className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        ))}
+                        {(edu.description || []).length === 0 && (
+                          <p className="text-muted-foreground py-2 text-center text-xs italic">
+                            Belum ada pencapaian yang ditambahkan.
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -1181,19 +1236,77 @@ export function ResumeForm({
                           className="bg-background border-border"
                         />
                       </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <Label className="text-muted-foreground text-xs font-medium uppercase">
-                          Deskripsi Projek
-                        </Label>
-                        <Textarea
-                          value={project.description}
-                          onChange={(e) =>
-                            updateProject(project.id, {
-                              description: e.target.value,
-                            })
-                          }
-                          className="bg-background border-border min-h-20"
-                        />
+                      <div className="space-y-4 md:col-span-2">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-muted-foreground text-xs font-medium uppercase">
+                            Deskripsi Projek
+                          </Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const current = project.description || [];
+                              updateProject(project.id, {
+                                description: [...current, ""],
+                              });
+                            }}
+                            className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Tambah Poin
+                          </Button>
+                        </div>
+
+                        <div className="space-y-2">
+                          {(project.description || []).map((bullet, idx) => (
+                            <div
+                              key={idx}
+                              className="group flex items-start gap-2"
+                            >
+                              <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold">
+                                {idx + 1}
+                              </div>
+                              <div className="relative flex-1">
+                                <textarea
+                                  value={bullet}
+                                  onChange={(e) => {
+                                    const newDesc = [
+                                      ...(project.description || []),
+                                    ];
+                                    newDesc[idx] = e.target.value;
+                                    updateProject(project.id, {
+                                      description: newDesc,
+                                    });
+                                  }}
+                                  placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
+                                  className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-xl border p-3 text-sm transition-all focus:ring-0"
+                                  rows={2}
+                                />
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newDesc = [
+                                    ...(project.description || []),
+                                  ];
+                                  newDesc.splice(idx, 1);
+                                  updateProject(project.id, {
+                                    description: newDesc,
+                                  });
+                                }}
+                                className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          ))}
+                          {(project.description || []).length === 0 && (
+                            <p className="text-muted-foreground py-2 text-center text-xs italic">
+                              Belum ada deskripsi yang ditambahkan.
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>

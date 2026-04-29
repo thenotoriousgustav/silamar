@@ -20,10 +20,8 @@ export const ResumeExperienceSchema = z.object({
   endDate: z.string().describe("End date, 'Present', or empty string"),
   isCurrentJob: z.boolean().describe("Whether the person currently works here"),
   description: z
-    .string()
-    .describe(
-      "Bullet points or paragraph describing responsibilities and achievements",
-    ),
+    .array(z.string())
+    .describe("List of responsibilities and achievements as bullet points"),
   location: z
     .string()
     .describe("City and country of the company or empty string"),
@@ -45,14 +43,16 @@ export const ResumeEducationSchema = z.object({
     .string()
     .describe("Grade Point Average (e.g., '3.8/4.0') or empty string"),
   description: z
-    .string()
-    .describe("Relevant coursework, honors, or activities or empty string"),
+    .array(z.string())
+    .describe(
+      "Relevant coursework, honors, or activities as bullet points (array of strings)",
+    ),
 });
 
 export const ResumeProjectSchema = z.object({
   id: z.string().describe("Unique identifier for the project item (UUID)"),
   name: z.string().describe("Name of the project"),
-  description: z.string().describe("Detailed description of the project"),
+  description: z.array(z.string()).describe("Detailed description of the project as bullet points"),
   technologies: z.array(z.string()).describe("List of technologies used"),
   link: z.string().describe("Project URL or GitHub link or empty string"),
   startDate: z.string().describe("Start date or empty string"),

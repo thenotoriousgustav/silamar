@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { ResumeContentSchema } from "@/types/resume-schema";
 import { extractPdfText } from "@/lib/resume/pdf-extractor";
@@ -60,10 +60,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Kirim ke AI untuk strukturisasi
-    const result = await generateObject({
+    // Kirim ke AI untuk strukturisasi menggunakan standar API terbaru
+    const { output: resumeData } = await generateText({
       model: openai("gpt-4o"),
-      schema: ResumeContentSchema,
+      output: Output.object({
+        schema: ResumeContentSchema,
+      }),
       messages: [
         {
           role: "user",
@@ -80,12 +82,14 @@ Rules:
 3. Generate valid UUIDs for all 'id' fields.
 4. If information is missing, use empty string or empty array.
 5. Skills should be a flat array of strings.
-6. Keep summary concise but complete.`,
+6. Keep summary concise but complete.
+7. CRITICAL: Experience descriptions and achievements MUST be split into a clean array of strings (bullet points). Look for bullet characters (•, -, *), newlines, or logical sentence breaks to separate each achievement. Do NOT merge them into a single block of text.
+8. Experience and Education descriptions MUST be returned as a clean array of strings (bullet points).`,
         },
       ],
     });
 
-    return Response.json(result.object);
+    return Response.json(resumeData);
   } catch (error) {
     console.error("Analysis error:", error);
     return Response.json(

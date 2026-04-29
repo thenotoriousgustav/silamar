@@ -31,6 +31,22 @@ Font.register({
   src: "/fonts/helvetica.ttf",
 });
 
+// Register aliases for common font names
+Font.register({
+  family: "font-serif",
+  src: "/fonts/times.ttf",
+});
+
+Font.register({
+  family: "font-sans",
+  src: "/fonts/helvetica.ttf",
+});
+
+Font.register({
+  family: "font-mono",
+  src: "/fonts/helvetica.ttf", // Monospace fallback
+});
+
 interface ResumeTemplateProps {
   data: ResumeContent;
 }
@@ -43,7 +59,17 @@ const colors = {
 };
 
 const getStyles = (fontFamily: string = "Helvetica") => {
-  const pdfFont = fontFamily;
+  // Map common names or use fallback
+  const validFonts = [
+    "Calibri",
+    "Georgia",
+    "Times New Roman",
+    "Helvetica",
+    "font-serif",
+    "font-sans",
+    "font-mono",
+  ];
+  const pdfFont = validFonts.includes(fontFamily) ? fontFamily : "Helvetica";
 
   // Use the same font for bold/italic if separate files aren't provided
   const boldFont = pdfFont;
@@ -339,11 +365,7 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                   </View>
                 </View>
                 <BulletList
-                  items={
-                    lang === "en"
-                      ? exp.descriptionEn || exp.description
-                      : exp.descriptionId || exp.description
-                  }
+                  items={exp.description}
                   styles={styles}
                 />
               </View>
@@ -414,9 +436,10 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                     {cleanUrl(project.link)}
                   </Text>
                 )}
-                <Text style={styles.projectDescription}>
-                  {project.description}
-                </Text>
+                <BulletList
+                  items={project.description}
+                  styles={styles}
+                />
               </View>
             ))}
           </View>

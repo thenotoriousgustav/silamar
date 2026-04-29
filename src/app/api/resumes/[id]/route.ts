@@ -1,105 +1,124 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { resumes } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
-import { z } from "zod";
-
-const updateSchema = z.object({
-  title: z.string().min(1).optional(),
-  content: z.any(), // ResumeContent type
-});
+import { auth } from "@/lib/auth";
+import { and, eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
-    const { id } = await params;
-    const session = await auth.api.getSession({ headers: req.headers });
-    if (!session?.user) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [resume] = await db
-      .select()
-      .from(resumes)
-      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
+    const { id } = await params;
+
+    const resume = await db.query.resumes.findFirst({
+      where: and(eq(resumes.id, id), eq(resumes.userId, session.user.id)),
+    });
 
     if (!resume) {
-      return NextResponse.json(
-        { error: "Resume tidak ditemukan" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Resume not found" }, { status: 404 });
     }
 
     return NextResponse.json({ resume });
   } catch (error) {
-    console.error("[API] resume get error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    console.error("[RESUME_GET]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
   try {
-    const { id } = await params;
-    const session = await auth.api.getSession({ headers: req.headers });
-    if (!session?.user) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
-    const parsed = updateSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Input tidak valid" }, { status: 400 });
-    }
 
-    const [existing] = await db
-      .select()
-      .from(resumes)
-      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
+    const updatedResume = await db
+      .update(resumes)
+      .set({
+        ...body,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)))
+      .returning();
 
-    if (!existing) {
-      await db
+    // If no resume was updated, it might be a new one being imported with a generated ID
+    if (!updatedResume.length) {
+      const newResume = await db
         .insert(resumes)
         .values({
           id,
           userId: session.user.id,
-          title: parsed.data.title ?? "Untitled Resume",
-          content: parsed.data.content,
+          title: body.title || "Resume Saya",
+          content: body.content || {},
+          atsScore: body.atsScore || null,
+          createdAt: new Date(),
           updatedAt: new Date(),
         })
-        .onConflictDoUpdate({
-          target: resumes.id,
-          set: {
-            title: parsed.data.title,
-            content: parsed.data.content,
-            updatedAt: new Date(),
-          },
-        });
-    } else {
-      await db
-        .update(resumes)
-        .set({
-          title: parsed.data.title,
-          content: parsed.data.content,
-          updatedAt: new Date(),
-        })
-        .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
+        .returning();
+
+      return NextResponse.json({ resume: newResume[0] });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ resume: updatedResume[0] });
   } catch (error) {
-    console.error("[API] resume patch error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    console.error("[RESUME_PATCH]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Resume ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const deletedResume = await db
+      .delete(resumes)
+      .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)))
+      .returning();
+
+    if (!deletedResume.length) {
+      return NextResponse.json({ error: "Resume not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Resume deleted successfully" });
+  } catch (error) {
+    console.error("[RESUME_DELETE]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
