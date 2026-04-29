@@ -53,7 +53,7 @@ export function ResumeImportDialog({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || "Gagal menganalisis resume");
+        throw new Error(errorData.error || errorData.details || "Gagal menganalisis resume");
       }
 
       const data = await response.json();
@@ -179,7 +179,7 @@ export function ResumeImportDialog({
           <Button
             onClick={handleUpload}
             disabled={!file || isAnalyzing}
-            className="bg-primary hover:bg-primary/90 shadow-primary/20 gap-2 px-6 font-bold text-primary-foreground shadow-lg transition-all hover:scale-105 active:scale-95"
+            className="bg-primary hover:bg-primary/90 shadow-primary/20 text-primary-foreground gap-2 px-6 font-bold shadow-lg transition-all hover:scale-105 active:scale-95"
           >
             {isAnalyzing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
