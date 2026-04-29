@@ -23,7 +23,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   JOB_STATUS_LABELS,
+  JOB_TYPE_LABELS,
   type JobStatus,
+  type JobType,
   type JobApplication,
 } from "@/types/job";
 import { format, isToday, isAfter, addDays, startOfDay } from "date-fns";
@@ -122,11 +124,14 @@ export function getJobTrackerColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} label="Tipe" />
       ),
-      cell: ({ row }) => (
-        <div className="bg-muted text-muted-foreground w-fit rounded-none px-2 py-0.5 text-[10px] font-medium whitespace-nowrap">
-          {row.getValue("type")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const type = row.getValue("type") as JobType;
+        return (
+          <div className="bg-muted text-muted-foreground w-fit rounded-none px-2 py-0.5 text-[10px] font-medium whitespace-nowrap uppercase tracking-wider">
+            {JOB_TYPE_LABELS[type] || type}
+          </div>
+        );
+      },
       meta: {
         label: "Tipe",
         variant: "multiSelect",

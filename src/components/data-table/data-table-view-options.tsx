@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-interface DataTableViewOptionsProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
+interface DataTableViewOptionsProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
   table: Table<TData>;
   disabled?: boolean;
 }
@@ -43,8 +44,21 @@ export function DataTableViewOptions<TData>({
 
   return (
     <Popover>
-      <PopoverTrigger render={<Button aria-label="Toggle columns" role="combobox" variant="outline" size="sm" className="ml-auto hidden h-8 font-normal lg:flex" disabled={disabled} />}><Settings2 className="text-muted-foreground" />View
-                  </PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button
+            aria-label="Toggle columns"
+            role="combobox"
+            variant="outline"
+            size="sm"
+            className="ml-auto hidden h-8 font-normal lg:flex"
+            disabled={disabled}
+          />
+        }
+      >
+        <Settings2 className="text-muted-foreground" />
+        View
+      </PopoverTrigger>
       <PopoverContent className="w-44 p-0" {...props}>
         <Command>
           <CommandInput placeholder="Search columns..." />
@@ -57,16 +71,21 @@ export function DataTableViewOptions<TData>({
                   onSelect={() =>
                     column.toggleVisibility(!column.getIsVisible())
                   }
+                  className="px-2"
                 >
-                  <span className="truncate">
-                    {column.columnDef.meta?.label ?? column.id}
-                  </span>
-                  <Check
-                    className={cn(
-                      "ml-auto size-4 shrink-0",
-                      column.getIsVisible() ? "opacity-100" : "opacity-0",
-                    )}
-                  />
+                  <div className="flex w-full items-center justify-between">
+                    <span className="truncate">
+                      {column.columnDef.meta?.label ?? column.id}
+                    </span>
+                    <div className="flex size-4 items-center justify-center">
+                      <Check
+                        className={cn(
+                          "size-3.5 shrink-0 transition-opacity",
+                          column.getIsVisible() ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </div>
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>

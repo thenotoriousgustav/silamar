@@ -75,60 +75,72 @@ export function DataTableFacetedFilter<TData, TValue>({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger render={<Button variant="outline" size="sm" className="border-dashed font-normal" />}>{selectedValues?.size > 0 ? (
-                      <div
-                        role="button"
-                        aria-label={`Clear ${title} filter`}
-                        tabIndex={0}
-                        className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                        onClick={onReset}
-                      >
-                        <XCircle />
-                      </div>
-                    ) : (
-                      <PlusCircle />
-                    )}{title}{selectedValues?.size > 0 && (
-                      <>
-                        <Separator
-                          orientation="vertical"
-                          className="mx-0.5 data-[orientation=vertical]:h-4"
-                        />
-                        <Badge
-                          variant="secondary"
-                          className="rounded-sm px-1 font-normal lg:hidden"
-                        >
-                          {selectedValues.size}
-                        </Badge>
-                        <div className="hidden items-center gap-1 lg:flex">
-                          {selectedValues.size > 2 ? (
-                            <Badge
-                              variant="secondary"
-                              className="rounded-sm px-1 font-normal"
-                            >
-                              {selectedValues.size} selected
-                            </Badge>
-                          ) : (
-                            options
-                              .filter((option) => selectedValues.has(option.value))
-                              .map((option) => (
-                                <Badge
-                                  variant="secondary"
-                                  key={option.value}
-                                  className="rounded-sm px-1 font-normal"
-                                >
-                                  {option.label}
-                                </Badge>
-                              ))
-                          )}
-                        </div>
-                      </>
-                    )}</PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-dashed font-normal"
+          />
+        }
+      >
+        {selectedValues?.size > 0 ? (
+          <div
+            role="button"
+            aria-label={`Clear ${title} filter`}
+            tabIndex={0}
+            className="focus-visible:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none"
+            onClick={onReset}
+          >
+            <XCircle />
+          </div>
+        ) : (
+          <PlusCircle />
+        )}
+        {title}
+        {selectedValues?.size > 0 && (
+          <>
+            <Separator
+              orientation="vertical"
+              className="mx-0.5 data-[orientation=vertical]:h-4"
+            />
+            <Badge
+              variant="secondary"
+              className="rounded-sm px-1 font-normal lg:hidden"
+            >
+              {selectedValues.size}
+            </Badge>
+            <div className="hidden items-center gap-1 lg:flex">
+              {selectedValues.size > 2 ? (
+                <Badge
+                  variant="secondary"
+                  className="rounded-sm px-1 font-normal"
+                >
+                  {selectedValues.size} selected
+                </Badge>
+              ) : (
+                options
+                  .filter((option) => selectedValues.has(option.value))
+                  .map((option) => (
+                    <Badge
+                      variant="secondary"
+                      key={option.value}
+                      className="rounded-sm px-1 font-normal"
+                    >
+                      {option.label}
+                    </Badge>
+                  ))
+              )}
+            </div>
+          </>
+        )}
+      </PopoverTrigger>
       <PopoverContent className="w-50 p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList className="max-h-full">
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup className="max-h-[300px] scroll-py-1 overflow-y-auto overflow-x-hidden">
+            <CommandGroup className="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto">
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
 
@@ -136,21 +148,24 @@ export function DataTableFacetedFilter<TData, TValue>({
                   <CommandItem
                     key={option.value}
                     onSelect={() => onItemSelect(option, isSelected)}
+                    className="flex items-center gap-2"
                   >
                     <div
                       className={cn(
-                        "flex size-4 items-center justify-center rounded-sm border border-primary",
+                        "border-primary flex size-4 items-center justify-center rounded-none border transition-all",
                         isSelected
-                          ? "bg-primary"
+                          ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible",
                       )}
                     >
-                      <Check />
+                      <Check className="size-3" />
                     </div>
-                    {option.icon && <option.icon />}
+                    {option.icon && (
+                      <option.icon className="text-muted-foreground size-4" />
+                    )}
                     <span className="truncate">{option.label}</span>
                     {option.count && (
-                      <span className="ml-auto font-mono text-xs">
+                      <span className="text-muted-foreground ml-auto font-mono text-[10px]">
                         {option.count}
                       </span>
                     )}
