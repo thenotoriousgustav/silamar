@@ -2,6 +2,30 @@
 
 import { useState } from "react";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  BarChart3,
+  AlertTriangle,
+  CheckCircle,
+  Calendar as CalendarIcon,
+  CheckCircle2,
+  Sparkles,
+  Zap,
+  FileText,
+  TrendingUp,
+  SpellCheck,
+  Loader2,
   User,
   Briefcase,
   GraduationCap,
@@ -12,11 +36,14 @@ import {
   Languages,
   ChevronUp,
   ChevronDown,
-  Calendar as CalendarIcon,
 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import {
+  calculateCompleteness,
+  getCompletenessFeedback,
+} from "@/lib/resume/completeness";
 import {
   Accordion,
   AccordionContent,
@@ -41,6 +68,7 @@ import type {
   ResumeEducation,
   ResumeProject,
 } from "@/types/resume";
+import { toast } from "sonner";
 
 interface ResumeFormProps {
   content: ResumeContent;
@@ -73,10 +101,257 @@ export function ResumeForm({
   updateSkills,
   updateStyle,
 }: ResumeFormProps) {
+  const [optimizingId, setOptimizingId] = useState<string | null>(null);
+  const [isAnalyzingATS, setIsAnalyzingATS] = useState(false);
+  const [atsResult, setAtsResult] = useState<{
+    score: number;
+    feedback: string;
+    criticalIssues: string[];
+    missingKeywords: string[];
+    readabilityScore: number;
+  } | null>(null);
+
+  const score = calculateCompleteness(content);
+  const feedback = getCompletenessFeedback(score);
   const lang = content.style?.language || "id";
+
+  const handleOptimize = async (
+    expId: string,
+    idx: number,
+    text: string,
+    type: "optimize" | "quantify" | "grammar" = "optimize",
+  ) => {
+    if (!text || text.length < 5) {
+      toast.error("Teks terlalu pendek untuk dioptimasi");
+      return;
+    }
+
+    const loadingId = `${expId}-${idx}`;
+    setOptimizingId(loadingId);
+
+    try {
+      const res = await fetch("/api/resume/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, type }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      const field = lang === "id" ? "descriptionId" : "descriptionEn";
+      const currentExp = content.experience.find((e) => e.id === expId);
+      if (currentExp) {
+        const currentBullets = Array.isArray(currentExp[field])
+          ? [...(currentExp[field] as string[])]
+          : [currentExp.description as string];
+        currentBullets[idx] = data.result;
+
+        updateExperience(expId, {
+          [field]: currentBullets,
+          description: lang === "id" ? currentBullets : currentExp.description,
+        });
+        toast.success("Teks berhasil dioptimasi!");
+      }
+    } catch (error) {
+      console.error("Optimize error:", error);
+      toast.error("Gagal mengoptimasi teks");
+    } finally {
+      setOptimizingId(null);
+    }
+  };
+
+  const handleRunATSAnalysis = async () => {
+    setIsAnalyzingATS(true);
+    try {
+      const res = await fetch("/api/resume/analyze-full", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setAtsResult(data);
+    } catch (error) {
+      console.error("ATS Error:", error);
+      toast.error("Gagal menjalankan analisis ATS");
+    } finally {
+      setIsAnalyzingATS(false);
+    }
+  };
 
   return (
     <div className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6">
+      {/* Completeness Dashboard - Wrapped to ensure visibility */}
+      <div className="shrink-0">
+        <Card className="border-primary/20 bg-card overflow-hidden rounded-2xl border shadow-sm">
+          <CardContent className="p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 text-primary border-primary/20 flex h-10 w-10 items-center justify-center rounded-xl border">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-foreground text-sm font-bold">
+                    Kesiapan Resume
+                  </h3>
+                  <p
+                    className={cn(
+                      "text-[10px] font-medium tracking-wider uppercase",
+                      feedback.color,
+                    )}
+                  >
+                    {feedback.message}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-foreground text-2xl font-black">
+                  {score}%
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
+              <div
+                className={cn(
+                  "h-full transition-all duration-1000 ease-out",
+                  feedback.bg,
+                )}
+                style={{ width: `${score}%` }}
+              />
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRunATSAnalysis}
+                disabled={isAnalyzingATS}
+                className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-full text-[10px] font-bold transition-all"
+              >
+                {isAnalyzingATS ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <BarChart3 className="text-brand-500 h-3 w-3" />
+                )}
+                {isAnalyzingATS ? "Menganalisis..." : "Analisis Skor ATS"}
+              </Button>
+              <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
+                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                ATS Format Validated
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ATS Result Dialog */}
+      <Dialog
+        open={!!atsResult}
+        onOpenChange={(open) => !open && setAtsResult(null)}
+      >
+        <DialogContent className="bg-background sm:max-w-180">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-bold">
+              <Sparkles className="text-brand-500 h-6 w-6" />
+              Analisis ATS AI
+            </DialogTitle>
+            <DialogDescription>
+              Hasil analisis mendalam untuk mengoptimalkan peluang Anda lolos
+              seleksi.
+            </DialogDescription>
+          </DialogHeader>
+
+          {atsResult && (
+            <div className="grid gap-6 py-4 md:grid-cols-2">
+              {/* Scores */}
+              <div className="space-y-6">
+                <div className="glass flex flex-col items-center justify-center rounded-2xl p-6 text-center">
+                  <span className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
+                    ATS Match Score
+                  </span>
+                  <span
+                    className={cn(
+                      "text-5xl font-black",
+                      atsResult.score >= 80
+                        ? "text-emerald-500"
+                        : atsResult.score >= 60
+                          ? "text-amber-500"
+                          : "text-red-500",
+                    )}
+                  >
+                    {atsResult.score}%
+                  </span>
+                  <p className="text-muted-foreground mt-4 text-xs italic">
+                    {atsResult.feedback}
+                  </p>
+                </div>
+
+                <div className="glass rounded-2xl p-5">
+                  <h4 className="mb-3 text-xs font-bold tracking-widest uppercase text-muted-foreground">
+                    Readability
+                  </h4>
+                  <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
+                    <div
+                      className="bg-primary h-full transition-all duration-1000 ease-out"
+                      style={{ width: `${atsResult.readabilityScore}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 flex justify-between text-[10px] font-medium">
+                    <span>Sulit</span>
+                    <span className="text-primary">{atsResult.readabilityScore}% Sangat Mudah</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Items */}
+              <div className="space-y-6">
+                <div>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-bold">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    Masalah Kritis
+                  </h4>
+                  <div className="space-y-2">
+                    {atsResult.criticalIssues.map((issue, i) => (
+                      <div
+                        key={i}
+                        className="bg-muted/50 flex items-start gap-3 rounded-xl p-3 text-xs"
+                      >
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                        {issue}
+                      </div>
+                    ))}
+                    {atsResult.criticalIssues.length === 0 && (
+                      <p className="text-muted-foreground text-xs italic">
+                        Tidak ditemukan masalah kritis.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="mb-3 flex items-center gap-2 text-sm font-bold">
+                    <CheckCircle className="h-4 w-4 text-emerald-500" />
+                    Keyword yang Disarankan
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {atsResult.missingKeywords.map((kw, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-bold text-emerald-600"
+                      >
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Accordion
         defaultValue={["personal"]}
         multiple
@@ -553,6 +828,97 @@ export function ResumeForm({
                                   >
                                     <ChevronDown className="h-3 w-3" />
                                   </Button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger
+                                      render={
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          disabled={
+                                            optimizingId === `${exp.id}-${idx}`
+                                          }
+                                          className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
+                                          title="AI Assistant"
+                                        >
+                                          {optimizingId ===
+                                          `${exp.id}-${idx}` ? (
+                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                          ) : (
+                                            <Sparkles className="h-3 w-3" />
+                                          )}
+                                        </Button>
+                                      }
+                                    />
+                                    <DropdownMenuContent
+                                      align="start"
+                                      className="w-56"
+                                    >
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          handleOptimize(
+                                            exp.id,
+                                            idx,
+                                            bullet,
+                                            "optimize",
+                                          )
+                                        }
+                                        className="gap-2 py-2"
+                                      >
+                                        <FileText className="text-brand-500 h-4 w-4" />
+                                        <div>
+                                          <p className="text-xs font-bold">
+                                            Optimalkan Kalimat
+                                          </p>
+                                          <p className="text-muted-foreground text-[10px]">
+                                            Gunakan kata kerja yang lebih kuat
+                                          </p>
+                                        </div>
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          handleOptimize(
+                                            exp.id,
+                                            idx,
+                                            bullet,
+                                            "quantify",
+                                          )
+                                        }
+                                        className="gap-2 py-2"
+                                      >
+                                        <TrendingUp className="h-4 w-4 text-emerald-500" />
+                                        <div>
+                                          <p className="text-xs font-bold">
+                                            Tambahkan Metrik
+                                          </p>
+                                          <p className="text-muted-foreground text-[10px]">
+                                            Sertakan angka pencapaian
+                                          </p>
+                                        </div>
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          handleOptimize(
+                                            exp.id,
+                                            idx,
+                                            bullet,
+                                            "grammar",
+                                          )
+                                        }
+                                        className="gap-2 py-2"
+                                      >
+                                        <SpellCheck className="h-4 w-4 text-amber-500" />
+                                        <div>
+                                          <p className="text-xs font-bold">
+                                            Perbaiki Grammar
+                                          </p>
+                                          <p className="text-muted-foreground text-[10px]">
+                                            Cek typo dan tata bahasa
+                                          </p>
+                                        </div>
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -896,7 +1262,9 @@ export function ResumeForm({
                 <div className="relative">
                   <select
                     value={content.style?.fontFamily || "Helvetica"}
-                    onChange={(e) => updateStyle({ fontFamily: e.target.value })}
+                    onChange={(e) =>
+                      updateStyle({ fontFamily: e.target.value })
+                    }
                     className="bg-background border-border focus:border-primary focus:ring-primary h-11 w-full appearance-none rounded-lg border px-4 py-2 text-sm transition-all focus:ring-1"
                   >
                     <option value="Calibri">Calibri</option>
@@ -904,7 +1272,7 @@ export function ResumeForm({
                     <option value="Times New Roman">Times New Roman</option>
                     <option value="Helvetica">Helvetica</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
+                  <div className="text-muted-foreground pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
                     <ChevronDown className="h-4 w-4" />
                   </div>
                 </div>

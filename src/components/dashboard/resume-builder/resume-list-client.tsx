@@ -23,12 +23,14 @@ import {
 import { ResumeImportDialog } from "@/components/dashboard/resume-builder/resume-import-dialog";
 import type { ResumeContent } from "@/types/resume";
 import { toast } from "sonner";
+import { calculateCompleteness } from "@/lib/resume/completeness";
 
 interface Resume {
   id: string;
   title: string;
   updatedAt: Date;
   atsScore: number | null;
+  content: any; // Add content to calculate completeness
 }
 
 interface ResumeListClientProps {
@@ -136,7 +138,27 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                   </span>
                 </div>
               )}
-              <div className="text-muted-foreground group-hover:text-foreground mt-3 flex items-center gap-1 text-xs transition-colors">
+              {/* Completeness Score */}
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-bold tracking-wider uppercase">
+                  <span className="text-muted-foreground">
+                    Kelengkapan Data
+                  </span>
+                  <span className="text-primary">
+                    {calculateCompleteness(resume.content as any)}%
+                  </span>
+                </div>
+                <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                  <div
+                    className="bg-primary h-full transition-all"
+                    style={{
+                      width: `${calculateCompleteness(resume.content as any)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="text-muted-foreground group-hover:text-foreground mt-4 flex items-center gap-1 text-xs transition-colors">
                 Edit Resume <ArrowRight className="h-3 w-3" />
               </div>
             </Link>
