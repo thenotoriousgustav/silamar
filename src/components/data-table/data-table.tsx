@@ -12,6 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+
 import { cn } from "@/lib/utils";
 import { getColumnPinningStyle } from "@/lib/data-table";
 
@@ -20,6 +26,7 @@ interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   actionBar?: React.ReactNode;
   onRowClick?: (data: TData) => void;
   isLoading?: boolean;
+  renderContextMenu?: (data: TData) => React.ReactNode;
 }
 
 export function DataTable<TData>({
@@ -29,6 +36,7 @@ export function DataTable<TData>({
   className,
   onRowClick,
   isLoading,
+  renderContextMenu,
   ...props
 }: DataTableProps<TData>) {
   return (
@@ -78,30 +86,70 @@ export function DataTable<TData>({
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => onRowClick?.(row.original)}
-                  className={cn(
-                    onRowClick && "hover:bg-muted/50 cursor-pointer",
-                  )}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        ...getColumnPinningStyle({ column: cell.column }),
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const rowContent = (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => onRowClick?.(row.original)}
+                    className={cn(
+                      onRowClick && "hover:bg-muted/50 cursor-pointer",
+                    )}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          ...getColumnPinningStyle({ column: cell.column }),
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+
+                if (renderContextMenu) {
+                  return (
+                    <ContextMenu key={row.id}>
+                      <ContextMenuTrigger render={(props) => (
+                         <tr {...props} 
+                           className={cn(
+                             "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+                             onRowClick && "cursor-pointer"
+                           )}
+                           onClick={(e) => {
+                             onRowClick?.(row.original);
+                             props.onClick?.(e);
+                           }}
+                         >
+                           {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                              key={cell.id}
+                              style={{
+                                ...getColumnPinningStyle({ column: cell.column }),
+                              }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </TableCell>
+                          ))}
+                         </tr>
+                      )} />
+                      <ContextMenuContent className="rounded-none">
+                        {renderContextMenu(row.original)}
+                      </ContextMenuContent>
+                    </ContextMenu>
+                  );
+                }
+
+                return rowContent;
+              })
             ) : (
               <TableRow>
                 <TableCell

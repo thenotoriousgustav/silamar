@@ -22,6 +22,7 @@ export interface JobApplication {
   offerDate?: Date | null;
   notes?: string | null;
   jobUrl?: string | null;
+  description?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,6 +39,7 @@ export interface CreateJobApplicationInput {
   offerDate?: string;
   notes?: string;
   jobUrl?: string;
+  description?: string;
 }
 
 export const JOB_STATUS_LABELS: Record<JobStatus, string> = {

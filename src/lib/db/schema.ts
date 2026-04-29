@@ -159,6 +159,7 @@ export const jobApplications = pgTable("job_applications", {
   offerDate: timestamp("offer_date"),
   notes: text("notes"),
   jobUrl: text("job_url"),
+  description: text("description"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

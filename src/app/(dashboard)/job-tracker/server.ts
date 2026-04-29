@@ -27,7 +27,7 @@ export async function createJobAction(data: any) {
   const session = await getSession();
   if (!session?.user) throw new Error("Unauthorized");
 
-  const { appliedDate, ...rest } = data;
+  const { appliedDate, interviewDate, offerDate, ...rest } = data;
 
   const newJob = await db
     .insert(jobApplications)
@@ -36,6 +36,8 @@ export async function createJobAction(data: any) {
       userId: session.user.id,
       ...rest,
       appliedDate: appliedDate ? new Date(appliedDate) : new Date(),
+      interviewDate: interviewDate ? new Date(interviewDate) : null,
+      offerDate: offerDate ? new Date(offerDate) : null,
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -49,12 +51,12 @@ export async function updateJobAction(id: string, data: any) {
   const session = await getSession();
   if (!session?.user) throw new Error("Unauthorized");
 
-  const { appliedDate, ...updates } = data;
-  
+  const { appliedDate, interviewDate, offerDate, ...updates } = data;
+
   const processedUpdates = { ...updates };
-  if (appliedDate) {
-    processedUpdates.appliedDate = new Date(appliedDate);
-  }
+  if (appliedDate) processedUpdates.appliedDate = new Date(appliedDate);
+  if (interviewDate) processedUpdates.interviewDate = new Date(interviewDate);
+  if (offerDate) processedUpdates.offerDate = new Date(offerDate);
 
   const updatedJob = await db
     .update(jobApplications)
@@ -65,8 +67,8 @@ export async function updateJobAction(id: string, data: any) {
     .where(
       and(
         eq(jobApplications.id, id),
-        eq(jobApplications.userId, session.user.id)
-      )
+        eq(jobApplications.userId, session.user.id),
+      ),
     )
     .returning();
 
@@ -85,8 +87,8 @@ export async function deleteJobAction(id: string) {
     .where(
       and(
         eq(jobApplications.id, id),
-        eq(jobApplications.userId, session.user.id)
-      )
+        eq(jobApplications.userId, session.user.id),
+      ),
     )
     .returning();
 
