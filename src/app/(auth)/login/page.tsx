@@ -73,7 +73,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="bg-primary shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-xl shadow-lg">
+            <div className="bg-primary shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-none shadow-lg">
               <Zap className="text-primary-foreground h-5 w-5" />
             </div>
             <span className="gradient-text text-2xl font-extrabold">
@@ -88,11 +88,11 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="glass rounded-2xl p-8">
+        <div className="glass rounded-none p-8">
           {/* Social Login */}
           <button
             onClick={handleGoogleSignIn}
-            className="hover:bg-surface-800 flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 py-3 text-sm font-semibold text-white transition-all"
+            className="hover:bg-surface-800 flex w-full items-center justify-center gap-3 rounded-none border border-white/10 py-3 text-sm font-semibold text-white transition-all"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 id="input-email"
                 type="email"
                 placeholder="kamu@email.com"
-                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
+                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-none border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
                   errors.email ? "border-red-500/50" : ""
                 }`}
               />
@@ -158,7 +158,7 @@ export default function LoginPage() {
                   id="input-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
+                  className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-none border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
                     errors.password ? "border-red-500/50" : ""
                   }`}
                 />
@@ -185,7 +185,7 @@ export default function LoginPage() {
               type="submit"
               id="btn-submit-login"
               disabled={isLoading}
-              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all hover:shadow-lg disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex w-full items-center justify-center gap-2 rounded-none py-3 text-sm font-bold transition-all hover:shadow-lg disabled:opacity-50"
             >
               {isLoading ? (
                 <>

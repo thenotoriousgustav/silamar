@@ -48,6 +48,8 @@ import {
   type JobApplication,
 } from "@/types/job";
 
+import { updateJobAction } from "../server";
+
 const formSchema = z.object({
   company: z.string().min(1, "Nama perusahaan wajib diisi"),
   position: z.string().min(1, "Posisi pekerjaan wajib diisi"),
@@ -74,6 +76,7 @@ interface JobDetailDrawerProps {
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
   onDelete?: (job: JobApplication) => void;
+  defaultEditMode?: boolean;
 }
 
 export function JobDetailDrawer({
@@ -82,20 +85,14 @@ export function JobDetailDrawer({
   onOpenChange,
   onSuccess,
   onDelete: onDeleteProp,
+  defaultEditMode = false,
 }: JobDetailDrawerProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(defaultEditMode);
 
   const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      if (!job) return;
-      const response = await fetch("/api/jobs", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: job.id, ...values }),
-      });
-
-      if (!response.ok) throw new Error("Gagal memperbarui lamaran");
-      return response.json();
+    mutationFn: (values: FormValues) => {
+      if (!job) throw new Error("No job selected");
+      return updateJobAction(job.id, values);
     },
     onSuccess: () => {
       toast.success("Lamaran berhasil diperbarui");
@@ -125,9 +122,9 @@ export function JobDetailDrawer({
         appliedDate: job.appliedDate ? new Date(job.appliedDate) : new Date(),
         notes: job.notes || "",
       });
-      setIsEditing(false);
+      setIsEditing(defaultEditMode);
     }
-  }, [job, form]);
+  }, [job, form, defaultEditMode]);
 
   const onSubmit = (values: FormValues) => {
     mutation.mutate(values);
@@ -144,7 +141,7 @@ export function JobDetailDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent className="max-w-xl">
+      <DrawerContent className="sm:max-w-2xl">
         <DrawerHeader className="border-b pb-4">
           <div className="flex items-center justify-between">
             <div>
@@ -184,9 +181,9 @@ export function JobDetailDrawer({
         >
           {/* Status Badge (Static View) */}
           {!isEditing && (
-            <div className="bg-muted/30 border-border/50 flex items-center justify-between rounded-2xl border p-4">
+            <div className="bg-muted/30 border-border/50 flex items-center justify-between rounded-none border p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
+                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-none">
                   <Info className="h-5 w-5" />
                 </div>
                 <div>
@@ -259,7 +256,7 @@ export function JobDetailDrawer({
                 {isEditing ? (
                   <select
                     {...form.register("type")}
-                    className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-lg border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+                    className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
                   >
                     {Object.entries(JOB_TYPE_LABELS).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -280,7 +277,7 @@ export function JobDetailDrawer({
                 </Label>
                 <select
                   {...form.register("status")}
-                  className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-lg border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+                  className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
                 >
                   {Object.entries(JOB_STATUS_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -399,10 +396,10 @@ export function JobDetailDrawer({
               {isEditing ? (
                 <Textarea
                   {...form.register("notes")}
-                  className="bg-background min-h-32"
+                  className="bg-background min-h-32 rounded-none"
                 />
               ) : (
-                <div className="bg-muted/50 border-border/50 text-muted-foreground rounded-xl border p-4 text-sm whitespace-pre-wrap italic">
+                <div className="bg-muted/50 border-border/50 text-muted-foreground rounded-none border p-4 text-sm whitespace-pre-wrap italic">
                   {job.notes || "Tidak ada catatan."}
                 </div>
               )}

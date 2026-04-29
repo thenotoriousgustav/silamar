@@ -29,7 +29,7 @@ export default async function SettingsPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Sidebar nav */}
-        <nav className="glass h-fit rounded-2xl p-4">
+        <nav className="glass h-fit rounded-none p-4">
           <ul className="space-y-1">
             {[
               { icon: User, label: "Profil", active: true },
@@ -38,7 +38,7 @@ export default async function SettingsPage() {
             ].map((item) => (
               <li key={item.label}>
                 <button
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                  className={`flex w-full items-center gap-3 rounded-none px-3 py-2.5 text-sm font-medium transition-all ${
                     item.active
                       ? "bg-brand-600/20 text-brand-400"
                       : "text-surface-300 hover:bg-surface-800 hover:text-white"
@@ -55,7 +55,7 @@ export default async function SettingsPage() {
         {/* Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile */}
-          <div className="glass rounded-2xl p-6">
+          <div className="glass rounded-none p-6">
             <h2 className="mb-6 flex items-center gap-2 text-sm font-semibold text-white">
               <User className="h-4 w-4 text-brand-400" />
               Profil
@@ -65,10 +65,10 @@ export default async function SettingsPage() {
                 <img
                   src={user.image}
                   alt={user.name ?? ""}
-                  className="h-14 w-14 rounded-full object-cover"
+                  className="h-14 w-14 rounded-none object-cover"
                 />
               ) : (
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-xl font-bold text-white">
+                <div className="flex h-14 w-14 items-center justify-center rounded-none bg-brand-600 text-xl font-bold text-white">
                   {user.name?.charAt(0)?.toUpperCase() ?? "U"}
                 </div>
               )}
@@ -86,7 +86,7 @@ export default async function SettingsPage() {
                 <input
                   defaultValue={user.name ?? ""}
                   id="input-profile-name"
-                  className="w-full rounded-xl border border-white/10 bg-surface-800 px-4 py-3 text-sm text-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  className="w-full rounded-none border border-white/10 bg-surface-800 px-4 py-3 text-sm text-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                 />
               </div>
               <div>
@@ -96,12 +96,12 @@ export default async function SettingsPage() {
                 <input
                   defaultValue={user.email ?? ""}
                   disabled
-                  className="w-full rounded-xl border border-white/5 bg-surface-800/50 px-4 py-3 text-sm text-surface-300 outline-none cursor-not-allowed"
+                  className="w-full rounded-none border border-white/5 bg-surface-800/50 px-4 py-3 text-sm text-surface-300 outline-none cursor-not-allowed"
                 />
               </div>
               <button
                 id="btn-save-profile"
-                className="rounded-xl bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition-all"
+                className="rounded-none bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition-all"
               >
                 Simpan Perubahan
               </button>
@@ -109,14 +109,14 @@ export default async function SettingsPage() {
           </div>
 
           {/* Billing */}
-          <div className="glass rounded-2xl p-6">
+          <div className="glass rounded-none p-6">
             <h2 className="mb-6 flex items-center gap-2 text-sm font-semibold text-white">
               <CreditCard className="h-4 w-4 text-brand-400" />
               Billing & Kredit
             </h2>
 
             {/* Current Plan */}
-            <div className="mb-6 rounded-xl bg-surface-800 p-4">
+            <div className="mb-6 rounded-none bg-surface-800 p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-semibold text-white">
@@ -140,7 +140,7 @@ export default async function SettingsPage() {
             </div>
 
             {/* Pro Subscription */}
-            <div className="mb-4 rounded-xl border border-brand-500/30 bg-brand-500/5 p-4">
+            <div className="mb-4 rounded-none border border-brand-500/30 bg-brand-500/5 p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-semibold text-white">{PRO_SUBSCRIPTION.name}</div>
@@ -155,7 +155,7 @@ export default async function SettingsPage() {
               </div>
               <button
                 id="btn-buy-pro"
-                className="mt-4 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-bold text-white hover:bg-brand-500 transition-all"
+                className="mt-4 w-full rounded-none bg-brand-600 py-2.5 text-sm font-bold text-white hover:bg-brand-500 transition-all"
               >
                 {user.plan === "pro" ? "Perpanjang Pro" : "Upgrade ke Pro"}
               </button>
@@ -167,7 +167,7 @@ export default async function SettingsPage() {
             </h3>
             <div className="grid gap-3 sm:grid-cols-3">
               {CREDIT_PACKAGES.map((pkg) => (
-                <div key={pkg.id} className="rounded-xl border border-white/10 bg-surface-800 p-4 text-center">
+                <div key={pkg.id} className="rounded-none border border-white/10 bg-surface-800 p-4 text-center">
                   <div className="text-xl font-bold text-white">{pkg.credits}</div>
                   <div className="text-xs text-surface-300 mb-2">kredit</div>
                   <div className="text-sm font-semibold text-brand-400">
@@ -175,7 +175,7 @@ export default async function SettingsPage() {
                   </div>
                   <button
                     id={`btn-buy-${pkg.id}`}
-                    className="mt-3 w-full rounded-lg bg-surface-700 py-1.5 text-xs font-semibold text-white hover:bg-surface-600 transition-colors"
+                    className="mt-3 w-full rounded-none bg-surface-700 py-1.5 text-xs font-semibold text-white hover:bg-surface-600 transition-colors"
                   >
                     Beli
                   </button>

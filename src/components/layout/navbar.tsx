@@ -23,7 +23,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2">
-            <div className="bg-brand-600 shadow-brand-600/30 flex h-8 w-8 items-center justify-center rounded-lg shadow-lg transition-transform group-hover:scale-110">
+            <div className="bg-brand-600 shadow-brand-600/30 flex h-8 w-8 items-center justify-center rounded-none shadow-lg transition-transform group-hover:scale-110">
               <Zap className="h-4 w-4 text-white" />
             </div>
             <span className="gradient-text text-lg font-bold tracking-tight">
@@ -50,7 +50,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
+                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-none px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
                 >
                   Dashboard
                 </Link>
@@ -71,7 +71,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
+                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-none px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
                 >
                   Daftar Gratis
                 </Link>
@@ -81,7 +81,7 @@ export function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="text-surface-300 hover:bg-surface-800 rounded-lg p-2 hover:text-white md:hidden"
+            className="text-surface-300 hover:bg-surface-800 rounded-none p-2 hover:text-white md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -111,7 +111,7 @@ export function Navbar() {
               {session ? (
                 <Link
                   href="/dashboard"
-                  className="bg-brand-600 rounded-lg px-4 py-2 text-center text-sm font-semibold text-white"
+                  className="bg-brand-600 rounded-none px-4 py-2 text-center text-sm font-semibold text-white"
                 >
                   Dashboard
                 </Link>
@@ -125,7 +125,7 @@ export function Navbar() {
                   </Link>
                   <Link
                     href="/register"
-                    className="bg-brand-600 rounded-lg px-4 py-2 text-center text-sm font-semibold text-white"
+                    className="bg-brand-600 rounded-none px-4 py-2 text-center text-sm font-semibold text-white"
                   >
                     Daftar Gratis
                   </Link>

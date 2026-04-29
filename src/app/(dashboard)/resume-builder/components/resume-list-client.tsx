@@ -130,7 +130,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
       {resumesList.length === 0 ? (
         <div className="border-border flex flex-col items-center justify-center border border-dashed py-20 text-center">
-          <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-xl">
+          <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-none">
             <FileText className="text-muted-foreground h-8 w-8" />
           </div>
           <h3 className="text-foreground text-lg font-semibold">
@@ -181,7 +181,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
               </p>
               {resume.atsScore !== null && (
                 <div className="mt-3 flex items-center gap-2">
-                  <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
+                  <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-none">
                     <div
                       className="from-primary to-primary/60 h-full bg-linear-to-r"
                       style={{ width: `${resume.atsScore}%` }}
@@ -202,7 +202,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                     {calculateCompleteness(resume.content as any).score}%
                   </span>
                 </div>
-                <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                <div className="bg-muted h-1.5 w-full overflow-hidden rounded-none">
                   <div
                     className="bg-primary h-full transition-all"
                     style={{
@@ -221,7 +221,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
           {/* New resume card */}
           <button
             onClick={() => setIsChoiceOpen(true)}
-            className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-2xl border border-dashed p-6 text-center transition-all"
+            className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
             <div className="border-border mb-3 flex h-12 w-12 items-center justify-center border border-dashed">
               <Plus className="text-muted-foreground h-5 w-5" />
@@ -240,7 +240,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
       >
         <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <div className="bg-destructive/10 mb-2 flex h-12 w-12 items-center justify-center rounded-full">
+            <div className="bg-destructive/10 mb-2 flex h-12 w-12 items-center justify-center rounded-none">
               <AlertTriangle className="text-destructive h-6 w-6" />
             </div>
             <AlertDialogTitle className="text-xl font-bold">
@@ -294,9 +294,9 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                 setIsChoiceOpen(false);
                 router.push("/resume-builder/new");
               }}
-              className="bg-muted/50 hover:border-primary/50 group hover:bg-muted border-border flex flex-col items-center gap-4 rounded-2xl border p-8 text-center transition-all"
+              className="bg-muted/50 hover:border-primary/50 group hover:bg-muted border-border flex flex-col items-center gap-4 rounded-none border p-8 text-center transition-all"
             >
-              <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+              <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-none transition-transform group-hover:scale-110">
                 <PencilLine className="h-8 w-8" />
               </div>
               <div>
@@ -314,9 +314,9 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                 setIsChoiceOpen(false);
                 setIsImportOpen(true);
               }}
-              className="bg-primary/5 border-primary/20 hover:border-primary/50 group hover:bg-primary/10 flex flex-col items-center gap-4 rounded-2xl border p-8 text-center transition-all"
+              className="bg-primary/5 border-primary/20 hover:border-primary/50 group hover:bg-primary/10 flex flex-col items-center gap-4 rounded-none border p-8 text-center transition-all"
             >
-              <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-xl text-white shadow-lg transition-transform group-hover:scale-110">
+              <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-none text-white shadow-lg transition-transform group-hover:scale-110">
                 <Sparkles className="h-8 w-8" />
               </div>
               <div>

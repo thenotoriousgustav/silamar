@@ -154,7 +154,7 @@ export default function HomePage() {
           }}
         />
 
-        <div className="border-brand-500/30 bg-brand-500/10 text-brand-400 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-sm font-medium">
+        <div className="border-brand-500/30 bg-brand-500/10 text-brand-400 mb-6 inline-flex items-center gap-2 rounded-none border px-4 py-1.5 font-mono text-sm font-medium">
           <Sparkles className="h-3.5 w-3.5" />
           Powered by Google Gemini AI
         </div>
@@ -175,7 +175,7 @@ export default function HomePage() {
           <Link
             href="/register"
             id="cta-register-hero"
-            className="group bg-brand-600 shadow-brand-600/30 hover:bg-brand-500 hover:shadow-brand-500/40 flex items-center gap-2 rounded-xl px-8 py-4 text-base font-bold text-white shadow-xl transition-all hover:scale-105"
+            className="group bg-brand-600 shadow-brand-600/30 hover:bg-brand-500 hover:shadow-brand-500/40 flex items-center gap-2 rounded-none px-8 py-4 text-base font-bold text-white shadow-xl transition-all hover:scale-105"
           >
             Mulai Gratis Sekarang
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -220,14 +220,14 @@ export default function HomePage() {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="glass hover:border-brand-500/30 hover:shadow-brand-600/10 group rounded-2xl p-6 transition-all hover:shadow-lg"
+                className="glass hover:border-brand-500/30 hover:shadow-brand-600/10 group rounded-none p-6 transition-all hover:shadow-lg"
               >
                 <div className="mb-4 flex items-start justify-between">
-                  <div className="bg-brand-600/20 text-brand-400 flex h-10 w-10 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+                  <div className="bg-brand-600/20 text-brand-400 flex h-10 w-10 items-center justify-center rounded-none transition-transform group-hover:scale-110">
                     <feature.icon className="h-5 w-5" />
                   </div>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    className={`rounded-none px-2.5 py-0.5 text-xs font-semibold ${
                       feature.tagColor === "green"
                         ? "bg-emerald-500/10 text-emerald-400"
                         : "bg-brand-500/10 text-brand-400"
@@ -257,7 +257,7 @@ export default function HomePage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
             {testimonials.map((t) => (
-              <div key={t.name} className="glass rounded-2xl p-6">
+              <div key={t.name} className="glass rounded-none p-6">
                 <div className="mb-3 flex gap-1">
                   {Array.from({ length: t.stars }).map((_, i) => (
                     <Star
@@ -299,7 +299,7 @@ export default function HomePage() {
             {plans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative rounded-2xl p-8 ${
+                className={`relative rounded-none p-8 ${
                   plan.highlighted
                     ? "gradient-border bg-surface-900 glow"
                     : "glass"
@@ -307,7 +307,7 @@ export default function HomePage() {
               >
                 {plan.highlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-brand-600 rounded-full px-4 py-1 font-mono text-xs font-bold text-white shadow-lg">
+                    <span className="bg-brand-600 rounded-none px-4 py-1 font-mono text-xs font-bold text-white shadow-lg">
                       PALING POPULER
                     </span>
                   </div>
@@ -342,7 +342,7 @@ export default function HomePage() {
                 <Link
                   href={plan.href}
                   id={`cta-plan-${plan.name.toLowerCase()}`}
-                  className={`block w-full rounded-xl py-3 text-center text-sm font-bold transition-all ${
+                  className={`block w-full rounded-none py-3 text-center text-sm font-bold transition-all ${
                     plan.highlighted
                       ? "bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 text-white hover:shadow-lg"
                       : "hover:bg-surface-800 border border-white/10 text-white"
@@ -365,7 +365,7 @@ export default function HomePage() {
           </div>
           <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-3">
             {creditPacks.map((pack) => (
-              <div key={pack.name} className="glass rounded-xl p-5 text-center">
+              <div key={pack.name} className="glass rounded-none p-5 text-center">
                 <div className="font-mono text-2xl font-extrabold text-white">
                   {pack.credits}
                 </div>
@@ -379,7 +379,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/register"
-                  className="bg-surface-800 hover:bg-surface-700 block rounded-lg py-2 text-sm font-semibold text-white transition-colors"
+                  className="bg-surface-800 hover:bg-surface-700 block rounded-none py-2 text-sm font-semibold text-white transition-colors"
                 >
                   {pack.name}
                 </Link>
@@ -404,7 +404,7 @@ export default function HomePage() {
             <Link
               href="/register"
               id="cta-register-bottom"
-              className="group bg-brand-600 shadow-brand-600/30 hover:bg-brand-500 flex items-center gap-2 rounded-xl px-8 py-4 text-base font-bold text-white shadow-xl transition-all hover:scale-105"
+              className="group bg-brand-600 shadow-brand-600/30 hover:bg-brand-500 flex items-center gap-2 rounded-none px-8 py-4 text-base font-bold text-white shadow-xl transition-all hover:scale-105"
             >
               Mulai Gratis — Dapat 3 Kredit AI
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

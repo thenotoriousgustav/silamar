@@ -93,7 +93,7 @@ export function ResumeImportDialog({
         <div className="grid gap-4 py-4">
           {!file ? (
             <div
-              className="border-border bg-muted/20 hover:border-primary/50 group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed py-12 transition-colors"
+              className="border-border bg-muted/20 hover:border-primary/50 group flex flex-col items-center justify-center gap-4 rounded-none border-2 border-dashed py-12 transition-colors"
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
@@ -105,7 +105,7 @@ export function ResumeImportDialog({
                 }
               }}
             >
-              <div className="bg-primary/10 text-primary rounded-2xl p-4 transition-transform group-hover:scale-110">
+              <div className="bg-primary/10 text-primary rounded-none p-4 transition-transform group-hover:scale-110">
                 <Upload className="h-8 w-8" />
               </div>
               <div className="text-center">
@@ -134,8 +134,8 @@ export function ResumeImportDialog({
               </Button>
             </div>
           ) : (
-            <div className="bg-muted/40 border-border relative flex items-center gap-4 rounded-2xl border p-5 shadow-xs">
-              <div className="bg-primary/10 text-primary flex h-14 w-14 items-center justify-center rounded-xl">
+            <div className="bg-muted/40 border-border relative flex items-center gap-4 rounded-none border p-5 shadow-xs">
+              <div className="bg-primary/10 text-primary flex h-14 w-14 items-center justify-center rounded-none">
                 <FileText className="h-7 w-7" />
               </div>
               <div className="flex-1 overflow-hidden">
@@ -150,7 +150,7 @@ export function ResumeImportDialog({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-9 w-9 rounded-full transition-colors"
+                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-9 w-9 rounded-none transition-colors"
                   onClick={() => setFile(null)}
                 >
                   <X className="h-4 w-4" />

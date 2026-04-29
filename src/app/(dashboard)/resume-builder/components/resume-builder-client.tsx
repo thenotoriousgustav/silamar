@@ -156,7 +156,7 @@ export function ResumeBuilderClient({
       <div className="flex items-center gap-3">
         <Link
           href="/resume-builder"
-          className="hover:bg-muted text-muted-foreground shrink-0 rounded p-1 transition-colors"
+          className="hover:bg-muted text-muted-foreground shrink-0 rounded-none p-1 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
@@ -172,7 +172,7 @@ export function ResumeBuilderClient({
           placeholder="Judul Resume..."
         />
         {isDirty && (
-          <span className="text-primary bg-primary/10 hidden rounded-full px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase sm:inline-block">
+          <span className="text-primary bg-primary/10 hidden rounded-none px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase sm:inline-block">
             Belum Simpan
           </span>
         )}
@@ -242,23 +242,28 @@ export function ResumeBuilderClient({
         </div>
 
         <Button
-          onClick={() => mutation.mutate({ title: resumeTitle })}
-          disabled={!isDirty || mutation.isPending}
+          onClick={async () => {
+            const success = await save(id, resumeTitle);
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["resumes"] });
+              router.refresh();
+            }
+          }}
+          disabled={!isDirty || isSaving}
           variant="secondary"
           size="sm"
           className="h-9 gap-2 px-3 sm:px-4"
         >
-          <Save
-            className={clsx(
-              "h-3.5 w-3.5",
-              mutation.isPending && "animate-spin",
-            )}
-          />
+          {isSaving ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Save className="h-3.5 w-3.5" />
+          )}
           <span className="hidden sm:inline">
-            {mutation.isPending ? "Menyimpan..." : "Simpan"}
+            {isSaving ? "Menyimpan..." : "Simpan"}
           </span>
           <span className="sm:hidden">
-            {mutation.isPending ? "..." : "Simpan"}
+            {isSaving ? "..." : "Simpan"}
           </span>
         </Button>
       </div>,

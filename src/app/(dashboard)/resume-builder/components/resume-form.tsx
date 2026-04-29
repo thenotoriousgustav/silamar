@@ -63,7 +63,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { MonthPicker } from "@/components/ui/monthpicker";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -198,9 +198,9 @@ export function ResumeForm({
       {/* Completeness Dashboard - Wrapped to ensure visibility */}
       <Dialog open={isCompletenessOpen} onOpenChange={setIsCompletenessOpen}>
         <div className="shrink-0" onClick={() => setIsCompletenessOpen(true)}>
-          <Card className="group border-primary/20 bg-card hover:border-primary/50 relative cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all hover:shadow-md active:scale-[0.98]">
+          <Card className="group border-primary/20 bg-card hover:border-primary/50 relative cursor-pointer overflow-hidden rounded-none border shadow-sm transition-all hover:shadow-md active:scale-[0.98]">
             {/* Click Indicator */}
-            <div className="bg-primary/5 absolute top-2 right-2 flex items-center gap-1 rounded-full px-2 py-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="bg-primary/5 absolute top-2 right-2 flex items-center gap-1 rounded-none px-2 py-0.5 opacity-0 transition-opacity group-hover:opacity-100">
               <span className="text-primary text-[9px] font-bold uppercase">
                 Lihat Detail
               </span>
@@ -210,7 +210,7 @@ export function ResumeForm({
             <CardContent className="p-5">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-xl border transition-colors">
+                  <div className="bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-none border transition-colors">
                     <Zap className="h-5 w-5" />
                   </div>
                   <div>
@@ -234,7 +234,7 @@ export function ResumeForm({
                 </div>
               </div>
 
-              <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
+              <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-none border">
                 <div
                   className={cn(
                     "h-full transition-all duration-1000 ease-out",
@@ -253,7 +253,7 @@ export function ResumeForm({
                     analyzeMutation.mutate();
                   }}
                   disabled={analyzeMutation.isPending}
-                  className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-full text-[10px] font-bold transition-all"
+                  className="hover:bg-primary/5 border-border bg-background h-8 gap-1.5 rounded-none text-[10px] font-bold transition-all"
                 >
                   {analyzeMutation.isPending ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -264,7 +264,7 @@ export function ResumeForm({
                     ? "Menganalisis..."
                     : "Analisis Skor ATS"}
                 </Button>
-                <div className="border-border bg-background flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium shadow-sm">
+                <div className="border-border bg-background flex items-center gap-1.5 rounded-none border px-2.5 py-1 text-[10px] font-medium shadow-sm">
                   <CheckCircle2 className="h-3 w-3 text-emerald-500" />
                   ATS Format Validated
                 </div>
@@ -273,11 +273,11 @@ export function ResumeForm({
           </Card>
         </div>
 
-        <DialogContent className="overflow-hidden rounded-3xl border-none p-0 shadow-2xl sm:max-w-2xl">
+        <DialogContent className="overflow-hidden rounded-none border-none p-0 shadow-2xl sm:max-w-2xl">
           <div className="from-primary/10 via-background to-background bg-linear-to-br p-8">
             <div className="mb-8 flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg">
+                <div className="bg-primary text-primary-foreground shadow-primary/20 flex h-14 w-14 items-center justify-center rounded-none shadow-lg">
                   <Zap className="h-7 w-7" />
                 </div>
                 <div>
@@ -285,7 +285,7 @@ export function ResumeForm({
                     RESUME READINESS
                   </h2>
                   <div className="flex items-center gap-2">
-                    <div className="bg-primary/10 flex h-1.5 w-24 overflow-hidden rounded-full">
+                    <div className="bg-primary/10 flex h-1.5 w-24 overflow-hidden rounded-none">
                       <div
                         className={cn("h-full", feedback.bg)}
                         style={{ width: `${score}%` }}
@@ -318,7 +318,7 @@ export function ResumeForm({
               ).map((category) => (
                 <div key={category} className="space-y-3">
                   <div className="flex items-center gap-2 px-1">
-                    <div className="bg-primary h-1 w-1 rounded-full" />
+                    <div className="bg-primary h-1 w-1 rounded-none" />
                     <h4 className="text-muted-foreground text-[10px] font-black tracking-[0.2em] uppercase">
                       {category}
                     </h4>
@@ -330,7 +330,7 @@ export function ResumeForm({
                         <div
                           key={idx}
                           className={cn(
-                            "group flex items-center gap-3 rounded-2xl border p-3 transition-all",
+                            "group flex items-center gap-3 rounded-none border p-3 transition-all",
                             s.completed
                               ? "border-emerald-500/10 bg-emerald-500/5 opacity-60"
                               : "bg-background border-border hover:border-primary/30 shadow-sm",
@@ -338,7 +338,7 @@ export function ResumeForm({
                         >
                           <div
                             className={cn(
-                              "flex h-7 w-7 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110",
+                              "flex h-7 w-7 shrink-0 items-center justify-center rounded-none transition-transform group-hover:scale-110",
                               s.completed
                                 ? "bg-emerald-500/20 text-emerald-600"
                                 : "bg-muted text-muted-foreground",
@@ -380,7 +380,7 @@ export function ResumeForm({
                 meningkatkan peluang ATS.
               </p>
               <Button
-                className="shadow-primary/20 h-12 rounded-2xl px-8 font-black tracking-tighter uppercase italic shadow-xl transition-all hover:scale-105 active:scale-95"
+                className="shadow-primary/20 h-12 rounded-none px-8 font-black tracking-tighter uppercase italic shadow-xl transition-all hover:scale-105 active:scale-95"
                 onClick={() => setIsCompletenessOpen(false)}
               >
                 GOT IT, LETS GO!
@@ -413,7 +413,7 @@ export function ResumeForm({
             <div className="grid gap-6 py-4 md:grid-cols-2">
               {/* Scores */}
               <div className="space-y-6">
-                <div className="glass flex flex-col items-center justify-center rounded-2xl p-6 text-center">
+                <div className="glass flex flex-col items-center justify-center rounded-none p-6 text-center">
                   <span className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
                     ATS Match Score
                   </span>
@@ -434,11 +434,11 @@ export function ResumeForm({
                   </p>
                 </div>
 
-                <div className="glass rounded-2xl p-5">
+                <div className="glass rounded-none p-5">
                   <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-widest uppercase">
                     Readability
                   </h4>
-                  <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-full border">
+                  <div className="bg-primary/10 border-primary/5 h-2.5 w-full overflow-hidden rounded-none border">
                     <div
                       className="bg-primary h-full transition-all duration-1000 ease-out"
                       style={{ width: `${atsResult.readabilityScore}%` }}
@@ -464,9 +464,9 @@ export function ResumeForm({
                     {atsResult.criticalIssues.map((issue, i) => (
                       <div
                         key={i}
-                        className="bg-muted/50 flex items-start gap-3 rounded-xl p-3 text-xs"
+                        className="bg-muted/50 flex items-start gap-3 rounded-none p-3 text-xs"
                       >
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-none bg-amber-500" />
                         {issue}
                       </div>
                     ))}
@@ -487,7 +487,7 @@ export function ResumeForm({
                     {atsResult.missingKeywords.map((kw, i) => (
                       <span
                         key={i}
-                        className="rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-bold text-emerald-600"
+                        className="rounded-none bg-emerald-500/10 px-3 py-1 text-[10px] font-bold text-emerald-600"
                       >
                         {kw}
                       </span>
@@ -508,11 +508,11 @@ export function ResumeForm({
         {/* Section: Personal Info */}
         <AccordionItem
           value="personal"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex items-center gap-4">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                 <User className="h-4 w-4" />
               </div>
               <span className="text-foreground font-semibold tracking-tight">
@@ -649,12 +649,12 @@ export function ResumeForm({
         {/* Section: Experience */}
         <AccordionItem
           value="experience"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex w-full items-center justify-between pr-4">
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                   <Briefcase className="h-4 w-4" />
                 </div>
                 <span className="text-foreground font-semibold tracking-tight">
@@ -668,7 +668,7 @@ export function ResumeForm({
                   e.stopPropagation();
                   addExperience();
                 }}
-                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-all"
+                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
                 title="Tambah Pengalaman"
               >
                 <Plus className="h-4 w-4" />
@@ -680,7 +680,7 @@ export function ResumeForm({
               {content.experience.map((exp: ResumeExperience) => (
                 <Card
                   key={exp.id}
-                  className="bg-muted/20 border-border relative overflow-hidden rounded-xl"
+                  className="bg-muted/20 border-border relative overflow-hidden rounded-none"
                 >
                   <Button
                     variant="ghost"
@@ -744,9 +744,8 @@ export function ResumeForm({
                             }
                           />
                           <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={
+                            <MonthPicker
+                              selectedMonth={
                                 exp.startDate
                                   ? parse(
                                       exp.startDate,
@@ -756,7 +755,7 @@ export function ResumeForm({
                                     )
                                   : undefined
                               }
-                              onSelect={(date) => {
+                              onMonthSelect={(date) => {
                                 if (date) {
                                   updateExperience(exp.id, {
                                     startDate: format(date, "MMMM yyyy", {
@@ -765,7 +764,6 @@ export function ResumeForm({
                                   });
                                 }
                               }}
-                              initialFocus
                             />
                           </PopoverContent>
                         </Popover>
@@ -797,9 +795,8 @@ export function ResumeForm({
                             }
                           />
                           <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={
+                            <MonthPicker
+                              selectedMonth={
                                 exp.endDate
                                   ? parse(
                                       exp.endDate,
@@ -809,7 +806,7 @@ export function ResumeForm({
                                     )
                                   : undefined
                               }
-                              onSelect={(date) => {
+                              onMonthSelect={(date) => {
                                 if (date) {
                                   updateExperience(exp.id, {
                                     endDate: format(date, "MMMM yyyy", {
@@ -818,8 +815,6 @@ export function ResumeForm({
                                   });
                                 }
                               }}
-                              disabled={exp.isCurrentJob}
-                              initialFocus
                             />
                           </PopoverContent>
                         </Popover>
@@ -907,7 +902,7 @@ export function ResumeForm({
                                   }
                                   className="bg-background border-border h-9 text-sm"
                                 />
-                                <div className="border-border bg-background flex shrink-0 items-center overflow-hidden rounded-lg border shadow-sm">
+                                <div className="border-border bg-background flex shrink-0 items-center overflow-hidden rounded-none border shadow-sm">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -1111,12 +1106,12 @@ export function ResumeForm({
         {/* Section: Education */}
         <AccordionItem
           value="education"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex w-full items-center justify-between pr-4">
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                   <GraduationCap className="h-4 w-4" />
                 </div>
                 <span className="text-foreground font-semibold tracking-tight">
@@ -1130,7 +1125,7 @@ export function ResumeForm({
                   e.stopPropagation();
                   addEducation();
                 }}
-                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-all"
+                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
                 title="Tambah Edukasi"
               >
                 <Plus className="h-4 w-4" />
@@ -1142,7 +1137,7 @@ export function ResumeForm({
               {content.education.map((edu: ResumeEducation) => (
                 <Card
                   key={edu.id}
-                  className="bg-muted/20 border-border relative overflow-hidden rounded-xl"
+                  className="bg-muted/20 border-border relative overflow-hidden rounded-none"
                 >
                   <Button
                     variant="ghost"
@@ -1208,29 +1203,90 @@ export function ResumeForm({
                       </div>
                       <div className="space-y-2">
                         <Label className="text-muted-foreground text-xs font-medium uppercase">
-                          Tahun Mulai
+                          Bulan/Tahun Mulai
                         </Label>
-                        <Input
-                          value={edu.startYear}
-                          onChange={(e) =>
-                            updateEducation(edu.id, {
-                              startYear: e.target.value,
-                            })
-                          }
-                          className="bg-background border-border"
-                        />
+                        <Popover>
+                          <PopoverTrigger
+                            render={
+                              <div className="relative">
+                                <Input
+                                  readOnly
+                                  value={edu.startYear}
+                                  placeholder="Pilih bulan & tahun"
+                                  className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                />
+                                <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                              </div>
+                            }
+                          />
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <MonthPicker
+                              selectedMonth={
+                                edu.startYear
+                                  ? parse(
+                                      edu.startYear,
+                                      "MMMM yyyy",
+                                      new Date(),
+                                      { locale: id },
+                                    )
+                                  : undefined
+                              }
+                              onMonthSelect={(date) => {
+                                if (date) {
+                                  updateEducation(edu.id, {
+                                    startYear: format(date, "MMMM yyyy", {
+                                      locale: id,
+                                    }),
+                                  });
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-muted-foreground text-xs font-medium uppercase">
-                          Tahun Selesai
+                          Bulan/Tahun Selesai
                         </Label>
-                        <Input
-                          value={edu.endYear}
-                          onChange={(e) =>
-                            updateEducation(edu.id, { endYear: e.target.value })
-                          }
-                          className="bg-background border-border"
-                        />
+                        <Popover>
+                          <PopoverTrigger
+                            render={
+                              <div className="relative">
+                                <Input
+                                  readOnly
+                                  value={edu.endYear}
+                                  placeholder="Pilih bulan & tahun"
+                                  className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                  disabled={edu.isCurrentlyStudying}
+                                />
+                                <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                              </div>
+                            }
+                          />
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <MonthPicker
+                              selectedMonth={
+                                edu.endYear
+                                  ? parse(
+                                      edu.endYear,
+                                      "MMMM yyyy",
+                                      new Date(),
+                                      { locale: id },
+                                    )
+                                  : undefined
+                              }
+                              onMonthSelect={(date) => {
+                                if (date) {
+                                  updateEducation(edu.id, {
+                                    endYear: format(date, "MMMM yyyy", {
+                                      locale: id,
+                                    }),
+                                  });
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     </div>
 
@@ -1261,7 +1317,7 @@ export function ResumeForm({
                             key={idx}
                             className="group flex items-start gap-2"
                           >
-                            <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold">
+                            <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
                               {idx + 1}
                             </div>
                             <div className="relative flex-1">
@@ -1275,7 +1331,7 @@ export function ResumeForm({
                                   });
                                 }}
                                 placeholder="Contoh: Lulus dengan predikat Cum Laude atau Aktif di organisasi mahasiswa..."
-                                className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-xl border p-3 text-sm transition-all focus:ring-0"
+                                className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
                                 rows={2}
                               />
                             </div>
@@ -1318,12 +1374,12 @@ export function ResumeForm({
         {/* Section: Projects */}
         <AccordionItem
           value="projects"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex w-full items-center justify-between pr-4">
               <div className="flex items-center gap-4">
-                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+                <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                   <Code2 className="h-4 w-4" />
                 </div>
                 <span className="text-foreground font-semibold tracking-tight">
@@ -1337,7 +1393,7 @@ export function ResumeForm({
                   e.stopPropagation();
                   addProject();
                 }}
-                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-all"
+                className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
                 title="Tambah Projek"
               >
                 <Plus className="h-4 w-4" />
@@ -1349,7 +1405,7 @@ export function ResumeForm({
               {content.projects.map((project: ResumeProject) => (
                 <Card
                   key={project.id}
-                  className="bg-muted/20 border-border relative overflow-hidden rounded-xl"
+                  className="bg-muted/20 border-border relative overflow-hidden rounded-none"
                 >
                   <Button
                     variant="ghost"
@@ -1386,6 +1442,92 @@ export function ResumeForm({
                           className="bg-background border-border"
                         />
                       </div>
+                      <div className="space-y-2">
+                        <Label className="text-muted-foreground text-xs font-medium uppercase">
+                          Bulan/Tahun Mulai
+                        </Label>
+                        <Popover>
+                          <PopoverTrigger
+                            render={
+                              <div className="relative">
+                                <Input
+                                  readOnly
+                                  value={project.startDate}
+                                  placeholder="Pilih bulan & tahun"
+                                  className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                />
+                                <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                              </div>
+                            }
+                          />
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <MonthPicker
+                              selectedMonth={
+                                project.startDate
+                                  ? parse(
+                                      project.startDate,
+                                      "MMMM yyyy",
+                                      new Date(),
+                                      { locale: id },
+                                    )
+                                  : undefined
+                              }
+                              onMonthSelect={(date) => {
+                                if (date) {
+                                  updateProject(project.id, {
+                                    startDate: format(date, "MMMM yyyy", {
+                                      locale: id,
+                                    }),
+                                  });
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-muted-foreground text-xs font-medium uppercase">
+                          Bulan/Tahun Selesai
+                        </Label>
+                        <Popover>
+                          <PopoverTrigger
+                            render={
+                              <div className="relative">
+                                <Input
+                                  readOnly
+                                  value={project.endDate}
+                                  placeholder="Pilih bulan & tahun"
+                                  className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                />
+                                <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                              </div>
+                            }
+                          />
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <MonthPicker
+                              selectedMonth={
+                                project.endDate
+                                  ? parse(
+                                      project.endDate,
+                                      "MMMM yyyy",
+                                      new Date(),
+                                      { locale: id },
+                                    )
+                                  : undefined
+                              }
+                              onMonthSelect={(date) => {
+                                if (date) {
+                                  updateProject(project.id, {
+                                    endDate: format(date, "MMMM yyyy", {
+                                      locale: id,
+                                    }),
+                                  });
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                       <div className="space-y-4 md:col-span-2">
                         <div className="flex items-center justify-between">
                           <Label className="text-muted-foreground text-xs font-medium uppercase">
@@ -1413,7 +1555,7 @@ export function ResumeForm({
                               key={idx}
                               className="group flex items-start gap-2"
                             >
-                              <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold">
+                              <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
                                 {idx + 1}
                               </div>
                               <div className="relative flex-1">
@@ -1429,7 +1571,7 @@ export function ResumeForm({
                                     });
                                   }}
                                   placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
-                                  className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-xl border p-3 text-sm transition-all focus:ring-0"
+                                  className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
                                   rows={2}
                                 />
                               </div>
@@ -1472,11 +1614,11 @@ export function ResumeForm({
         {/* Section: Skills */}
         <AccordionItem
           value="skills"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex items-center gap-4">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                 <Code2 className="h-4 w-4" />
               </div>
               <span className="text-foreground font-semibold tracking-tight">
@@ -1504,11 +1646,11 @@ export function ResumeForm({
         {/* Section: Visual Settings */}
         <AccordionItem
           value="style"
-          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-2xl border shadow-sm transition-all"
+          className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
           <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
             <div className="flex items-center gap-4">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                 <Settings2 className="h-4 w-4" />
               </div>
               <span className="text-foreground font-semibold tracking-tight">
@@ -1528,7 +1670,7 @@ export function ResumeForm({
                     onChange={(e) =>
                       updateStyle({ fontFamily: e.target.value })
                     }
-                    className="bg-background border-border focus:border-primary focus:ring-primary h-11 w-full appearance-none rounded-lg border px-4 py-2 text-sm transition-all focus:ring-1"
+                    className="bg-background border-border focus:border-primary focus:ring-primary h-11 w-full appearance-none rounded-none border px-4 py-2 text-sm transition-all focus:ring-1"
                   >
                     <option value="Calibri">Calibri</option>
                     <option value="Georgia">Georgia</option>
@@ -1609,7 +1751,7 @@ function EmptyState({
   onAdd: () => void;
 }) {
   return (
-    <div className="border-border bg-muted/20 flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-10">
+    <div className="border-border bg-muted/20 flex flex-col items-center justify-center rounded-none border-2 border-dashed py-10">
       <p className="text-surface-400 mb-4">{message}</p>
       <Button
         onClick={onAdd}

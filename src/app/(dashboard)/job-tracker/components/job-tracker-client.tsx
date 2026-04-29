@@ -15,7 +15,16 @@ import {
   Trash2,
   PencilLine,
   AlertTriangle,
+  X,
 } from "lucide-react";
+import {
+  ActionBar,
+  ActionBarSelection,
+  ActionBarSeparator,
+  ActionBarGroup,
+  ActionBarItem,
+  ActionBarClose,
+} from "@/components/ui/action-bar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
   JOB_STATUS_LABELS,
@@ -47,6 +57,21 @@ import {
   KanbanOverlay,
 } from "@/components/ui/kanban";
 import type { DragEndEvent } from "@dnd-kit/core";
+
+import { useSearchParams } from "next/navigation";
+import { getJobsAction, deleteJobAction, updateJobAction } from "../server";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { useDataTable } from "@/hooks/use-data-table";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  Building2 as CompanyIcon,
+  Briefcase as PositionIcon,
+  Clock as DateIcon,
+  Tag as TypeIcon,
+  Activity as StatusIcon,
+} from "lucide-react";
 
 const STATUS_COLORS: Record<JobStatus, string> = {
   dilamar: "border-blue-500/30 bg-blue-500/5",
@@ -74,6 +99,7 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<JobApplication | null>(null);
   const [localJobs, setLocalJobs] = useState<JobApplication[]>(initialJobs);
   const [columnOrder, setColumnOrder] = useState<string[]>(() => {
@@ -93,31 +119,57 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
   // Track original status before drag starts
   const dragStartStatusRef = useRef<string | null>(null);
 
+  // Server-side filtering state from URL
+  const searchParams = useSearchParams();
+  const queryParams = useMemo(() => {
+    const params: any = {};
+    searchParams.forEach((value, key) => {
+      if (["type", "status"].includes(key)) {
+        params[key] = value.split(",");
+      } else if (key === "appliedDate") {
+        const parts = value.includes(".") ? value.split(".") : value.split(",");
+        if (parts.length === 2) {
+          params.from = parts[0];
+          params.to = parts[1];
+        } else {
+          params.from = value;
+          params.to = value;
+        }
+      } else {
+        params[key] = value;
+      }
+    });
+    return params;
+  }, [searchParams]);
+
   // 1. Fetch Jobs Query
-  const { data: jobs = initialJobs, isLoading } = useQuery<JobApplication[]>({
-    queryKey: ["jobs"],
-    queryFn: async () => {
-      const response = await fetch("/api/jobs");
-      if (!response.ok) throw new Error("Gagal mengambil data lamaran");
-      return response.json();
-    },
-    initialData: initialJobs,
+  const {
+    data: jobs,
+    isLoading,
+    isFetching,
+  } = useQuery<JobApplication[]>({
+    queryKey: ["jobs", queryParams],
+    queryFn: () => getJobsAction(queryParams) as any,
+    initialData: undefined,
   });
+
+  // Use jobs from query, or initialJobs only if we haven't fetched yet
+  const tableData = useMemo(() => {
+    if (jobs) return jobs;
+    if (isLoading && Object.keys(queryParams).length === 0) return initialJobs;
+    return [];
+  }, [jobs, isLoading, initialJobs, queryParams]);
 
   // Sync localJobs with jobs from query
   useEffect(() => {
-    if (jobs.length >= 0) {
+    if (jobs) {
       setLocalJobs(jobs);
     }
   }, [jobs]);
 
   // 2. Mutations
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/jobs?id=${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Gagal menghapus lamaran");
-      return response.json();
-    },
+    mutationFn: (id: string) => deleteJobAction(id),
     onSuccess: () => {
       toast.success("Lamaran berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
@@ -130,15 +182,8 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const response = await fetch("/api/jobs", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
-      if (!response.ok) throw new Error("Gagal memperbarui status");
-      return response.json();
-    },
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateJobAction(id, { status }),
     onSuccess: (_, variables) => {
       toast.success(
         `Status diperbarui ke ${JOB_STATUS_LABELS[variables.status as JobStatus]}`,
@@ -149,6 +194,189 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
       console.error(error);
       toast.error("Gagal memperbarui status ke server");
     },
+  });
+
+  // 3. Data Table Configuration
+  const dataTableColumns = useMemo<ColumnDef<JobApplication>[]>(
+    () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            indeterminate={
+              table.getIsSomePageRowsSelected() &&
+              !table.getIsAllPageRowsSelected()
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+            className="translate-y-0.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Select row"
+            className="translate-y-0.5"
+          />
+        ),
+        size: 32,
+        enableSorting: false,
+        enableHiding: false,
+      },
+      {
+        id: "position",
+        accessorKey: "position",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label="Posisi" />
+        ),
+        cell: ({ row }) => (
+          <div className="text-foreground font-medium">
+            {row.getValue("position")}
+          </div>
+        ),
+        meta: {
+          label: "Posisi",
+          placeholder: "Cari posisi...",
+          variant: "text",
+          icon: PositionIcon,
+        },
+        enableColumnFilter: true,
+      },
+      {
+        id: "company",
+        accessorKey: "company",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label="Perusahaan" />
+        ),
+        cell: ({ row }) => (
+          <div className="text-muted-foreground">{row.getValue("company")}</div>
+        ),
+        enableColumnFilter: true,
+      },
+      {
+        id: "type",
+        accessorKey: "type",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label="Tipe" />
+        ),
+        cell: ({ row }) => (
+          <div className="text-muted-foreground capitalize">
+            {row.getValue("type")}
+          </div>
+        ),
+        meta: {
+          label: "Tipe",
+          variant: "multiSelect",
+          options: [
+            { label: "Full-time", value: "full-time" },
+            { label: "Part-time", value: "part-time" },
+            { label: "Contract", value: "contract" },
+            { label: "Internship", value: "internship" },
+            { label: "Freelance", value: "freelance" },
+          ],
+          icon: TypeIcon,
+        },
+        enableColumnFilter: true,
+      },
+      {
+        id: "status",
+        accessorKey: "status",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label="Status" />
+        ),
+        cell: ({ row }) => {
+          const status = row.getValue("status") as JobStatus;
+          return (
+            <span
+              className={cn(
+                "rounded-none px-2.5 py-0.5 text-[10px] font-bold uppercase",
+                STATUS_BADGE[status],
+              )}
+            >
+              {JOB_STATUS_LABELS[status]}
+            </span>
+          );
+        },
+        meta: {
+          label: "Status",
+          variant: "multiSelect",
+          options: Object.entries(JOB_STATUS_LABELS).map(([value, label]) => ({
+            label,
+            value,
+          })),
+          icon: StatusIcon,
+        },
+        enableColumnFilter: true,
+      },
+      {
+        id: "appliedDate",
+        accessorKey: "appliedDate",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label="Tanggal" />
+        ),
+        cell: ({ row }) => {
+          const date = row.getValue("appliedDate") as string;
+          return (
+            <div className="text-muted-foreground">
+              {date ? formatDate(date, "d MMM yyyy") : "-"}
+            </div>
+          );
+        },
+        meta: {
+          label: "Tanggal",
+          variant: "dateRange",
+          icon: DateIcon,
+        },
+        enableColumnFilter: true,
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditJob(row.original);
+              }}
+            >
+              <PencilLine className="text-muted-foreground h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-destructive/10 h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                setJobToDelete(row.original);
+              }}
+            >
+              <Trash2 className="text-destructive h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const { table } = useDataTable({
+    data: tableData,
+    columns: dataTableColumns,
+    pageCount: 1,
+    initialState: {
+      sorting: [{ id: "appliedDate", desc: true }],
+      pagination: { pageIndex: 0, pageSize: 10 },
+    },
+    getRowId: (row) => row.id,
+    shallow: false,
   });
 
   // 3. Derived State (Columns)
@@ -180,6 +408,13 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
 
   const handleOpenDetail = (job: JobApplication) => {
     setSelectedJob(job);
+    setIsEditMode(false);
+    setIsDetailOpen(true);
+  };
+
+  const handleEditJob = (job: JobApplication) => {
+    setSelectedJob(job);
+    setIsEditMode(true);
     setIsDetailOpen(true);
   };
 
@@ -253,11 +488,11 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="border-border bg-card flex rounded-xl border p-1">
+          <div className="border-border bg-card flex rounded-none border p-1">
             <button
               onClick={() => setView("kanban")}
               className={cn(
-                "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                "flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-medium transition-all",
                 view === "kanban"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground",
@@ -269,7 +504,7 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
             <button
               onClick={() => setView("table")}
               className={cn(
-                "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                "flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-medium transition-all",
                 view === "table"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground",
@@ -282,19 +517,13 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
           <button
             id="btn-add-job"
             onClick={() => setIsAddOpen(true)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-none px-4 py-2.5 text-sm font-semibold transition-all"
           >
             <Plus className="h-4 w-4" />
             Tambah Lamaran
           </button>
         </div>
       </div>
-
-      {isLoading && jobs.length === 0 && (
-        <div className="flex justify-center py-20">
-          <Loader2 className="text-brand-400 h-8 w-8 animate-spin" />
-        </div>
-      )}
 
       {view === "kanban" && (
         <Kanban
@@ -314,6 +543,7 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
                   label={colInfo?.label || status}
                   tasks={columns[status] || []}
                   onItemClick={handleOpenDetail}
+                  onItemEdit={handleEditJob}
                   onItemDelete={(job) => setJobToDelete(job)}
                 />
               );
@@ -328,6 +558,9 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
                     value={value}
                     label={col?.label || (value as string)}
                     tasks={columns[value] || []}
+                    onItemClick={handleOpenDetail}
+                    onItemEdit={handleEditJob}
+                    onItemDelete={(job) => setJobToDelete(job)}
                   />
                 );
               }
@@ -345,104 +578,53 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
       )}
 
       {view === "table" && (
-        <div className="glass overflow-hidden rounded-2xl">
-          {jobs.length === 0 ? (
-            <div className="flex flex-col items-center py-20 text-center">
-              <Briefcase className="text-surface-400 mb-3 h-10 w-10" />
-              <p className="text-surface-300 text-sm">
-                Belum ada lamaran kerja
-              </p>
-              <button
-                onClick={() => setIsAddOpen(true)}
-                className="bg-brand-600 hover:bg-brand-500 mt-4 flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white"
+        <div className="rounded-none border-none bg-transparent">
+          <DataTable
+            table={table}
+            onRowClick={handleOpenDetail}
+            isLoading={isLoading || isFetching}
+            actionBar={
+              <ActionBar
+                open={table.getFilteredSelectedRowModel().rows.length > 0}
+                onOpenChange={(open) => {
+                  if (!open) table.resetRowSelection();
+                }}
               >
-                <Plus className="h-4 w-4" />
-                Tambah Lamaran Pertama
-              </button>
-            </div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/5">
-                  {[
-                    "Posisi",
-                    "Perusahaan",
-                    "Tipe",
-                    "Status",
-                    "Tanggal",
-                    "",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job) => (
-                  <tr
-                    key={job.id}
-                    onClick={() => handleOpenDetail(job)}
-                    className="hover:bg-muted/50 border-border/50 cursor-pointer border-b transition-colors"
+                <ActionBarSelection>
+                  {table.getFilteredSelectedRowModel().rows.length} terpilih
+                </ActionBarSelection>
+                <ActionBarSeparator />
+                <ActionBarGroup>
+                  <ActionBarItem
+                    className="bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-none"
+                    onClick={() => {
+                      const selectedRows = table
+                        .getFilteredSelectedRowModel()
+                        .rows.map((row) => row.original);
+                      if (selectedRows.length > 0) {
+                        setJobToDelete(selectedRows[0]);
+                      }
+                    }}
                   >
-                    <td className="text-foreground px-4 py-3 font-medium">
-                      {job.position}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3">
-                      {job.company}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 capitalize">
-                      {job.type}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase",
-                          STATUS_BADGE[job.status as JobStatus],
-                        )}
-                      >
-                        {JOB_STATUS_LABELS[job.status as JobStatus]}
-                      </span>
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3">
-                      {job.appliedDate
-                        ? formatDate(job.appliedDate, "d MMM yyyy")
-                        : "-"}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenDetail(job);
-                          }}
-                        >
-                          <PencilLine className="text-muted-foreground h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="hover:bg-destructive/10 h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setJobToDelete(job);
-                          }}
-                        >
-                          <Trash2 className="text-destructive h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                    <Trash2 className="mr-2 h-3.5 w-3.5" />
+                    Hapus
+                  </ActionBarItem>
+                </ActionBarGroup>
+                <ActionBarSeparator />
+                <ActionBarClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-none"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </ActionBarClose>
+              </ActionBar>
+            }
+          >
+            <DataTableToolbar table={table} />
+          </DataTable>
         </div>
       )}
 
@@ -456,6 +638,7 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
         job={selectedJob}
         open={isDetailOpen}
         onOpenChange={setIsDetailOpen}
+        defaultEditMode={isEditMode}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["jobs"] })}
         onDelete={(job) => {
           setIsDetailOpen(false);
@@ -470,7 +653,7 @@ export function JobTrackerClient({ initialJobs }: JobTrackerClientProps) {
       >
         <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <div className="bg-destructive/10 mb-2 flex h-12 w-12 items-center justify-center rounded-full">
+            <div className="bg-destructive/10 mb-2 flex h-12 w-12 items-center justify-center rounded-none">
               <AlertTriangle className="text-destructive h-6 w-6" />
             </div>
             <AlertDialogTitle className="text-xl font-bold">
@@ -516,10 +699,17 @@ interface JobCardProps extends Omit<
 > {
   job: JobApplication;
   onItemClick?: (job: JobApplication) => void;
+  onItemEdit?: (job: JobApplication) => void;
   onItemDelete?: (job: JobApplication) => void;
 }
 
-function JobCard({ job, onItemClick, onItemDelete, ...props }: JobCardProps) {
+function JobCard({
+  job,
+  onItemClick,
+  onItemEdit,
+  onItemDelete,
+  ...props
+}: JobCardProps) {
   return (
     <KanbanItem
       key={job.id}
@@ -528,7 +718,7 @@ function JobCard({ job, onItemClick, onItemDelete, ...props }: JobCardProps) {
       {...props}
       onClick={() => onItemClick?.(job)}
     >
-      <div className="group glass hover:border-primary/20 border-border/50 relative cursor-pointer rounded-xl border p-4 shadow-sm transition-all">
+      <div className="group glass hover:border-primary/20 border-border/50 relative cursor-pointer rounded-none border p-4 shadow-sm transition-all">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -540,21 +730,34 @@ function JobCard({ job, onItemClick, onItemDelete, ...props }: JobCardProps) {
               </div>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-destructive/10 absolute top-2 right-2 h-7 w-7 opacity-0 transition-all group-hover:opacity-100"
-              onClick={(e) => {
-                e.stopPropagation();
-                onItemDelete?.(job);
-              }}
-            >
-              <Trash2 className="text-destructive h-3.5 w-3.5" />
-            </Button>
+            <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-all group-hover:opacity-100">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-primary/10 h-7 w-7"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onItemEdit?.(job);
+                }}
+              >
+                <PencilLine className="text-muted-foreground h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-destructive/10 h-7 w-7"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onItemDelete?.(job);
+                }}
+              >
+                <Trash2 className="text-destructive h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between pt-1">
-            <div className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[10px] font-medium">
+            <div className="bg-muted text-muted-foreground rounded-none px-2 py-0.5 text-[10px] font-medium">
               {job.type}
             </div>
             {job.appliedDate && (
@@ -577,6 +780,7 @@ interface JobColumnProps extends Omit<
   tasks: JobApplication[];
   label: string;
   onItemClick?: (job: JobApplication) => void;
+  onItemEdit?: (job: JobApplication) => void;
   onItemDelete?: (job: JobApplication) => void;
 }
 
@@ -585,6 +789,7 @@ function JobColumn({
   tasks,
   label,
   onItemClick,
+  onItemEdit,
   onItemDelete,
   ...props
 }: JobColumnProps) {
@@ -593,7 +798,7 @@ function JobColumn({
   return (
     <KanbanColumn
       value={value}
-      className={cn("rounded-2xl border p-4", STATUS_COLORS[statusId])}
+      className={cn("rounded-none border p-4", STATUS_COLORS[statusId])}
       {...props}
     >
       <div className="mb-4 flex items-center justify-between">
@@ -601,7 +806,7 @@ function JobColumn({
           <h3 className="text-foreground text-sm font-semibold">{label}</h3>
           <span
             className={cn(
-              "rounded-full px-2 py-0.5 text-xs font-bold",
+              "rounded-none px-2 py-0.5 text-xs font-bold",
               STATUS_BADGE[statusId],
             )}
           >
@@ -621,7 +826,7 @@ function JobColumn({
 
       <div className="flex min-h-25 flex-col gap-3">
         {tasks.length === 0 && (
-          <div className="border-border/50 bg-background/20 rounded-xl border border-dashed py-8 text-center">
+          <div className="border-border/50 bg-background/20 rounded-none border border-dashed py-8 text-center">
             <Briefcase className="text-muted-foreground/30 mx-auto mb-2 h-5 w-5" />
             <p className="text-muted-foreground/50 text-xs">Kosong</p>
           </div>
@@ -632,6 +837,7 @@ function JobColumn({
             job={job}
             asHandle
             onItemClick={onItemClick}
+            onItemEdit={onItemEdit}
             onItemDelete={onItemDelete}
           />
         ))}

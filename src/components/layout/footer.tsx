@@ -27,7 +27,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2">
-              <div className="bg-brand-600 flex h-8 w-8 items-center justify-center rounded-lg">
+              <div className="bg-brand-600 flex h-8 w-8 items-center justify-center rounded-none">
                 <Zap className="h-4 w-4 text-white" />
               </div>
               <span className="gradient-text text-lg font-bold">SiLamar</span>

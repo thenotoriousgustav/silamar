@@ -53,6 +53,6 @@ export const getResumeDTO = async (id: string) => {
 
   return {
     ...data,
-    content: data.content as any, // Cast to any to avoid type issues here
+    content: data.content,
   };
 };

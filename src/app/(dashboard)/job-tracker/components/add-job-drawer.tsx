@@ -35,12 +35,15 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   JOB_STATUS_LABELS,
   JOB_TYPE_LABELS,
   type JobStatus,
   type JobType,
 } from "@/types/job";
+
+import { createJobAction } from "../server";
 
 const formSchema = z.object({
   company: z.string().min(1, "Nama perusahaan wajib diisi"),
@@ -74,20 +77,15 @@ export function AddJobDrawer({
   onSuccess,
 }: AddJobDrawerProps) {
   const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) throw new Error("Gagal menyimpan lamaran");
-      return response.json();
-    },
+    mutationFn: (values: FormValues) => createJobAction(values),
     onSuccess: () => {
       form.reset();
       onOpenChange(false);
       onSuccess?.();
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Gagal menyimpan lamaran");
     },
   });
 
@@ -112,7 +110,7 @@ export function AddJobDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent className="max-w-xl">
+      <DrawerContent className="max-w-2xl">
         <DrawerHeader className="border-b pb-4">
           <DrawerTitle className="text-xl font-bold">
             Tambah Lamaran Kerja
@@ -195,7 +193,7 @@ export function AddJobDrawer({
               <select
                 id="status"
                 {...form.register("status")}
-                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-lg border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
               >
                 {Object.entries(JOB_STATUS_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -215,7 +213,7 @@ export function AddJobDrawer({
               <select
                 id="type"
                 {...form.register("type")}
-                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-lg border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
               >
                 {Object.entries(JOB_TYPE_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>

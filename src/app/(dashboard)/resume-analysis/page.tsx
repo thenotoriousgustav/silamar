@@ -86,7 +86,7 @@ export default function ResumeAnalysisPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
-        <div className="glass rounded-2xl p-6">
+        <div className="glass rounded-none p-6">
           <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
             <FileText className="text-brand-400 h-4 w-4" />
             Tempel Konten Resume
@@ -98,7 +98,7 @@ export default function ResumeAnalysisPage() {
                 id="textarea-resume-content"
                 rows={16}
                 placeholder="Tempel isi resume kamu di sini (nama, pengalaman, pendidikan, skill, dll)..."
-                className="bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full resize-none rounded-xl border border-white/10 px-4 py-3 font-mono text-sm text-white transition-all outline-none focus:ring-2"
+                className="bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full resize-none rounded-none border border-white/10 px-4 py-3 font-mono text-sm text-white transition-all outline-none focus:ring-2"
               />
               {errors.resumeContent && (
                 <p className="mt-1 text-xs text-red-400">
@@ -110,7 +110,7 @@ export default function ResumeAnalysisPage() {
               type="submit"
               id="btn-analyze-resume"
               disabled={mutation.isPending}
-              className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50"
+              className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 flex w-full items-center justify-center gap-2 rounded-none py-3 text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50"
             >
               {mutation.isPending ? (
                 <>
@@ -130,7 +130,7 @@ export default function ResumeAnalysisPage() {
         {/* Results */}
         <div className="space-y-4">
           {!result && !mutation.isPending && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 py-20 text-center">
+            <div className="flex flex-col items-center justify-center rounded-none border border-dashed border-white/10 py-20 text-center">
               <BarChart3 className="text-surface-400 mb-3 h-10 w-10" />
               <p className="text-surface-300 text-sm">
                 Hasil analisis akan muncul di sini
@@ -139,7 +139,7 @@ export default function ResumeAnalysisPage() {
           )}
 
           {mutation.isPending && (
-            <div className="border-brand-500/30 bg-brand-500/5 flex flex-col items-center justify-center rounded-2xl border border-dashed py-20 text-center">
+            <div className="border-brand-500/30 bg-brand-500/5 flex flex-col items-center justify-center rounded-none border border-dashed py-20 text-center">
               <Loader2 className="text-brand-400 mb-3 h-10 w-10 animate-spin" />
               <p className="text-brand-400 text-sm">
                 AI sedang menganalisis resume kamu...
@@ -150,7 +150,7 @@ export default function ResumeAnalysisPage() {
           {result && (
             <>
               {/* ATS Score */}
-              <div className="glass rounded-2xl p-6">
+              <div className="glass rounded-none p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-white">Skor ATS</h3>
                   <span
@@ -159,9 +159,9 @@ export default function ResumeAnalysisPage() {
                     {result.atsScore}%
                   </span>
                 </div>
-                <div className="bg-surface-700 mb-3 h-2 overflow-hidden rounded-full">
+                <div className="bg-surface-700 mb-3 h-2 overflow-hidden rounded-none">
                   <div
-                    className={`h-full rounded-full transition-all duration-1000 ${scoreBg(result.atsScore)}`}
+                    className={`h-full rounded-none transition-all duration-1000 ${scoreBg(result.atsScore)}`}
                     style={{ width: `${result.atsScore}%` }}
                   />
                 </div>
@@ -171,7 +171,7 @@ export default function ResumeAnalysisPage() {
               </div>
 
               {/* Section Scores */}
-              <div className="glass rounded-2xl p-6">
+              <div className="glass rounded-none p-6">
                 <h3 className="mb-4 text-sm font-semibold text-white">
                   Skor per Seksi
                 </h3>
@@ -182,9 +182,9 @@ export default function ResumeAnalysisPage() {
                         <span className="text-surface-300 w-24 text-xs capitalize">
                           {section}
                         </span>
-                        <div className="bg-surface-700 h-1.5 flex-1 overflow-hidden rounded-full">
+                        <div className="bg-surface-700 h-1.5 flex-1 overflow-hidden rounded-none">
                           <div
-                            className={`h-full rounded-full ${scoreBg(score as number)}`}
+                            className={`h-full rounded-none ${scoreBg(score as number)}`}
                             style={{ width: `${score}%` }}
                           />
                         </div>
@@ -200,7 +200,7 @@ export default function ResumeAnalysisPage() {
               </div>
 
               {/* Strengths */}
-              <div className="glass rounded-2xl p-6">
+              <div className="glass rounded-none p-6">
                 <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
                   <CheckCircle className="h-4 w-4 text-emerald-400" />
                   Kekuatan
@@ -211,7 +211,7 @@ export default function ResumeAnalysisPage() {
                       key={i}
                       className="text-surface-300 flex items-start gap-2 text-sm"
                     >
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-none bg-emerald-400" />
                       {s}
                     </li>
                   ))}
@@ -219,7 +219,7 @@ export default function ResumeAnalysisPage() {
               </div>
 
               {/* Improvements */}
-              <div className="glass rounded-2xl p-6">
+              <div className="glass rounded-none p-6">
                 <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
                   <AlertCircle className="h-4 w-4 text-amber-400" />
                   Perlu Diperbaiki
@@ -230,7 +230,7 @@ export default function ResumeAnalysisPage() {
                       key={i}
                       className="text-surface-300 flex items-start gap-2 text-sm"
                     >
-                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-none bg-amber-400" />
                       {s}
                     </li>
                   ))}
@@ -238,7 +238,7 @@ export default function ResumeAnalysisPage() {
               </div>
 
               {/* Keywords */}
-              <div className="glass rounded-2xl p-6">
+              <div className="glass rounded-none p-6">
                 <h3 className="mb-3 text-sm font-semibold text-white">
                   Keyword yang Disarankan
                 </h3>
@@ -246,7 +246,7 @@ export default function ResumeAnalysisPage() {
                   {result.keywordSuggestions.map((kw) => (
                     <span
                       key={kw}
-                      className="bg-brand-500/10 text-brand-400 rounded-full px-3 py-1 text-xs font-medium"
+                      className="bg-brand-500/10 text-brand-400 rounded-none px-3 py-1 text-xs font-medium"
                     >
                       {kw}
                     </span>

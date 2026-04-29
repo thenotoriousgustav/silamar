@@ -74,7 +74,7 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="bg-primary shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-xl shadow-lg">
+            <div className="bg-primary shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-none shadow-lg">
               <Zap className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="gradient-text text-2xl font-extrabold">
@@ -87,11 +87,11 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <div className="glass rounded-2xl p-8">
+        <div className="glass rounded-none p-8">
           {/* Social Login */}
           <button
             onClick={handleGoogleSignIn}
-            className="hover:bg-surface-800 flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 py-3 text-sm font-semibold text-white transition-all"
+            className="hover:bg-surface-800 flex w-full items-center justify-center gap-3 rounded-none border border-white/10 py-3 text-sm font-semibold text-white transition-all"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -136,7 +136,7 @@ export default function RegisterPage() {
                 id="input-name"
                 type="text"
                 placeholder="Budi Santoso"
-                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
+                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-none border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
                   errors.name ? "border-red-500/50" : ""
                 }`}
               />
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                 id="input-email"
                 type="email"
                 placeholder="kamu@email.com"
-                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
+                className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-none border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
                   errors.email ? "border-red-500/50" : ""
                 }`}
               />
@@ -177,7 +177,7 @@ export default function RegisterPage() {
                   id="input-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Min. 8 karakter"
-                  className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-xl border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
+                  className={`bg-surface-800 placeholder-surface-300 focus:border-brand-500 focus:ring-brand-500/20 w-full rounded-none border border-white/10 px-4 py-3 text-sm text-white transition-all outline-none focus:ring-2 ${
                     errors.password ? "border-red-500/50" : ""
                   }`}
                 />
@@ -204,7 +204,7 @@ export default function RegisterPage() {
               type="submit"
               id="btn-submit-register"
               disabled={isLoading}
-              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-primary-foreground transition-all hover:shadow-lg disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 flex w-full items-center justify-center gap-2 rounded-none py-3 text-sm font-bold text-primary-foreground transition-all hover:shadow-lg disabled:opacity-50"
             >
               {isLoading ? (
                 <>
