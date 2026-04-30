@@ -65,8 +65,12 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
-  const [pendingCreationType, setPendingCreationType] = useState<"empty" | "import" | null>(null);
-  const [importedContent, setImportedContent] = useState<ResumeContent | null>(null);
+  const [pendingCreationType, setPendingCreationType] = useState<
+    "empty" | "import" | null
+  >(null);
+  const [importedContent, setImportedContent] = useState<ResumeContent | null>(
+    null,
+  );
   const queryClient = useQueryClient();
 
   const { data: resumesList = initialResumes } = useQuery<Resume[]>({
@@ -94,8 +98,6 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
       createResumeAction(data),
     onSuccess: (newResume) => {
       toast.success("Resume berhasil dibuat! 🚀");
-      setIsChoiceOpen(false);
-      setIsImportOpen(false);
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
       router.push(`/resume-builder/${newResume.id}`);
     },
@@ -106,7 +108,8 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   });
 
   const createEmptyMutation = useMutation({
-    mutationFn: (templateId: ResumeTemplateId) => createEmptyResumeAction(templateId),
+    mutationFn: (templateId: ResumeTemplateId) =>
+      createEmptyResumeAction(templateId),
     onSuccess: (newResume) => {
       toast.success("Resume berhasil dibuat! 🚀");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
@@ -141,7 +144,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
             fontSize: "text-sm",
             language: "id",
             templateId: templateId,
-          }
+          },
         },
         title: "Imported Resume",
       });
@@ -265,8 +268,8 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
           {/* New resume card */}
           <button
             onClick={() => {
-               setPendingCreationType("empty");
-               setIsTemplateSelectOpen(true);
+              setPendingCreationType("empty");
+              setIsTemplateSelectOpen(true);
             }}
             className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
@@ -393,14 +396,15 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         isLoading={createEmptyMutation.isPending || createMutation.isPending}
       />
 
-      {(createMutation.isPending || createEmptyMutation.isPending) && !isTemplateSelectOpen && (
-        <div className="bg-background/80 fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-sm">
-          <Loader2 className="text-primary h-12 w-12 animate-spin" />
-          <p className="text-foreground mt-4 font-medium italic">
-            Sedang menyiapkan resume kamu...
-          </p>
-        </div>
-      )}
+      {(createMutation.isPending || createEmptyMutation.isPending) &&
+        !isTemplateSelectOpen && (
+          <div className="bg-background/80 fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-sm">
+            <Loader2 className="text-primary h-12 w-12 animate-spin" />
+            <p className="text-foreground mt-4 font-medium italic">
+              Sedang menyiapkan resume kamu...
+            </p>
+          </div>
+        )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   FileText,
@@ -10,6 +10,7 @@ import {
   Sparkles,
   Loader2,
   X,
+  Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -52,7 +53,17 @@ export function ResumeSelectorDialog({
   selectedId,
 }: ResumeSelectorDialogProps) {
   const [search, setSearch] = useState("");
-  const [previewId, setPreviewId] = useState<string | null>(selectedId || null);
+  const [previewId, setPreviewId] = useState<string | null>(
+    selectedId || (resumes.length > 0 ? resumes[0].id : null),
+  );
+  const [openedIds, setOpenedIds] = useState<Set<string>>(new Set());
+
+  // Track which resumes have been opened to keep them cached in DOM
+  useEffect(() => {
+    if (previewId) {
+      setOpenedIds((prev) => new Set(prev).add(previewId));
+    }
+  }, [previewId]);
 
   const filteredResumes = resumes.filter((r) =>
     r.title.toLowerCase().includes(search.toLowerCase()),
@@ -128,7 +139,7 @@ export function ResumeSelectorDialog({
                         {resume.title}
                       </h4>
                       {resume.id === selectedId && (
-                        <div className="bg-primary rounded-full p-0.5 text-white">
+                        <div className="bg-primary rounded-none p-0.5 text-black">
                           <Check className="h-3 w-3" />
                         </div>
                       )}
@@ -169,7 +180,7 @@ export function ResumeSelectorDialog({
                   "hover:border-primary hover:text-primary h-8 w-full rounded-none border-dashed transition-all",
                 )}
               >
-                <PlusIcon className="mr-2 h-3 w-3" /> Buat Resume Baru
+                <Plus className="mr-2 h-3 w-3" /> Buat Resume Baru
               </a>
             </div>
           </div>
@@ -201,12 +212,30 @@ export function ResumeSelectorDialog({
                     <Check className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="bg-muted/30 flex flex-1 justify-center overflow-y-auto p-8">
-                  <div className="w-full max-w-3xl origin-top shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
-                    <ResumePreview
-                      content={selectedResume.content as ResumeContent}
-                    />
-                  </div>
+                <div className="bg-muted/30 relative flex flex-1 justify-center overflow-y-auto p-8">
+                  {resumes.map((resume) => {
+                    const isOpened = openedIds.has(resume.id);
+                    const isActive = previewId === resume.id;
+
+                    if (!isOpened && !isActive) return null;
+
+                    return (
+                      <div
+                        key={resume.id}
+                        className={cn(
+                          "w-full max-w-3xl origin-top shadow-2xl transition-all duration-300",
+                          isActive
+                            ? "scale-100 opacity-100"
+                            : "pointer-events-none absolute scale-95 opacity-0",
+                        )}
+                        style={{ display: isActive ? "block" : "none" }}
+                      >
+                        <ResumePreview
+                          content={resume.content as ResumeContent}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ) : (
@@ -245,25 +274,5 @@ export function ResumeSelectorDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function PlusIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
   );
 }

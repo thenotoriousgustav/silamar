@@ -186,7 +186,15 @@ export function JobFormDrawer({
 
   return (
     <>
-      <Drawer open={open} onOpenChange={onOpenChange} direction="right">
+      <Drawer
+        open={open}
+        onOpenChange={(newOpen) => {
+          // Prevent drawer from closing if resume selector is open
+          if (!newOpen && isResumeSelectorOpen) return;
+          onOpenChange(newOpen);
+        }}
+        direction="right"
+      >
         <DrawerContent className="flex h-full w-full flex-col sm:max-w-xl">
           <DrawerHeader className="shrink-0 border-b pb-4">
             <div className="flex items-center justify-between">
@@ -542,13 +550,15 @@ export function JobFormDrawer({
         </DrawerContent>
       </Drawer>
 
-      <ResumeSelectorDialog
-        resumes={userResumes}
-        open={isResumeSelectorOpen}
-        onOpenChange={setIsResumeSelectorOpen}
-        selectedId={form.watch("resumeId")}
-        onSelect={(id) => form.setValue("resumeId", id)}
-      />
+      {isResumeSelectorOpen && (
+        <ResumeSelectorDialog
+          resumes={userResumes}
+          open={isResumeSelectorOpen}
+          onOpenChange={setIsResumeSelectorOpen}
+          selectedId={form.watch("resumeId")}
+          onSelect={(id) => form.setValue("resumeId", id)}
+        />
+      )}
     </>
   );
 }
