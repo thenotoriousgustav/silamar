@@ -1,17 +1,17 @@
 "use client";
 
-import { 
-  Briefcase, 
-  Plus, 
-  Trash2, 
-  Calendar as CalendarIcon, 
-  ChevronUp, 
-  ChevronDown, 
-  Sparkles, 
-  Loader2, 
-  FileText, 
-  TrendingUp, 
-  SpellCheck 
+import {
+  Briefcase,
+  Plus,
+  Trash2,
+  Calendar as CalendarIcon,
+  ChevronUp,
+  ChevronDown,
+  Sparkles,
+  Loader2,
+  FileText,
+  TrendingUp,
+  SpellCheck,
 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
@@ -46,7 +46,12 @@ interface ExperienceSectionProps {
   addExperience: () => void;
   updateExperience: (id: string, data: Partial<ResumeExperience>) => void;
   removeExperience: (id: string) => void;
-  handleOptimize: (expId: string, idx: number, text: string, type: "optimize" | "quantify" | "grammar") => void;
+  handleOptimize: (
+    expId: string,
+    idx: number,
+    text: string,
+    type: "optimize" | "quantify" | "grammar",
+  ) => void;
   optimizingId: string | null;
 }
 
@@ -161,12 +166,9 @@ export function ExperienceSection({
                         <MonthPicker
                           selectedMonth={
                             exp.startDate
-                              ? parse(
-                                  exp.startDate,
-                                  "MMMM yyyy",
-                                  new Date(),
-                                  { locale: id },
-                                )
+                              ? parse(exp.startDate, "MMMM yyyy", new Date(), {
+                                  locale: id,
+                                })
                               : undefined
                           }
                           onMonthSelect={(date) => {
@@ -212,12 +214,9 @@ export function ExperienceSection({
                         <MonthPicker
                           selectedMonth={
                             exp.endDate
-                              ? parse(
-                                  exp.endDate,
-                                  "MMMM yyyy",
-                                  new Date(),
-                                  { locale: id },
-                                )
+                              ? parse(exp.endDate, "MMMM yyyy", new Date(), {
+                                  locale: id,
+                                })
                               : undefined
                           }
                           onMonthSelect={(date) => {
@@ -384,8 +383,7 @@ export function ExperienceSection({
                                       className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
                                       title="AI Assistant"
                                     >
-                                      {optimizingId ===
-                                      `${exp.id}-${idx}` ? (
+                                      {optimizingId === `${exp.id}-${idx}` ? (
                                         <Loader2 className="h-3 w-3 animate-spin" />
                                       ) : (
                                         <Sparkles className="h-3 w-3" />
@@ -476,9 +474,7 @@ export function ExperienceSection({
                                       : "descriptionEn";
                                   updateExperience(exp.id, {
                                     [field]:
-                                      newBullets.length > 0
-                                        ? newBullets
-                                        : [""],
+                                      newBullets.length > 0 ? newBullets : [""],
                                     description:
                                       lang === "id"
                                         ? newBullets.length > 0
