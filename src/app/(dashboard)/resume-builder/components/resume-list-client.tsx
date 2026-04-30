@@ -37,8 +37,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { deleteResumeAction, createResumeAction, getResumesAction } from "../server";
+import {
+  deleteResumeAction,
+  createResumeAction,
+  getResumesAction,
+  createEmptyResumeAction,
+} from "../server";
 import { ResumeImportDialog } from "./resume-import-dialog";
+import { TemplateSelectionDialog } from "./template-selection-dialog";
+import type { ResumeTemplateId } from "@/types/resume";
 
 interface Resume {
   id: string;
@@ -56,7 +63,10 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const router = useRouter();
   const [isChoiceOpen, setIsChoiceOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
+  const [pendingCreationType, setPendingCreationType] = useState<"empty" | "import" | null>(null);
+  const [importedContent, setImportedContent] = useState<ResumeContent | null>(null);
   const queryClient = useQueryClient();
 
   const { data: resumesList = initialResumes } = useQuery<Resume[]>({
@@ -95,13 +105,47 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
     },
   });
 
+  const createEmptyMutation = useMutation({
+    mutationFn: (templateId: ResumeTemplateId) => createEmptyResumeAction(templateId),
+    onSuccess: (newResume) => {
+      toast.success("Resume berhasil dibuat! 🚀");
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      router.push(`/resume-builder/${newResume.id}`);
+    },
+    onError: (error) => {
+      console.error("Create error:", error);
+      toast.error("Gagal membuat resume. Coba lagi.");
+    },
+  });
+
   const handleImportComplete = (content: ResumeContent) => {
-    const newId = crypto.randomUUID();
-    createMutation.mutate({
-      id: newId,
-      content,
-      title: "Imported Resume",
-    });
+    setImportedContent(content);
+    setIsImportOpen(false);
+    setPendingCreationType("import");
+    setIsTemplateSelectOpen(true);
+  };
+
+  const handleTemplateSelect = (templateId: ResumeTemplateId) => {
+    setIsTemplateSelectOpen(false);
+    if (pendingCreationType === "empty") {
+      createEmptyMutation.mutate(templateId);
+    } else if (pendingCreationType === "import" && importedContent) {
+      const newId = crypto.randomUUID();
+      createMutation.mutate({
+        id: newId,
+        content: {
+          ...importedContent,
+          style: {
+            ...importedContent.style,
+            fontFamily: "font-serif",
+            fontSize: "text-sm",
+            language: "id",
+            templateId: templateId,
+          }
+        },
+        title: "Imported Resume",
+      });
+    }
   };
 
   const handleDelete = () => {
@@ -220,7 +264,10 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
           {/* New resume card */}
           <button
-            onClick={() => setIsChoiceOpen(true)}
+            onClick={() => {
+               setPendingCreationType("empty");
+               setIsTemplateSelectOpen(true);
+            }}
             className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
             <div className="border-border mb-3 flex h-12 w-12 items-center justify-center border border-dashed">
@@ -292,7 +339,8 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
             <button
               onClick={() => {
                 setIsChoiceOpen(false);
-                router.push("/resume-builder/new");
+                setPendingCreationType("empty");
+                setIsTemplateSelectOpen(true);
               }}
               className="bg-muted/50 hover:border-primary/50 group hover:bg-muted border-border flex flex-col items-center gap-4 rounded-none border p-8 text-center transition-all"
             >
@@ -338,7 +386,14 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         onImportComplete={handleImportComplete}
       />
 
-      {createMutation.isPending && (
+      <TemplateSelectionDialog
+        isOpen={isTemplateSelectOpen}
+        onOpenChange={setIsTemplateSelectOpen}
+        onSelect={handleTemplateSelect}
+        isLoading={createEmptyMutation.isPending || createMutation.isPending}
+      />
+
+      {(createMutation.isPending || createEmptyMutation.isPending) && !isTemplateSelectOpen && (
         <div className="bg-background/80 fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-sm">
           <Loader2 className="text-primary h-12 w-12 animate-spin" />
           <p className="text-foreground mt-4 font-medium italic">

@@ -48,6 +48,7 @@ export interface ResumeStyle {
   fontFamily: string;
   fontSize: string;
   language?: "id" | "en";
+  templateId?: ResumeTemplateId;
 }
 
 export interface ResumeContent {

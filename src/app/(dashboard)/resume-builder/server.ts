@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { ResumeContent } from "@/types/resume";
 import { getResumesDTO } from "@/data/resumes";
 
@@ -70,6 +71,48 @@ export async function updateResumeAction(
   revalidatePath("/resume-builder");
   revalidatePath(`/resume-builder/${id}`);
   return updatedResume[0];
+}
+
+export async function createEmptyResumeAction(
+  templateId: import("@/types/resume").ResumeTemplateId = "classic",
+) {
+  const session = await getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const newResume = await db
+    .insert(resumes)
+    .values({
+      id: crypto.randomUUID(),
+      userId: session.user.id,
+      title: "Resume Tanpa Judul",
+      content: {
+        personalInfo: {
+          fullName: "",
+          email: "",
+          phone: "",
+          location: "",
+          linkedin: "",
+          website: "",
+          summary: "",
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+        style: {
+          fontFamily: "font-serif",
+          fontSize: "text-sm",
+          language: "id",
+          templateId: templateId,
+        },
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  revalidatePath("/resume-builder");
+  return newResume[0];
 }
 
 export async function deleteResumeAction(id: string) {

@@ -56,9 +56,10 @@ const colors = {
   secondary: "#333333",
   muted: "#555555",
   border: "#000000",
+  accent: "#2563eb", // Blue accent for Modern template
 };
 
-const getStyles = (fontFamily: string = "Helvetica") => {
+const getStyles = (fontFamily: string = "Helvetica", templateId: string = "classic") => {
   // Map common names or use fallback
   const validFonts = [
     "Calibri",
@@ -75,7 +76,7 @@ const getStyles = (fontFamily: string = "Helvetica") => {
   const boldFont = pdfFont;
   const italicFont = pdfFont;
 
-  return StyleSheet.create({
+  let styles: any = {
     page: {
       padding: 50,
       fontSize: 10,
@@ -86,6 +87,12 @@ const getStyles = (fontFamily: string = "Helvetica") => {
     header: {
       marginBottom: 6,
       textAlign: "center",
+    },
+    headerContentLeft: {
+      flex: 1,
+    },
+    headerContentRight: {
+      textAlign: "right",
     },
     name: {
       fontSize: 18,
@@ -234,7 +241,85 @@ const getStyles = (fontFamily: string = "Helvetica") => {
       fontSize: 9,
       lineHeight: 1.5,
     },
-  });
+  };
+
+  if (templateId === "modern") {
+    styles.header = {
+      ...styles.header,
+      textAlign: "left",
+      borderBottomWidth: 3,
+      borderBottomColor: colors.accent,
+      paddingBottom: 12,
+      marginBottom: 15,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
+    };
+    styles.name = {
+      ...styles.name,
+      fontSize: 24,
+      color: colors.accent,
+      marginBottom: 4,
+    };
+    styles.jobTitle = {
+      ...styles.jobTitle,
+      color: colors.accent,
+      fontSize: 12,
+      fontFamily: boldFont,
+    };
+    styles.contactInfo = {
+      ...styles.contactInfo,
+      textAlign: "right",
+      fontSize: 8,
+    };
+    styles.sectionTitle = {
+      ...styles.sectionTitle,
+      backgroundColor: "#eff6ff", // Light blue background
+      color: colors.accent,
+      padding: 5,
+      paddingLeft: 8,
+      borderBottomWidth: 0,
+      marginBottom: 10,
+      borderRadius: 2,
+    };
+    styles.experienceTitle = {
+      ...styles.experienceTitle,
+      color: colors.accent,
+    };
+  } else if (templateId === "minimal") {
+    styles.page = { ...styles.page, padding: 45 };
+    styles.header = { ...styles.header, marginBottom: 20, textAlign: "center", borderBottomWidth: 0 };
+    styles.name = {
+      ...styles.name,
+      fontSize: 20,
+      textTransform: "none",
+      letterSpacing: 0,
+      marginBottom: 4,
+      textAlign: "center",
+    };
+    styles.contactInfo = {
+      ...styles.contactInfo,
+      textAlign: "center",
+      color: colors.muted,
+    };
+    styles.sectionTitle = {
+      ...styles.sectionTitle,
+      borderBottomWidth: 0,
+      borderLeftWidth: 3,
+      borderLeftColor: colors.primary,
+      paddingLeft: 10,
+      textTransform: "none",
+      fontSize: 13,
+      letterSpacing: 0,
+      marginBottom: 10,
+    };
+    styles.experienceTitle = {
+      ...styles.experienceTitle,
+      fontSize: 11,
+    };
+  }
+
+  return StyleSheet.create(styles);
 };
 
 function cleanUrl(url: string | null | undefined): string {
@@ -300,35 +385,62 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
   const { personalInfo, experience, education, skills, projects, style } = data;
   const lang = style?.language || "id";
   const t = translations[lang];
-  const styles = getStyles(style?.fontFamily);
+  const templateId = style?.templateId || "classic";
+  const styles = getStyles(style?.fontFamily, templateId);
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.name}>
-            {personalInfo.fullName || "NAMA LENGKAP"}
-          </Text>
-          {personalInfo.title && (
-            <Text style={styles.jobTitle}>{personalInfo.title}</Text>
-          )}
-          <Text style={styles.contactInfo}>
-            {[
-              personalInfo.email,
-              personalInfo.phone,
-              personalInfo.location,
-              cleanUrl(personalInfo.website),
-            ]
-              .filter(Boolean)
-              .join(" | ")}
-          </Text>
-          {personalInfo.linkedin && (
-            <Text style={styles.contactInfo}>
-              {cleanUrl(personalInfo.linkedin)}
+        {templateId === "modern" ? (
+          <View style={styles.header}>
+            <View style={styles.headerContentLeft}>
+              <Text style={styles.name}>
+                {personalInfo.fullName || "NAMA LENGKAP"}
+              </Text>
+              {personalInfo.title && (
+                <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+              )}
+            </View>
+            <View style={styles.headerContentRight}>
+              <Text style={styles.contactInfo}>
+                {personalInfo.email}
+              </Text>
+              <Text style={styles.contactInfo}>
+                {personalInfo.phone}
+              </Text>
+              {(personalInfo.location || personalInfo.linkedin) && (
+                <Text style={styles.contactInfo}>
+                  {[personalInfo.location, cleanUrl(personalInfo.linkedin)].filter(Boolean).join(" | ")}
+                </Text>
+              )}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.header}>
+            <Text style={styles.name}>
+              {personalInfo.fullName || "NAMA LENGKAP"}
             </Text>
-          )}
-        </View>
+            {personalInfo.title && (
+              <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+            )}
+            <Text style={styles.contactInfo}>
+              {[
+                personalInfo.email,
+                personalInfo.phone,
+                personalInfo.location,
+                cleanUrl(personalInfo.website),
+              ]
+                .filter(Boolean)
+                .join(" | ")}
+            </Text>
+            {personalInfo.linkedin && (
+              <Text style={styles.contactInfo}>
+                {cleanUrl(personalInfo.linkedin)}
+              </Text>
+            )}
+          </View>
+        )}
 
         {/* Professional Summary */}
         {personalInfo.summary && (

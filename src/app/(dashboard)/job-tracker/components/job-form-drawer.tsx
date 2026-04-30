@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Info,
   FileText,
+  Sparkles,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -48,8 +49,13 @@ import {
   type JobApplication,
 } from "@/types/job";
 
-import { createJobAction, updateJobAction, getUserResumesAction } from "../server";
+import {
+  createJobAction,
+  updateJobAction,
+  getUserResumesAction,
+} from "../server";
 import { useQuery } from "@tanstack/react-query";
+import { ResumeSelectorDialog } from "./resume-selector-dialog";
 
 const formSchema = z.object({
   company: z.string().min(1, "Nama perusahaan wajib diisi"),
@@ -91,6 +97,7 @@ export function JobFormDrawer({
   onDelete,
 }: JobFormDrawerProps) {
   const queryClient = useQueryClient();
+  const [isResumeSelectorOpen, setIsResumeSelectorOpen] = useState(false);
   const isEdit = !!job;
 
   const mutation = useMutation({
@@ -102,7 +109,7 @@ export function JobFormDrawer({
     },
     onSuccess: (data, variables) => {
       toast.success(isEdit ? "Lamaran diperbarui" : "Lamaran ditambahkan");
-      
+
       if (variables.status === "penawaran") {
         triggerSuccessConfetti();
       }
@@ -178,7 +185,8 @@ export function JobFormDrawer({
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} direction="right">
+    <>
+      <Drawer open={open} onOpenChange={onOpenChange} direction="right">
       <DrawerContent className="flex h-full w-full flex-col sm:max-w-xl">
         <DrawerHeader className="shrink-0 border-b pb-4">
           <div className="flex items-center justify-between">
@@ -345,20 +353,63 @@ export function JobFormDrawer({
               <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
                 <FileText className="h-3.5 w-3.5" /> Resume yang Digunakan
               </Label>
-              <select
-                {...form.register("resumeId")}
-                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
-              >
-                <option value="">-- Pilih Resume --</option>
-                {userResumes.map((resume: any) => (
-                  <option key={resume.id} value={resume.id}>
-                    {resume.title} {resume.atsScore ? `(ATS: ${resume.atsScore}%)` : ""}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                control={form.control}
+                name="resumeId"
+                render={({ field }) => {
+                  const selectedResume = userResumes.find(
+                    (r: any) => r.id === field.value,
+                  );
+                  return (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setIsResumeSelectorOpen(true)}
+                        className={cn(
+                          "bg-background hover:border-primary/50 flex w-full items-center justify-between border px-4 py-3 text-left transition-all",
+                          !field.value && "text-muted-foreground border-dashed",
+                        )}
+                      >
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          <div
+                            className={cn(
+                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-none",
+                              field.value
+                                ? "bg-primary/10 text-primary"
+                                : "bg-muted text-muted-foreground",
+                            )}
+                          >
+                            <FileText className="h-5 w-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold">
+                              {selectedResume?.title || "Pilih Resume"}
+                            </p>
+                            {selectedResume?.atsScore && (
+                              <p className="text-primary flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase">
+                                <Sparkles className="h-3 w-3" />{" "}
+                                {selectedResume.atsScore}% ATS Score
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-muted-foreground border-muted-foreground/30 hover:bg-muted shrink-0 border px-2 py-1 text-[10px] font-bold tracking-tighter uppercase transition-colors">
+                          {field.value ? "Ganti" : "Pilih"}
+                        </div>
+                      </button>
+                    </>
+                  );
+                }}
+              />
               {userResumes.length === 0 && (
                 <p className="text-muted-foreground text-[10px]">
-                  Kamu belum memiliki resume. <a href="/resume-builder" className="text-primary hover:underline font-bold">Buat sekarang?</a>
+                  Kamu belum memiliki resume.{" "}
+                  <a
+                    href="/resume-builder"
+                    className="text-primary font-bold hover:underline"
+                  >
+                    Buat sekarang?
+                  </a>
                 </p>
               )}
             </div>
@@ -485,5 +536,14 @@ export function JobFormDrawer({
         </div>
       </DrawerContent>
     </Drawer>
+    
+    <ResumeSelectorDialog
+      resumes={userResumes}
+      open={isResumeSelectorOpen}
+      onOpenChange={setIsResumeSelectorOpen}
+      selectedId={form.watch("resumeId")}
+      onSelect={(id) => form.setValue("resumeId", id)}
+    />
+    </>
   );
 }
