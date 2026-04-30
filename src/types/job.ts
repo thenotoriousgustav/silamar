@@ -10,6 +10,7 @@ export type JobStatus = "dilamar" | "interview" | "penawaran" | "ditolak";
 export interface JobApplication {
   id: string;
   userId: string;
+  resumeId?: string | null;
   company: string;
   position: string;
   logoUrl?: string | null;
@@ -30,6 +31,7 @@ export interface JobApplication {
 export interface CreateJobApplicationInput {
   company: string;
   position: string;
+  resumeId?: string | null;
   logoUrl?: string;
   salary?: string;
   type: JobType;

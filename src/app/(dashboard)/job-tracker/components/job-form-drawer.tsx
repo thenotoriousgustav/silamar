@@ -17,6 +17,7 @@ import {
   Trash2,
   ExternalLink,
   Info,
+  FileText,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -47,7 +48,8 @@ import {
   type JobApplication,
 } from "@/types/job";
 
-import { createJobAction, updateJobAction } from "../server";
+import { createJobAction, updateJobAction, getUserResumesAction } from "../server";
+import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
   company: z.string().min(1, "Nama perusahaan wajib diisi"),
@@ -65,6 +67,7 @@ const formSchema = z.object({
   salary: z.string().optional(),
   appliedDate: z.date().optional(),
   interviewDate: z.date().optional(),
+  resumeId: z.string().optional().nullable(),
   description: z.string().optional(),
 });
 
@@ -130,6 +133,12 @@ export function JobFormDrawer({
     },
   });
 
+  const { data: userResumes = [] } = useQuery({
+    queryKey: ["user-resumes"],
+    queryFn: () => getUserResumesAction(),
+    enabled: open,
+  });
+
   useEffect(() => {
     if (job) {
       form.reset({
@@ -140,6 +149,7 @@ export function JobFormDrawer({
         type: job.type as any,
         jobUrl: job.jobUrl || "",
         salary: job.salary || "",
+        resumeId: job.resumeId || null,
         appliedDate: job.appliedDate ? new Date(job.appliedDate) : new Date(),
         interviewDate: job.interviewDate
           ? new Date(job.interviewDate)
@@ -155,6 +165,7 @@ export function JobFormDrawer({
         type: "full-time",
         jobUrl: "",
         salary: "",
+        resumeId: null,
         appliedDate: new Date(),
         interviewDate: undefined,
         description: "",
@@ -328,6 +339,28 @@ export function JobFormDrawer({
                   )}
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
+                <FileText className="h-3.5 w-3.5" /> Resume yang Digunakan
+              </Label>
+              <select
+                {...form.register("resumeId")}
+                className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+              >
+                <option value="">-- Pilih Resume --</option>
+                {userResumes.map((resume: any) => (
+                  <option key={resume.id} value={resume.id}>
+                    {resume.title} {resume.atsScore ? `(ATS: ${resume.atsScore}%)` : ""}
+                  </option>
+                ))}
+              </select>
+              {userResumes.length === 0 && (
+                <p className="text-muted-foreground text-[10px]">
+                  Kamu belum memiliki resume. <a href="/resume-builder" className="text-primary hover:underline font-bold">Buat sekarang?</a>
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">

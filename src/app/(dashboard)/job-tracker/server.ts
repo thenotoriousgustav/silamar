@@ -8,10 +8,15 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { getJobsDTO } from "@/data/jobs";
+import { getResumesDTO } from "@/data/resumes";
 
 /**
  * Server Actions for Job Tracker
  */
+
+export async function getUserResumesAction() {
+  return await getResumesDTO();
+}
 
 async function getSession() {
   return await auth.api.getSession({

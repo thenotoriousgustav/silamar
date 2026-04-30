@@ -147,6 +147,9 @@ export const jobApplications = pgTable("job_applications", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  resumeId: text("resume_id").references(() => resumes.id, {
+    onDelete: "set null",
+  }),
   company: text("company").notNull(),
   position: text("position").notNull(),
   location: text("location"),
