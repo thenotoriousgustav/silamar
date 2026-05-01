@@ -138,6 +138,7 @@ export function EducationSection({
                     </Label>
                     <Popover>
                       <PopoverTrigger
+                        nativeButton={false}
                         render={
                           <div className="relative">
                             <Input
@@ -181,6 +182,7 @@ export function EducationSection({
                     </Label>
                     <Popover>
                       <PopoverTrigger
+                        nativeButton={false}
                         render={
                           <div className="relative">
                             <Input

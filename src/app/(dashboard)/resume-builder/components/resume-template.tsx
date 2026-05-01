@@ -518,9 +518,44 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
             <Text style={styles.sectionTitle} minPresenceAhead={20}>
               {t.skills}
             </Text>
-            <Text style={styles.skillsText}>{skills.join(", ")}</Text>
+            {skills.map((skill, index) => (
+              <View key={index} style={styles.skillCategory}>
+                <Text style={styles.skillsText}>
+                  <Text style={styles.skillCategoryName}>
+                    {skill.category}:{" "}
+                  </Text>
+                  {skill.items.join(", ")}
+                </Text>
+              </View>
+            ))}
           </View>
         )}
+
+        {/* Custom Sections */}
+        {(data.customSections || []).map((section, sIndex) => (
+          <View key={sIndex} style={styles.section}>
+            <Text style={styles.sectionTitle} minPresenceAhead={20}>
+              {section.title}
+            </Text>
+            {section.items.map((item, iIndex) => (
+              <View key={iIndex} style={styles.experienceItem}>
+                <View style={styles.experienceTitleRow}>
+                  <Text style={styles.experienceTitle}>{item.title}</Text>
+                  {item.date && (
+                    <Text style={styles.experienceDate}>{item.date}</Text>
+                  )}
+                </View>
+                {item.subtitle && (
+                  <Text style={styles.experienceCompany}>{item.subtitle}</Text>
+                )}
+                {item.link && (
+                  <Text style={styles.projectUrl}>{cleanUrl(item.link)}</Text>
+                )}
+                <BulletList items={item.description || []} styles={styles} />
+              </View>
+            ))}
+          </View>
+        ))}
 
         {/* Projects */}
         {projects.length > 0 && (

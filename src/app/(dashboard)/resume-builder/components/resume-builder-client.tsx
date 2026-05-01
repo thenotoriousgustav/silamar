@@ -54,6 +54,15 @@ export function ResumeBuilderClient({
     updateProject,
     removeProject,
     updateSkills,
+    addSkillCategory,
+    updateSkillCategory,
+    removeSkillCategory,
+    addCustomSection,
+    updateCustomSection,
+    removeCustomSection,
+    addCustomSectionItem,
+    updateCustomSectionItem,
+    removeCustomSectionItem,
     updateStyle,
     save,
     setContent,
@@ -262,9 +271,7 @@ export function ResumeBuilderClient({
           <span className="hidden sm:inline">
             {isSaving ? "Menyimpan..." : "Simpan"}
           </span>
-          <span className="sm:hidden">
-            {isSaving ? "..." : "Simpan"}
-          </span>
+          <span className="sm:hidden">{isSaving ? "..." : "Simpan"}</span>
         </Button>
       </div>,
     );
@@ -319,6 +326,15 @@ export function ResumeBuilderClient({
             updateProject={updateProject}
             removeProject={removeProject}
             updateSkills={updateSkills}
+            addSkillCategory={addSkillCategory}
+            updateSkillCategory={updateSkillCategory}
+            removeSkillCategory={removeSkillCategory}
+            addCustomSection={addCustomSection}
+            updateCustomSection={updateCustomSection}
+            removeCustomSection={removeCustomSection}
+            addCustomSectionItem={addCustomSectionItem}
+            updateCustomSectionItem={updateCustomSectionItem}
+            removeCustomSectionItem={removeCustomSectionItem}
             updateStyle={updateStyle}
           />
         </div>

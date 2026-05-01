@@ -44,6 +44,27 @@ export interface ResumeProject {
   endDate?: string;
 }
 
+export interface ResumeSkill {
+  id: string;
+  category: string;
+  items: string[];
+}
+
+export interface ResumeCustomSectionItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  date?: string;
+  description?: string[];
+  link?: string;
+}
+
+export interface ResumeCustomSection {
+  id: string;
+  title: string;
+  items: ResumeCustomSectionItem[];
+}
+
 export interface ResumeStyle {
   fontFamily: string;
   fontSize: string;
@@ -55,8 +76,9 @@ export interface ResumeContent {
   personalInfo: ResumePersonalInfo;
   experience: ResumeExperience[];
   education: ResumeEducation[];
-  skills: string[];
+  skills: ResumeSkill[];
   projects: ResumeProject[];
+  customSections?: ResumeCustomSection[];
   style?: ResumeStyle;
 }
 

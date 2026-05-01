@@ -9,6 +9,9 @@ import type {
   ResumeExperience,
   ResumeEducation,
   ResumeProject,
+  ResumeSkill,
+  ResumeCustomSection,
+  ResumeCustomSectionItem,
 } from "@/types/resume";
 
 // Import Modular Sections
@@ -18,6 +21,7 @@ import { ExperienceSection } from "./form-sections/experience-section";
 import { EducationSection } from "./form-sections/education-section";
 import { ProjectSection } from "./form-sections/project-section";
 import { SkillsSection } from "./form-sections/skills-section";
+import { CustomSection } from "./form-sections/custom-section";
 import { VisualSettingsSection } from "./form-sections/visual-settings-section";
 
 interface ResumeFormProps {
@@ -32,7 +36,20 @@ interface ResumeFormProps {
   addProject: () => void;
   updateProject: (id: string, data: Partial<ResumeProject>) => void;
   removeProject: (id: string) => void;
-  updateSkills: (skills: string[]) => void;
+  addSkillCategory: () => void;
+  updateSkillCategory: (id: string, data: Partial<ResumeSkill>) => void;
+  removeSkillCategory: (id: string) => void;
+  updateSkills: (skills: ResumeSkill[]) => void;
+  addCustomSection: () => void;
+  updateCustomSection: (id: string, data: Partial<ResumeCustomSection>) => void;
+  removeCustomSection: (id: string) => void;
+  addCustomSectionItem: (sectionId: string) => void;
+  updateCustomSectionItem: (
+    sectionId: string,
+    itemId: string,
+    data: Partial<ResumeCustomSectionItem>,
+  ) => void;
+  removeCustomSectionItem: (sectionId: string, itemId: string) => void;
   updateStyle: (style: Partial<ResumeContent["style"]>) => void;
 }
 
@@ -48,7 +65,16 @@ export function ResumeForm({
   addProject,
   updateProject,
   removeProject,
+  addSkillCategory,
+  updateSkillCategory,
+  removeSkillCategory,
   updateSkills,
+  addCustomSection,
+  updateCustomSection,
+  removeCustomSection,
+  addCustomSectionItem,
+  updateCustomSectionItem,
+  removeCustomSectionItem,
   updateStyle,
 }: ResumeFormProps) {
   const [atsResult, setAtsResult] = useState<{
@@ -141,7 +167,7 @@ export function ResumeForm({
   return (
     <div className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6">
       {/* ATS & Completeness Dashboard */}
-      <ATSDashboard 
+      <ATSDashboard
         content={content}
         atsResult={atsResult}
         isAnalyzing={analyzeMutation.isPending}
@@ -154,12 +180,12 @@ export function ResumeForm({
         multiple
         className="w-full space-y-4 border-none"
       >
-        <PersonalInfoSection 
-          content={content} 
-          updatePersonalInfo={updatePersonalInfo} 
+        <PersonalInfoSection
+          content={content}
+          updatePersonalInfo={updatePersonalInfo}
         />
 
-        <ExperienceSection 
+        <ExperienceSection
           content={content}
           addExperience={addExperience}
           updateExperience={updateExperience}
@@ -168,29 +194,39 @@ export function ResumeForm({
           optimizingId={optimizingId}
         />
 
-        <EducationSection 
+        <EducationSection
           content={content}
           addEducation={addEducation}
           updateEducation={updateEducation}
           removeEducation={removeEducation}
         />
 
-        <ProjectSection 
+        <ProjectSection
           content={content}
           addProject={addProject}
           updateProject={updateProject}
           removeProject={removeProject}
         />
 
-        <SkillsSection 
+        <SkillsSection
           content={content}
+          addSkillCategory={addSkillCategory}
+          updateSkillCategory={updateSkillCategory}
+          removeSkillCategory={removeSkillCategory}
           updateSkills={updateSkills}
         />
 
-        <VisualSettingsSection 
+        <CustomSection
           content={content}
-          updateStyle={updateStyle}
+          addCustomSection={addCustomSection}
+          updateCustomSection={updateCustomSection}
+          removeCustomSection={removeCustomSection}
+          addCustomSectionItem={addCustomSectionItem}
+          updateCustomSectionItem={updateCustomSectionItem}
+          removeCustomSectionItem={removeCustomSectionItem}
         />
+
+        <VisualSettingsSection content={content} updateStyle={updateStyle} />
       </Accordion>
     </div>
   );

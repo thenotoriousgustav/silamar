@@ -9,6 +9,9 @@ import type {
   ResumeExperience,
   ResumeEducation,
   ResumeProject,
+  ResumeSkill,
+  ResumeCustomSection,
+  ResumeCustomSectionItem,
 } from "@/types/resume";
 
 const DEFAULT_RESUME: ResumeContent = {
@@ -25,6 +28,7 @@ const DEFAULT_RESUME: ResumeContent = {
   education: [],
   skills: [],
   projects: [],
+  customSections: [],
   style: {
     fontFamily: "font-serif",
     fontSize: "text-sm",
@@ -36,9 +40,25 @@ export function useResumeBuilder(
   initialContent?: Partial<ResumeContent>,
 ) {
   const router = useRouter();
+  // Migration: Handle old skills format (string[]) and convert to ResumeSkill[]
+  const migratedSkills =
+    Array.isArray(initialContent?.skills) &&
+    initialContent.skills.length > 0 &&
+    typeof initialContent.skills[0] === "string"
+      ? [
+          {
+            id: "legacy-skills",
+            category: "Skills",
+            items: initialContent.skills as unknown as string[],
+          },
+        ]
+      : (initialContent?.skills as ResumeSkill[]) || [];
+
   const [content, setContent] = useState<ResumeContent>({
     ...DEFAULT_RESUME,
     ...initialContent,
+    skills: migratedSkills,
+    customSections: initialContent?.customSections || [],
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -197,10 +217,132 @@ export function useResumeBuilder(
     setIsDirty(true);
   }, []);
 
-  const updateSkills = useCallback((skills: string[]) => {
+  // --- NEW: Categorized Skills ---
+  const updateSkills = useCallback((skills: ResumeSkill[]) => {
     setContent((prev: ResumeContent) => ({ ...prev, skills }));
     setIsDirty(true);
   }, []);
+
+  const addSkillCategory = useCallback(() => {
+    const newSkill: ResumeSkill = {
+      id: crypto.randomUUID(),
+      category: "",
+      items: [],
+    };
+    setContent((prev: ResumeContent) => ({
+      ...prev,
+      skills: [...(prev.skills || []), newSkill],
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const updateSkillCategory = useCallback(
+    (id: string, data: Partial<ResumeSkill>) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        skills: prev.skills.map((s) => (s.id === id ? { ...s, ...data } : s)),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const removeSkillCategory = useCallback((id: string) => {
+    setContent((prev: ResumeContent) => ({
+      ...prev,
+      skills: prev.skills.filter((s) => s.id !== id),
+    }));
+    setIsDirty(true);
+  }, []);
+
+  // --- NEW: Custom Sections ---
+  const addCustomSection = useCallback(() => {
+    const newSection: ResumeCustomSection = {
+      id: crypto.randomUUID(),
+      title: "Seksi Baru",
+      items: [],
+    };
+    setContent((prev: ResumeContent) => ({
+      ...prev,
+      customSections: [...(prev.customSections || []), newSection],
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const updateCustomSection = useCallback(
+    (id: string, data: Partial<ResumeCustomSection>) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        customSections: (prev.customSections || []).map((s) =>
+          s.id === id ? { ...s, ...data } : s,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const removeCustomSection = useCallback((id: string) => {
+    setContent((prev: ResumeContent) => ({
+      ...prev,
+      customSections: (prev.customSections || []).filter((s) => s.id !== id),
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const addCustomSectionItem = useCallback((sectionId: string) => {
+    const newItem: ResumeCustomSectionItem = {
+      id: crypto.randomUUID(),
+      title: "",
+      description: [],
+    };
+    setContent((prev: ResumeContent) => ({
+      ...prev,
+      customSections: (prev.customSections || []).map((s) =>
+        s.id === sectionId ? { ...s, items: [...s.items, newItem] } : s,
+      ),
+    }));
+    setIsDirty(true);
+  }, []);
+
+  const updateCustomSectionItem = useCallback(
+    (
+      sectionId: string,
+      itemId: string,
+      data: Partial<ResumeCustomSectionItem>,
+    ) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        customSections: (prev.customSections || []).map((s) =>
+          s.id === sectionId
+            ? {
+                ...s,
+                items: s.items.map((i) =>
+                  i.id === itemId ? { ...i, ...data } : i,
+                ),
+              }
+            : s,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const removeCustomSectionItem = useCallback(
+    (sectionId: string, itemId: string) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        customSections: (prev.customSections || []).map((s) =>
+          s.id === sectionId
+            ? { ...s, items: s.items.filter((i) => i.id !== itemId) }
+            : s,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
 
   const updateStyle = useCallback(
     (styleUpdate: Partial<ResumeContent["style"]>) => {
@@ -258,6 +400,15 @@ export function useResumeBuilder(
     updateProject,
     removeProject,
     updateSkills,
+    addSkillCategory,
+    updateSkillCategory,
+    removeSkillCategory,
+    addCustomSection,
+    updateCustomSection,
+    removeCustomSection,
+    addCustomSectionItem,
+    updateCustomSectionItem,
+    removeCustomSectionItem,
     updateStyle,
     save,
     setContent,
