@@ -10,6 +10,7 @@ import {
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -88,226 +89,261 @@ export function ProjectSection({
             onValueChange={updateProjectList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="flex flex-col gap-6">
-              {content.projects.map((project: ResumeProject) => (
-                <SortableItem key={project.id} value={project.id}>
-                  <Card className="bg-muted/20 border-border relative overflow-hidden rounded-none">
-                    <div className="bg-muted/50 border-border/50 flex items-center justify-between border-b px-6 py-2">
-                      <SortableItemHandle
-                        asChild
-                        className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
-                      >
-                        <GripVertical className="h-4 w-4" />
-                      </SortableItemHandle>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeProject(project.id)}
-                        className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-7 w-7 transition-colors"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Nama Projek
-                          </Label>
-                          <Input
-                            value={project.name || ""}
-                            onChange={(e) =>
-                              updateProject(project.id, {
-                                name: e.target.value,
-                              })
-                            }
-                            className="bg-background border-border"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Tautan Projek (Opsional)
-                          </Label>
-                          <Input
-                            value={project.link || ""}
-                            onChange={(e) =>
-                              updateProject(project.id, {
-                                link: e.target.value,
-                              })
-                            }
-                            placeholder="https://github.com/..."
-                            className="bg-background border-border"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Bulan/Tahun Mulai
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger
-                              render={
-                                <div className="relative">
-                                  <Input
-                                    readOnly
-                                    value={project.startDate || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              }
-                            />
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <MonthPicker
-                                selectedMonth={
-                                  project.startDate
-                                    ? parse(
-                                        project.startDate,
-                                        "MMMM yyyy",
-                                        new Date(),
-                                        { locale: id },
-                                      )
-                                    : undefined
-                                }
-                                onMonthSelect={(date) => {
-                                  if (date) {
-                                    updateProject(project.id, {
-                                      startDate: format(date, "MMMM yyyy", {
-                                        locale: id,
-                                      }),
-                                    });
-                                  }
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Bulan/Tahun Selesai
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger
-                              render={
-                                <div className="relative">
-                                  <Input
-                                    readOnly
-                                    value={project.endDate || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              }
-                            />
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <MonthPicker
-                                selectedMonth={
-                                  project.endDate
-                                    ? parse(
-                                        project.endDate,
-                                        "MMMM yyyy",
-                                        new Date(),
-                                        { locale: id },
-                                      )
-                                    : undefined
-                                }
-                                onMonthSelect={(date) => {
-                                  if (date) {
-                                    updateProject(project.id, {
-                                      endDate: format(date, "MMMM yyyy", {
-                                        locale: id,
-                                      }),
-                                    });
-                                  }
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        <div className="space-y-4 md:col-span-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Deskripsi Projek
-                            </Label>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const current = project.description || [];
-                                updateProject(project.id, {
-                                  description: [...current, ""],
-                                });
-                              }}
-                              className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
-                            >
-                              <Plus className="h-3 w-3" />
-                              Tambah Poin
-                            </Button>
-                          </div>
-
-                          <div className="space-y-2">
-                            {(project.description || []).map((bullet, idx) => (
-                              <div
-                                key={idx}
-                                className="group flex items-start gap-2"
-                              >
-                                <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
-                                  {idx + 1}
-                                </div>
-                                <div className="relative flex-1">
-                                  <textarea
-                                    value={bullet || ""}
-                                    onChange={(e) => {
-                                      const newDesc = [
-                                        ...(project.description || []),
-                                      ];
-                                      newDesc[idx] = e.target.value;
-                                      updateProject(project.id, {
-                                        description: newDesc,
-                                      });
-                                    }}
-                                    placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
-                                    className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
-                                    rows={2}
-                                  />
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const newDesc = [
-                                      ...(project.description || []),
-                                    ];
-                                    newDesc.splice(idx, 1);
-                                    updateProject(project.id, {
-                                      description: newDesc,
-                                    });
-                                  }}
-                                  className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
+            <SortableContent className="flex flex-col gap-4">
+              <Accordion className="w-full space-y-4">
+                {content.projects.map((project: ResumeProject) => (
+                  <SortableItem key={project.id} value={project.id}>
+                    <AccordionItem
+                      value={project.id}
+                      className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
+                    >
+                      <div className="flex items-center">
+                        <SortableItemHandle
+                          asChild
+                          className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
+                        >
+                          <GripVertical className="h-4 w-4" />
+                        </SortableItemHandle>
+                        <AccordionTrigger
+                          nativeButton={false}
+                          render={<div />}
+                          className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
+                        >
+                          <div className="flex w-full flex-1 items-center justify-between text-left">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm font-bold">
+                                {project.name || "Nama Projek"}
+                              </span>
+                              <span className="text-muted-foreground text-xs font-medium">
+                                {project.link || "Tautan Projek"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-muted-foreground text-[10px] font-medium uppercase">
+                                {project.startDate || "Mulai"} —{" "}
+                                {project.endDate || "Selesai"}
                               </div>
-                            ))}
-                            {(project.description || []).length === 0 && (
-                              <p className="text-muted-foreground py-2 text-center text-xs italic">
-                                Belum ada deskripsi yang ditambahkan.
-                              </p>
-                            )}
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeProject(project.id);
+                                }}
+                                className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
+                                title="Hapus Projek"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                      </div>
+                      <AccordionContent className="border-t border-dashed px-6 py-6">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Nama Projek
+                            </Label>
+                            <Input
+                              value={project.name || ""}
+                              onChange={(e) =>
+                                updateProject(project.id, {
+                                  name: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Tautan Projek (Opsional)
+                            </Label>
+                            <Input
+                              value={project.link || ""}
+                              onChange={(e) =>
+                                updateProject(project.id, {
+                                  link: e.target.value,
+                                })
+                              }
+                              placeholder="https://github.com/..."
+                              className="bg-background border-border"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bulan/Tahun Mulai
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger
+                                nativeButton={false}
+                                render={
+                                  <div className="relative">
+                                    <Input
+                                      readOnly
+                                      value={project.startDate || ""}
+                                      placeholder="Pilih bulan & tahun"
+                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                    />
+                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                  </div>
+                                }
+                              />
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <MonthPicker
+                                  selectedMonth={
+                                    project.startDate
+                                      ? parse(
+                                          project.startDate,
+                                          "MMMM yyyy",
+                                          new Date(),
+                                          { locale: id },
+                                        )
+                                      : undefined
+                                  }
+                                  onMonthSelect={(date) => {
+                                    if (date) {
+                                      updateProject(project.id, {
+                                        startDate: format(date, "MMMM yyyy", {
+                                          locale: id,
+                                        }),
+                                      });
+                                    }
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bulan/Tahun Selesai
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger
+                                nativeButton={false}
+                                render={
+                                  <div className="relative">
+                                    <Input
+                                      readOnly
+                                      value={project.endDate || ""}
+                                      placeholder="Pilih bulan & tahun"
+                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                    />
+                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                  </div>
+                                }
+                              />
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <MonthPicker
+                                  selectedMonth={
+                                    project.endDate
+                                      ? parse(
+                                          project.endDate,
+                                          "MMMM yyyy",
+                                          new Date(),
+                                          { locale: id },
+                                        )
+                                      : undefined
+                                  }
+                                  onMonthSelect={(date) => {
+                                    if (date) {
+                                      updateProject(project.id, {
+                                        endDate: format(date, "MMMM yyyy", {
+                                          locale: id,
+                                        }),
+                                      });
+                                    }
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                          <div className="space-y-4 md:col-span-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                Deskripsi Projek
+                              </Label>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const current = project.description || [];
+                                  updateProject(project.id, {
+                                    description: [...current, ""],
+                                  });
+                                }}
+                                className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
+                              >
+                                <Plus className="h-3 w-3" />
+                                Tambah Poin
+                              </Button>
+                            </div>
+
+                            <div className="space-y-2">
+                              {(project.description || []).map(
+                                (bullet, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="group flex items-start gap-2"
+                                  >
+                                    <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
+                                      {idx + 1}
+                                    </div>
+                                    <div className="relative flex-1">
+                                      <textarea
+                                        value={bullet || ""}
+                                        onChange={(e) => {
+                                          const newDesc = [
+                                            ...(project.description || []),
+                                          ];
+                                          newDesc[idx] = e.target.value;
+                                          updateProject(project.id, {
+                                            description: newDesc,
+                                          });
+                                        }}
+                                        placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
+                                        className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
+                                        rows={2}
+                                      />
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        const newDesc = [
+                                          ...(project.description || []),
+                                        ];
+                                        newDesc.splice(idx, 1);
+                                        updateProject(project.id, {
+                                          description: newDesc,
+                                        });
+                                      }}
+                                      className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </div>
+                                ),
+                              )}
+                              {(project.description || []).length === 0 && (
+                                <p className="text-muted-foreground py-2 text-center text-xs italic">
+                                  Belum ada deskripsi yang ditambahkan.
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </SortableItem>
-              ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </SortableItem>
+                ))}
+              </Accordion>
             </SortableContent>
           </Sortable>
           {content.projects.length === 0 && (

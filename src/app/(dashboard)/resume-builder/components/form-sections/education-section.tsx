@@ -10,6 +10,7 @@ import {
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -88,186 +89,221 @@ export function EducationSection({
             onValueChange={updateEducationList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="flex flex-col gap-6">
-              {content.education.map((edu: ResumeEducation) => (
-                <SortableItem key={edu.id} value={edu.id}>
-                  <Card className="bg-muted/20 border-border relative overflow-hidden rounded-none">
-                    <div className="bg-muted/50 border-border/50 flex items-center justify-between border-b px-6 py-2">
-                      <SortableItemHandle
-                        asChild
-                        className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
-                      >
-                        <GripVertical className="h-4 w-4" />
-                      </SortableItemHandle>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeEducation(edu.id)}
-                        className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-7 w-7 transition-colors"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Institusi / Sekolah
-                          </Label>
-                          <Input
-                            value={edu.institution || ""}
-                            onChange={(e) =>
-                              updateEducation(edu.id, {
-                                institution: e.target.value,
-                              })
-                            }
-                            className="bg-background border-border"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Gelar / Sertifikasi
-                          </Label>
-                          <Input
-                            value={edu.degree || ""}
-                            onChange={(e) =>
-                              updateEducation(edu.id, {
-                                degree: e.target.value,
-                              })
-                            }
-                            className="bg-background border-border"
-                            placeholder="Misal: Sarjana Komputer"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Bidang Studi / Jurusan
-                          </Label>
-                          <Input
-                            value={edu.major || ""}
-                            onChange={(e) =>
-                              updateEducation(edu.id, { major: e.target.value })
-                            }
-                            className="bg-background border-border"
-                            placeholder="Misal: Teknik Informatika"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            IPK / Nilai (Opsional)
-                          </Label>
-                          <Input
-                            value={edu.gpa || ""}
-                            onChange={(e) =>
-                              updateEducation(edu.id, { gpa: e.target.value })
-                            }
-                            className="bg-background border-border"
-                            placeholder="3.8/4.0"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Bulan/Tahun Mulai
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger
-                              render={
-                                <div className="relative">
-                                  <Input
-                                    readOnly
-                                    value={edu.startYear || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              }
-                            />
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <MonthPicker
-                                selectedMonth={
-                                  edu.startYear
-                                    ? parse(
-                                        edu.startYear,
-                                        "MMMM yyyy",
-                                        new Date(),
-                                        {
-                                          locale: id,
-                                        },
-                                      )
-                                    : undefined
-                                }
-                                onMonthSelect={(date) => {
-                                  if (date) {
-                                    updateEducation(edu.id, {
-                                      startYear: format(date, "MMMM yyyy", {
-                                        locale: id,
-                                      }),
-                                    });
-                                  }
+            <SortableContent className="flex flex-col gap-4">
+              <Accordion className="w-full space-y-4">
+                {content.education.map((edu: ResumeEducation) => (
+                  <SortableItem key={edu.id} value={edu.id}>
+                    <AccordionItem
+                      value={edu.id}
+                      className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
+                    >
+                      <div className="flex items-center">
+                        <SortableItemHandle
+                          asChild
+                          className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
+                        >
+                          <GripVertical className="h-4 w-4" />
+                        </SortableItemHandle>
+                        <AccordionTrigger
+                          nativeButton={false}
+                          render={<div />}
+                          className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
+                        >
+                          <div className="flex w-full flex-1 items-center justify-between text-left">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm font-bold">
+                                {edu.institution || "Nama Institusi"}
+                              </span>
+                              <span className="text-muted-foreground text-xs font-medium">
+                                {edu.degree || "Gelar / Sertifikasi"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-muted-foreground text-[10px] font-medium uppercase">
+                                {edu.startYear || "Mulai"} —{" "}
+                                {edu.endYear || "Selesai"}
+                              </div>
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeEducation(edu.id);
                                 }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground text-xs font-medium uppercase">
-                            Bulan/Tahun Lulus
-                          </Label>
-                          <Popover>
-                            <PopoverTrigger
-                              render={
-                                <div className="relative">
-                                  <Input
-                                    readOnly
-                                    value={edu.endYear || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              }
-                            />
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <MonthPicker
-                                selectedMonth={
-                                  edu.endYear
-                                    ? parse(
-                                        edu.endYear,
-                                        "MMMM yyyy",
-                                        new Date(),
-                                        {
-                                          locale: id,
-                                        },
-                                      )
-                                    : undefined
-                                }
-                                onMonthSelect={(date) => {
-                                  if (date) {
-                                    updateEducation(edu.id, {
-                                      endYear: format(date, "MMMM yyyy", {
-                                        locale: id,
-                                      }),
-                                    });
-                                  }
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
+                                className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
+                                title="Hapus Edukasi"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
                       </div>
-                    </CardContent>
-                  </Card>
-                </SortableItem>
-              ))}
+                      <AccordionContent className="border-t border-dashed px-6 py-6">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Institusi / Sekolah
+                            </Label>
+                            <Input
+                              value={edu.institution || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, {
+                                  institution: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Gelar / Sertifikasi
+                            </Label>
+                            <Input
+                              value={edu.degree || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, {
+                                  degree: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                              placeholder="Misal: Sarjana Komputer"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bidang Studi / Jurusan
+                            </Label>
+                            <Input
+                              value={edu.major || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, {
+                                  major: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                              placeholder="Misal: Teknik Informatika"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              IPK / Nilai (Opsional)
+                            </Label>
+                            <Input
+                              value={edu.gpa || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, { gpa: e.target.value })
+                              }
+                              className="bg-background border-border"
+                              placeholder="3.8/4.0"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bulan/Tahun Mulai
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger
+                                nativeButton={false}
+                                render={
+                                  <div className="relative">
+                                    <Input
+                                      readOnly
+                                      value={edu.startYear || ""}
+                                      placeholder="Pilih bulan & tahun"
+                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                    />
+                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                  </div>
+                                }
+                              />
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <MonthPicker
+                                  selectedMonth={
+                                    edu.startYear
+                                      ? parse(
+                                          edu.startYear,
+                                          "MMMM yyyy",
+                                          new Date(),
+                                          {
+                                            locale: id,
+                                          },
+                                        )
+                                      : undefined
+                                  }
+                                  onMonthSelect={(date) => {
+                                    if (date) {
+                                      updateEducation(edu.id, {
+                                        startYear: format(date, "MMMM yyyy", {
+                                          locale: id,
+                                        }),
+                                      });
+                                    }
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bulan/Tahun Lulus
+                            </Label>
+                            <Popover>
+                              <PopoverTrigger
+                                nativeButton={false}
+                                render={
+                                  <div className="relative">
+                                    <Input
+                                      readOnly
+                                      value={edu.endYear || ""}
+                                      placeholder="Pilih bulan & tahun"
+                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                    />
+                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                  </div>
+                                }
+                              />
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
+                                <MonthPicker
+                                  selectedMonth={
+                                    edu.endYear
+                                      ? parse(
+                                          edu.endYear,
+                                          "MMMM yyyy",
+                                          new Date(),
+                                          {
+                                            locale: id,
+                                          },
+                                        )
+                                      : undefined
+                                  }
+                                  onMonthSelect={(date) => {
+                                    if (date) {
+                                      updateEducation(edu.id, {
+                                        endYear: format(date, "MMMM yyyy", {
+                                          locale: id,
+                                        }),
+                                      });
+                                    }
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </SortableItem>
+                ))}
+              </Accordion>
             </SortableContent>
           </Sortable>
           {content.education.length === 0 && (

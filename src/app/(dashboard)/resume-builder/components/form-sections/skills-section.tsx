@@ -80,7 +80,7 @@ function SortableSkillItem({
             />
           </div>
 
-          <div className="space-y-2 pl-7">
+          <div className="space-y-2">
             <Label className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
               Daftar Skill
             </Label>
