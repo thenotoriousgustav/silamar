@@ -70,7 +70,11 @@ export function ExperienceSection({
       value="experience"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
-      <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+      <AccordionTrigger
+        nativeButton={false}
+        render={<div />}
+        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+      >
         <div className="flex w-full items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
@@ -116,7 +120,7 @@ export function ExperienceSection({
                       Perusahaan
                     </Label>
                     <Input
-                      value={exp.company}
+                      value={exp.company || ""}
                       onChange={(e) =>
                         updateExperience(exp.id, {
                           company: e.target.value,
@@ -130,7 +134,7 @@ export function ExperienceSection({
                       Posisi
                     </Label>
                     <Input
-                      value={exp.position}
+                      value={exp.position || ""}
                       onChange={(e) =>
                         updateExperience(exp.id, {
                           position: e.target.value,
@@ -292,7 +296,7 @@ export function ExperienceSection({
                               {idx + 1}.
                             </span>
                             <Input
-                              value={bullet}
+                              value={bullet || ""}
                               onChange={(e) => {
                                 const newBullets = [...bullets];
                                 newBullets[idx] = e.target.value;

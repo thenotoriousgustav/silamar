@@ -92,7 +92,7 @@ function SortableSkillItem({
                 Nama Kategori
               </Label>
               <Input
-                value={skill.category}
+                value={skill.category || ""}
                 onChange={(e) =>
                   updateSkillCategory(skill.id, {
                     category: e.target.value,
@@ -174,7 +174,11 @@ export function SkillsSection({
       value="skills"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
-      <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+      <AccordionTrigger
+        nativeButton={false}
+        render={<div />}
+        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+      >
         <div className="flex w-full items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">

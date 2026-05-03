@@ -39,7 +39,11 @@ export function ProjectSection({
       value="projects"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
-      <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+      <AccordionTrigger
+        nativeButton={false}
+        render={<div />}
+        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+      >
         <div className="flex w-full items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
@@ -85,7 +89,7 @@ export function ProjectSection({
                       Nama Projek
                     </Label>
                     <Input
-                      value={project.name}
+                      value={project.name || ""}
                       onChange={(e) =>
                         updateProject(project.id, { name: e.target.value })
                       }
@@ -97,7 +101,7 @@ export function ProjectSection({
                       Tautan Projek (Opsional)
                     </Label>
                     <Input
-                      value={project.link}
+                      value={project.link || ""}
                       onChange={(e) =>
                         updateProject(project.id, { link: e.target.value })
                       }
@@ -116,7 +120,7 @@ export function ProjectSection({
                           <div className="relative">
                             <Input
                               readOnly
-                              value={project.startDate}
+                              value={project.startDate || ""}
                               placeholder="Pilih bulan & tahun"
                               className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
                             />
@@ -160,7 +164,7 @@ export function ProjectSection({
                           <div className="relative">
                             <Input
                               readOnly
-                              value={project.endDate}
+                              value={project.endDate || ""}
                               placeholder="Pilih bulan & tahun"
                               className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
                             />
@@ -216,16 +220,13 @@ export function ProjectSection({
 
                     <div className="space-y-2">
                       {(project.description || []).map((bullet, idx) => (
-                        <div
-                          key={idx}
-                          className="group flex items-start gap-2"
-                        >
+                        <div key={idx} className="group flex items-start gap-2">
                           <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
                             {idx + 1}
                           </div>
                           <div className="relative flex-1">
                             <textarea
-                              value={bullet}
+                              value={bullet || ""}
                               onChange={(e) => {
                                 const newDesc = [
                                   ...(project.description || []),
@@ -244,9 +245,7 @@ export function ProjectSection({
                             variant="ghost"
                             size="icon"
                             onClick={() => {
-                              const newDesc = [
-                                ...(project.description || []),
-                              ];
+                              const newDesc = [...(project.description || [])];
                               newDesc.splice(idx, 1);
                               updateProject(project.id, {
                                 description: newDesc,

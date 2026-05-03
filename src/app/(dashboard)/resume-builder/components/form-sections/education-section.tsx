@@ -1,6 +1,11 @@
 "use client";
 
-import { GraduationCap, Plus, Trash2, Calendar as CalendarIcon } from "lucide-react";
+import {
+  GraduationCap,
+  Plus,
+  Trash2,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
 import {
@@ -39,7 +44,11 @@ export function EducationSection({
       value="education"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
-      <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+      <AccordionTrigger
+        nativeButton={false}
+        render={<div />}
+        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+      >
         <div className="flex w-full items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
@@ -85,7 +94,7 @@ export function EducationSection({
                       Institusi
                     </Label>
                     <Input
-                      value={edu.institution}
+                      value={edu.institution || ""}
                       onChange={(e) =>
                         updateEducation(edu.id, {
                           institution: e.target.value,
@@ -99,7 +108,7 @@ export function EducationSection({
                       Gelar
                     </Label>
                     <Input
-                      value={edu.degree}
+                      value={edu.degree || ""}
                       onChange={(e) =>
                         updateEducation(edu.id, { degree: e.target.value })
                       }
@@ -112,7 +121,7 @@ export function EducationSection({
                       Jurusan
                     </Label>
                     <Input
-                      value={edu.major}
+                      value={edu.major || ""}
                       onChange={(e) =>
                         updateEducation(edu.id, { major: e.target.value })
                       }
@@ -124,7 +133,7 @@ export function EducationSection({
                       GPA (Opsional)
                     </Label>
                     <Input
-                      value={edu.gpa}
+                      value={edu.gpa || ""}
                       onChange={(e) =>
                         updateEducation(edu.id, { gpa: e.target.value })
                       }
@@ -143,7 +152,7 @@ export function EducationSection({
                           <div className="relative">
                             <Input
                               readOnly
-                              value={edu.startYear}
+                              value={edu.startYear || ""}
                               placeholder="Pilih bulan & tahun"
                               className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
                             />
@@ -155,12 +164,9 @@ export function EducationSection({
                         <MonthPicker
                           selectedMonth={
                             edu.startYear
-                              ? parse(
-                                  edu.startYear,
-                                  "MMMM yyyy",
-                                  new Date(),
-                                  { locale: id },
-                                )
+                              ? parse(edu.startYear, "MMMM yyyy", new Date(), {
+                                  locale: id,
+                                })
                               : undefined
                           }
                           onMonthSelect={(date) => {
@@ -187,7 +193,7 @@ export function EducationSection({
                           <div className="relative">
                             <Input
                               readOnly
-                              value={edu.endYear}
+                              value={edu.endYear || ""}
                               placeholder="Pilih bulan & tahun"
                               className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
                               disabled={edu.isCurrentlyStudying}
@@ -200,12 +206,9 @@ export function EducationSection({
                         <MonthPicker
                           selectedMonth={
                             edu.endYear
-                              ? parse(
-                                  edu.endYear,
-                                  "MMMM yyyy",
-                                  new Date(),
-                                  { locale: id },
-                                )
+                              ? parse(edu.endYear, "MMMM yyyy", new Date(), {
+                                  locale: id,
+                                })
                               : undefined
                           }
                           onMonthSelect={(date) => {
@@ -246,16 +249,13 @@ export function EducationSection({
 
                   <div className="space-y-2">
                     {(edu.description || []).map((bullet, idx) => (
-                      <div
-                        key={idx}
-                        className="group flex items-start gap-2"
-                      >
+                      <div key={idx} className="group flex items-start gap-2">
                         <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
                           {idx + 1}
                         </div>
                         <div className="relative flex-1">
                           <textarea
-                            value={bullet}
+                            value={bullet || ""}
                             onChange={(e) => {
                               const newDesc = [...(edu.description || [])];
                               newDesc[idx] = e.target.value;
@@ -295,10 +295,7 @@ export function EducationSection({
             </Card>
           ))}
           {content.education.length === 0 && (
-            <EmptyState
-              message="Belum ada data edukasi"
-              onAdd={addEducation}
-            />
+            <EmptyState message="Belum ada data edukasi" onAdd={addEducation} />
           )}
         </div>
       </AccordionContent>

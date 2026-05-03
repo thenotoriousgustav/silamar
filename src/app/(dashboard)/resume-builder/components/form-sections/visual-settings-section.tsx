@@ -1,6 +1,11 @@
 "use client";
 
-import { Settings2, ChevronDown, LayoutTemplate, Languages } from "lucide-react";
+import {
+  Settings2,
+  ChevronDown,
+  LayoutTemplate,
+  Languages,
+} from "lucide-react";
 import {
   AccordionContent,
   AccordionItem,
@@ -24,7 +29,11 @@ export function VisualSettingsSection({
       value="style"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
-      <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+      <AccordionTrigger
+        nativeButton={false}
+        render={<div />}
+        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+      >
         <div className="flex items-center gap-4">
           <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
             <Settings2 className="h-4 w-4" />
@@ -43,9 +52,7 @@ export function VisualSettingsSection({
             <div className="relative">
               <select
                 value={content.style?.fontFamily || "Helvetica"}
-                onChange={(e) =>
-                  updateStyle({ fontFamily: e.target.value })
-                }
+                onChange={(e) => updateStyle({ fontFamily: e.target.value })}
                 className="bg-background border-border focus:border-primary focus:ring-primary h-11 w-full appearance-none rounded-none border px-4 py-2 text-sm transition-all focus:ring-1"
               >
                 <option value="Calibri">Calibri</option>

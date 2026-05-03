@@ -1,6 +1,12 @@
 "use client";
 
-import { LayoutGrid, Plus, Trash2, Calendar as CalendarIcon, ExternalLink } from "lucide-react";
+import {
+  LayoutGrid,
+  Plus,
+  Trash2,
+  Calendar as CalendarIcon,
+  ExternalLink,
+} from "lucide-react";
 import {
   AccordionContent,
   AccordionItem,
@@ -10,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { 
-  ResumeContent, 
-  ResumeCustomSection, 
-  ResumeCustomSectionItem 
+import type {
+  ResumeContent,
+  ResumeCustomSection,
+  ResumeCustomSectionItem,
 } from "@/types/resume";
 
 interface CustomSectionProps {
@@ -22,7 +28,11 @@ interface CustomSectionProps {
   updateCustomSection: (id: string, data: Partial<ResumeCustomSection>) => void;
   removeCustomSection: (id: string) => void;
   addCustomSectionItem: (sectionId: string) => void;
-  updateCustomSectionItem: (sectionId: string, itemId: string, data: Partial<ResumeCustomSectionItem>) => void;
+  updateCustomSectionItem: (
+    sectionId: string,
+    itemId: string,
+    data: Partial<ResumeCustomSectionItem>,
+  ) => void;
   removeCustomSectionItem: (sectionId: string, itemId: string) => void;
 }
 
@@ -45,14 +55,18 @@ export function CustomSection({
           value={section.id}
           className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
         >
-          <AccordionTrigger className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline">
+          <AccordionTrigger
+            nativeButton={false}
+            render={<div />}
+            className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+          >
             <div className="flex w-full items-center justify-between pr-4">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                   <LayoutGrid className="h-4 w-4" />
                 </div>
                 <Input
-                  value={section.title}
+                  value={section.title || ""}
                   onChange={(e) => {
                     e.stopPropagation();
                     updateCustomSection(section.id, { title: e.target.value });
@@ -113,7 +127,7 @@ export function CustomSection({
                           Judul / Nama
                         </Label>
                         <Input
-                          value={item.title}
+                          value={item.title || ""}
                           onChange={(e) =>
                             updateCustomSectionItem(section.id, item.id, {
                               title: e.target.value,
@@ -128,7 +142,7 @@ export function CustomSection({
                           Subjudul (Opsional)
                         </Label>
                         <Input
-                          value={item.subtitle}
+                          value={item.subtitle || ""}
                           onChange={(e) =>
                             updateCustomSectionItem(section.id, item.id, {
                               subtitle: e.target.value,
@@ -144,7 +158,7 @@ export function CustomSection({
                         </Label>
                         <div className="relative">
                           <Input
-                            value={item.date}
+                            value={item.date || ""}
                             onChange={(e) =>
                               updateCustomSectionItem(section.id, item.id, {
                                 date: e.target.value,
@@ -162,7 +176,7 @@ export function CustomSection({
                         </Label>
                         <div className="relative">
                           <Input
-                            value={item.link}
+                            value={item.link || ""}
                             onChange={(e) =>
                               updateCustomSectionItem(section.id, item.id, {
                                 link: e.target.value,
@@ -199,9 +213,11 @@ export function CustomSection({
                           {(item.description || []).map((bullet, idx) => (
                             <div key={idx} className="flex gap-2">
                               <Input
-                                value={bullet}
+                                value={bullet || ""}
                                 onChange={(e) => {
-                                  const newBullets = [...(item.description || [])];
+                                  const newBullets = [
+                                    ...(item.description || []),
+                                  ];
                                   newBullets[idx] = e.target.value;
                                   updateCustomSectionItem(section.id, item.id, {
                                     description: newBullets,
@@ -215,7 +231,9 @@ export function CustomSection({
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => {
-                                  const newBullets = (item.description || []).filter((_, i) => i !== idx);
+                                  const newBullets = (
+                                    item.description || []
+                                  ).filter((_, i) => i !== idx);
                                   updateCustomSectionItem(section.id, item.id, {
                                     description: newBullets,
                                   });
@@ -233,8 +251,10 @@ export function CustomSection({
                 </Card>
               ))}
               {section.items.length === 0 && (
-                <div className="border-border border-dashed border py-8 text-center">
-                  <p className="text-muted-foreground text-xs italic">Belum ada item. Klik tombol + di atas untuk menambah.</p>
+                <div className="border-border border border-dashed py-8 text-center">
+                  <p className="text-muted-foreground text-xs italic">
+                    Belum ada item. Klik tombol + di atas untuk menambah.
+                  </p>
                 </div>
               )}
             </div>
