@@ -12,7 +12,7 @@ export default async function ResumeBuilderPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  
+
   let initialData = undefined;
 
   if (id !== "new") {

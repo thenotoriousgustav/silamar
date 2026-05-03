@@ -141,6 +141,11 @@ export function useResumeBuilder(
     setIsDirty(true);
   }, []);
 
+  const updateExperienceList = useCallback((experience: ResumeExperience[]) => {
+    setContent((prev: ResumeContent) => ({ ...prev, experience }));
+    setIsDirty(true);
+  }, []);
+
   const addEducation = useCallback(() => {
     const newEdu: ResumeEducation = {
       id: crypto.randomUUID(),
@@ -181,6 +186,11 @@ export function useResumeBuilder(
     setIsDirty(true);
   }, []);
 
+  const updateEducationList = useCallback((education: ResumeEducation[]) => {
+    setContent((prev: ResumeContent) => ({ ...prev, education }));
+    setIsDirty(true);
+  }, []);
+
   const addProject = useCallback(() => {
     const newProject: ResumeProject = {
       id: crypto.randomUUID(),
@@ -214,6 +224,11 @@ export function useResumeBuilder(
       ...prev,
       projects: prev.projects.filter((p: ResumeProject) => p.id !== id),
     }));
+    setIsDirty(true);
+  }, []);
+
+  const updateProjectList = useCallback((projects: ResumeProject[]) => {
+    setContent((prev: ResumeContent) => ({ ...prev, projects }));
     setIsDirty(true);
   }, []);
 
@@ -290,6 +305,14 @@ export function useResumeBuilder(
     setIsDirty(true);
   }, []);
 
+  const updateCustomSectionList = useCallback(
+    (customSections: ResumeCustomSection[]) => {
+      setContent((prev: ResumeContent) => ({ ...prev, customSections }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
   const addCustomSectionItem = useCallback((sectionId: string) => {
     const newItem: ResumeCustomSectionItem = {
       id: crypto.randomUUID(),
@@ -337,6 +360,19 @@ export function useResumeBuilder(
           s.id === sectionId
             ? { ...s, items: s.items.filter((i) => i.id !== itemId) }
             : s,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const updateCustomSectionItemList = useCallback(
+    (sectionId: string, items: ResumeCustomSectionItem[]) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        customSections: (prev.customSections || []).map((s) =>
+          s.id === sectionId ? { ...s, items } : s,
         ),
       }));
       setIsDirty(true);
@@ -392,12 +428,15 @@ export function useResumeBuilder(
     updatePersonalInfo,
     addExperience,
     updateExperience,
+    updateExperienceList,
     removeExperience,
     addEducation,
     updateEducation,
+    updateEducationList,
     removeEducation,
     addProject,
     updateProject,
+    updateProjectList,
     removeProject,
     updateSkills,
     addSkillCategory,
@@ -405,9 +444,11 @@ export function useResumeBuilder(
     removeSkillCategory,
     addCustomSection,
     updateCustomSection,
+    updateCustomSectionList,
     removeCustomSection,
     addCustomSectionItem,
     updateCustomSectionItem,
+    updateCustomSectionItemList,
     removeCustomSectionItem,
     updateStyle,
     save,

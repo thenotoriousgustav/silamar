@@ -46,12 +46,15 @@ export function ResumeBuilderClient({
     updatePersonalInfo,
     addExperience,
     updateExperience,
+    updateExperienceList,
     removeExperience,
     addEducation,
     updateEducation,
+    updateEducationList,
     removeEducation,
     addProject,
     updateProject,
+    updateProjectList,
     removeProject,
     updateSkills,
     addSkillCategory,
@@ -59,9 +62,11 @@ export function ResumeBuilderClient({
     removeSkillCategory,
     addCustomSection,
     updateCustomSection,
+    updateCustomSectionList,
     removeCustomSection,
     addCustomSectionItem,
     updateCustomSectionItem,
+    updateCustomSectionItemList,
     removeCustomSectionItem,
     updateStyle,
     save,
@@ -309,7 +314,7 @@ export function ResumeBuilderClient({
             viewMode === "form"
               ? "w-full"
               : viewMode === "split"
-                ? "w-3/8"
+                ? "w-5/10"
                 : "pointer-events-none w-0 overflow-hidden opacity-0",
           )}
         >
@@ -318,12 +323,15 @@ export function ResumeBuilderClient({
             updatePersonalInfo={updatePersonalInfo}
             addExperience={addExperience}
             updateExperience={updateExperience}
+            updateExperienceList={updateExperienceList}
             removeExperience={removeExperience}
             addEducation={addEducation}
             updateEducation={updateEducation}
+            updateEducationList={updateEducationList}
             removeEducation={removeEducation}
             addProject={addProject}
             updateProject={updateProject}
+            updateProjectList={updateProjectList}
             removeProject={removeProject}
             updateSkills={updateSkills}
             addSkillCategory={addSkillCategory}
@@ -331,9 +339,11 @@ export function ResumeBuilderClient({
             removeSkillCategory={removeSkillCategory}
             addCustomSection={addCustomSection}
             updateCustomSection={updateCustomSection}
+            updateCustomSectionList={updateCustomSectionList}
             removeCustomSection={removeCustomSection}
             addCustomSectionItem={addCustomSectionItem}
             updateCustomSectionItem={updateCustomSectionItem}
+            updateCustomSectionItemList={updateCustomSectionItemList}
             removeCustomSectionItem={removeCustomSectionItem}
             updateStyle={updateStyle}
           />
@@ -346,7 +356,7 @@ export function ResumeBuilderClient({
             viewMode === "preview"
               ? "w-full"
               : viewMode === "split"
-                ? "w-5/8"
+                ? "w-5/10"
                 : "pointer-events-none w-0 overflow-hidden opacity-0",
           )}
         >

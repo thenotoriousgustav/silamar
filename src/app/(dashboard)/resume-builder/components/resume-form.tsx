@@ -30,11 +30,14 @@ interface ResumeFormProps {
   addExperience: () => void;
   updateExperience: (id: string, data: Partial<ResumeExperience>) => void;
   removeExperience: (id: string) => void;
+  updateExperienceList: (experience: ResumeExperience[]) => void;
   addEducation: () => void;
   updateEducation: (id: string, data: Partial<ResumeEducation>) => void;
+  updateEducationList: (education: ResumeEducation[]) => void;
   removeEducation: (id: string) => void;
   addProject: () => void;
   updateProject: (id: string, data: Partial<ResumeProject>) => void;
+  updateProjectList: (projects: ResumeProject[]) => void;
   removeProject: (id: string) => void;
   addSkillCategory: () => void;
   updateSkillCategory: (id: string, data: Partial<ResumeSkill>) => void;
@@ -42,12 +45,17 @@ interface ResumeFormProps {
   updateSkills: (skills: ResumeSkill[]) => void;
   addCustomSection: () => void;
   updateCustomSection: (id: string, data: Partial<ResumeCustomSection>) => void;
+  updateCustomSectionList: (sections: ResumeCustomSection[]) => void;
   removeCustomSection: (id: string) => void;
   addCustomSectionItem: (sectionId: string) => void;
   updateCustomSectionItem: (
     sectionId: string,
     itemId: string,
     data: Partial<ResumeCustomSectionItem>,
+  ) => void;
+  updateCustomSectionItemList: (
+    sectionId: string,
+    items: ResumeCustomSectionItem[],
   ) => void;
   removeCustomSectionItem: (sectionId: string, itemId: string) => void;
   updateStyle: (style: Partial<ResumeContent["style"]>) => void;
@@ -59,11 +67,14 @@ export function ResumeForm({
   addExperience,
   updateExperience,
   removeExperience,
+  updateExperienceList,
   addEducation,
   updateEducation,
+  updateEducationList,
   removeEducation,
   addProject,
   updateProject,
+  updateProjectList,
   removeProject,
   addSkillCategory,
   updateSkillCategory,
@@ -71,9 +82,11 @@ export function ResumeForm({
   updateSkills,
   addCustomSection,
   updateCustomSection,
+  updateCustomSectionList,
   removeCustomSection,
   addCustomSectionItem,
   updateCustomSectionItem,
+  updateCustomSectionItemList,
   removeCustomSectionItem,
   updateStyle,
 }: ResumeFormProps) {
@@ -189,6 +202,7 @@ export function ResumeForm({
           content={content}
           addExperience={addExperience}
           updateExperience={updateExperience}
+          updateExperienceList={updateExperienceList}
           removeExperience={removeExperience}
           handleOptimize={handleOptimize}
           optimizingId={optimizingId}
@@ -198,6 +212,7 @@ export function ResumeForm({
           content={content}
           addEducation={addEducation}
           updateEducation={updateEducation}
+          updateEducationList={updateEducationList}
           removeEducation={removeEducation}
         />
 
@@ -205,6 +220,7 @@ export function ResumeForm({
           content={content}
           addProject={addProject}
           updateProject={updateProject}
+          updateProjectList={updateProjectList}
           removeProject={removeProject}
         />
 
@@ -220,9 +236,11 @@ export function ResumeForm({
           content={content}
           addCustomSection={addCustomSection}
           updateCustomSection={updateCustomSection}
+          updateCustomSectionList={updateCustomSectionList}
           removeCustomSection={removeCustomSection}
           addCustomSectionItem={addCustomSectionItem}
           updateCustomSectionItem={updateCustomSectionItem}
+          updateCustomSectionItemList={updateCustomSectionItemList}
           removeCustomSectionItem={removeCustomSectionItem}
         />
 
