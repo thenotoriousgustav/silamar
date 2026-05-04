@@ -4,6 +4,15 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Accordion } from "@/components/ui/accordion";
+import {
+  GripVertical,
+} from "lucide-react";
+import {
+  Sortable,
+  SortableContent,
+  SortableItem,
+  SortableItemHandle,
+} from "@/components/ui/sortable";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -59,6 +68,7 @@ interface ResumeFormProps {
   ) => void;
   removeCustomSectionItem: (sectionId: string, itemId: string) => void;
   updateStyle: (style: Partial<ResumeContent["style"]>) => void;
+  updateSectionOrder: (order: string[]) => void;
   jumpTarget?: string | null;
   onJumpEnd?: () => void;
 }
@@ -91,6 +101,7 @@ export function ResumeForm({
   updateCustomSectionItemList,
   removeCustomSectionItem,
   updateStyle,
+  updateSectionOrder,
   jumpTarget,
   onJumpEnd,
 }: ResumeFormProps) {
@@ -257,61 +268,91 @@ export function ResumeForm({
           />
         </div>
 
-        <div id="section-experience">
-          <ExperienceSection
-            content={content}
-            addExperience={addExperience}
-            updateExperience={updateExperience}
-            updateExperienceList={updateExperienceList}
-            removeExperience={removeExperience}
-            handleOptimize={handleOptimize}
-            optimizingId={optimizingId}
-          />
-        </div>
-
-        <div id="section-education">
-          <EducationSection
-            content={content}
-            addEducation={addEducation}
-            updateEducation={updateEducation}
-            updateEducationList={updateEducationList}
-            removeEducation={removeEducation}
-          />
-        </div>
-
-        <div id="section-projects">
-          <ProjectSection
-            content={content}
-            addProject={addProject}
-            updateProject={updateProject}
-            updateProjectList={updateProjectList}
-            removeProject={removeProject}
-          />
-        </div>
-
-        <div id="section-skills">
-          <SkillsSection
-            content={content}
-            addSkillCategory={addSkillCategory}
-            updateSkillCategory={updateSkillCategory}
-            removeSkillCategory={removeSkillCategory}
-            updateSkills={updateSkills}
-          />
-        </div>
-
-        <div id="section-custom">
-          <CustomSection
-            content={content}
-            addCustomSection={addCustomSection}
-            updateCustomSection={updateCustomSection}
-            updateCustomSectionList={updateCustomSectionList}
-            removeCustomSection={removeCustomSection}
-            addCustomSectionItem={addCustomSectionItem}
-            updateCustomSectionItem={updateCustomSectionItem}
-            updateCustomSectionItemList={updateCustomSectionItemList}
-            removeCustomSectionItem={removeCustomSectionItem}
-          />
-        </div>
+        <Sortable
+          value={
+            content.sectionOrder || [
+              "experience",
+              "education",
+              "projects",
+              "skills",
+              "custom",
+            ]
+          }
+          onValueChange={updateSectionOrder}
+        >
+          <SortableContent className="space-y-4">
+            {(
+              content.sectionOrder || [
+                "experience",
+                "education",
+                "projects",
+                "skills",
+                "custom",
+              ]
+            ).map((sectionId) => (
+              <SortableItem key={sectionId} value={sectionId}>
+                <div className="group relative">
+                  <SortableItemHandle className="absolute top-5 left-1 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                    <GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
+                  </SortableItemHandle>
+                  <div id={`section-${sectionId}`}>
+                    {sectionId === "experience" && (
+                      <ExperienceSection
+                        content={content}
+                        addExperience={addExperience}
+                        updateExperience={updateExperience}
+                        updateExperienceList={updateExperienceList}
+                        removeExperience={removeExperience}
+                        handleOptimize={handleOptimize}
+                        optimizingId={optimizingId}
+                      />
+                    )}
+                    {sectionId === "education" && (
+                      <EducationSection
+                        content={content}
+                        addEducation={addEducation}
+                        updateEducation={updateEducation}
+                        updateEducationList={updateEducationList}
+                        removeEducation={removeEducation}
+                      />
+                    )}
+                    {sectionId === "projects" && (
+                      <ProjectSection
+                        content={content}
+                        addProject={addProject}
+                        updateProject={updateProject}
+                        updateProjectList={updateProjectList}
+                        removeProject={removeProject}
+                      />
+                    )}
+                    {sectionId === "skills" && (
+                      <SkillsSection
+                        content={content}
+                        addSkillCategory={addSkillCategory}
+                        updateSkillCategory={updateSkillCategory}
+                        removeSkillCategory={removeSkillCategory}
+                        updateSkills={updateSkills}
+                      />
+                    )}
+                    {sectionId === "custom" && (
+                      <CustomSection
+                        content={content}
+                        addCustomSection={addCustomSection}
+                        updateCustomSection={updateCustomSection}
+                        updateCustomSectionList={updateCustomSectionList}
+                        removeCustomSection={removeCustomSection}
+                        addCustomSectionItem={addCustomSectionItem}
+                        updateCustomSectionItem={updateCustomSectionItem}
+                        updateCustomSectionItemList={updateCustomSectionItemList}
+                        removeCustomSectionItem={removeCustomSectionItem}
+                      />
+                    )}
+                  </div>
+                </div>
+              </SortableItem>
+            ))}
+          </SortableContent>
+        </Sortable>
 
         <VisualSettingsSection content={content} updateStyle={updateStyle} />
       </Accordion>

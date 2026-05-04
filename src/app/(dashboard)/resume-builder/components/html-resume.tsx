@@ -242,237 +242,256 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
       addToPage(summaryEl, estimateHeight("summary", personalInfo.summary));
     }
 
-    // Experience
-    if (experience.length > 0) {
-      addToPage(
-        <h2
-          key="exp-title"
-          onClick={() => onJumpToSection?.("experience")}
-          className={cn(
-            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
-            templateId === "modern" &&
-              "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
-            templateId === "minimal" &&
-              "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
-          )}
-        >
-          {t.workExperience}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+    const sectionOrder = data.sectionOrder || [
+      "experience",
+      "education",
+      "projects",
+      "skills",
+      "custom",
+    ];
 
-      experience.forEach((exp, i) => {
-        const expEl = (
-          <div
-            key={`exp-${i}`}
-            className={cn("mb-4", clickableClass)}
-            onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
+    sectionOrder.forEach((sectionId) => {
+      if (sectionId === "experience" && experience.length > 0) {
+        addToPage(
+          <h2
+            key="exp-title"
+            onClick={() => onJumpToSection?.("experience")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" &&
+                "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" &&
+                "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+            )}
           >
-            <div className="mb-0.5 flex items-baseline justify-between">
-              <h3
-                className={cn(
-                  "text-[11px] font-bold",
-                  templateId === "modern" && "text-blue-600",
+            {t.workExperience}
+          </h2>,
+          estimateHeight("sectionTitle", null),
+        );
+
+        experience.forEach((exp, i) => {
+          const expEl = (
+            <div
+              key={`exp-${i}`}
+              className={cn("mb-4", clickableClass)}
+              onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
+            >
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3
+                  className={cn(
+                    "text-[11px] font-bold",
+                    templateId === "modern" && "text-blue-600",
+                  )}
+                >
+                  {exp.position}
+                </h3>
+                <span className="text-[10px] font-medium text-slate-500">
+                  {exp.startDate} —{" "}
+                  {exp.endDate || (exp.isCurrentJob ? t.present : "")}
+                </span>
+              </div>
+              <div className="mb-1 flex items-baseline justify-between">
+                <span className="text-[11px] text-slate-700">
+                  {exp.company}
+                </span>
+                {exp.location && (
+                  <span className="text-[10px] text-slate-500">
+                    {exp.location}
+                  </span>
                 )}
-              >
-                {exp.position}
-              </h3>
-              <span className="text-[10px] font-medium text-slate-500">
-                {exp.startDate} —{" "}
-                {exp.endDate || (exp.isCurrentJob ? t.present : "")}
-              </span>
-            </div>
-            <div className="mb-1 flex items-baseline justify-between">
-              <span className="text-[11px] text-slate-700">{exp.company}</span>
-              {exp.location && (
-                <span className="text-[10px] text-slate-500">
-                  {exp.location}
-                </span>
-              )}
-            </div>
-            {renderBulletList(exp.description)}
-          </div>
-        );
-        addToPage(expEl, estimateHeight("experienceItem", exp));
-      });
-    }
-
-    // Education
-    if (education.length > 0) {
-      addToPage(
-        <h2
-          key="edu-title"
-          onClick={() => onJumpToSection?.("education")}
-          className={cn(
-            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
-            templateId === "modern" &&
-              "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
-            templateId === "minimal" &&
-              "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
-          )}
-        >
-          {t.education}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
-
-      education.forEach((edu, i) => {
-        const eduEl = (
-          <div
-            key={`edu-${i}`}
-            className={cn("mb-3", clickableClass)}
-            onClick={() => onJumpToSection?.(`education-${edu.id}`)}
-          >
-            <div className="mb-0.5 flex items-baseline justify-between">
-              <h3 className="text-[11px] font-bold">
-                {edu.degree} {edu.major}
-              </h3>
-              <span className="text-[10px] font-medium text-slate-500">
-                {edu.startYear} —{" "}
-                {edu.endYear || (edu.isCurrentlyStudying ? t.present : "")}
-              </span>
-            </div>
-            <div className="text-[11px] text-slate-700">{edu.institution}</div>
-            {edu.gpa && (
-              <div className="text-[10px] text-slate-500">
-                {t.gpa}: {edu.gpa}
               </div>
+              {renderBulletList(exp.description)}
+            </div>
+          );
+          addToPage(expEl, estimateHeight("experienceItem", exp));
+        });
+      }
+
+      if (sectionId === "education" && education.length > 0) {
+        addToPage(
+          <h2
+            key="edu-title"
+            onClick={() => onJumpToSection?.("education")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" &&
+                "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" &&
+                "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
-            {edu.description && renderBulletList(edu.description)}
-          </div>
+          >
+            {t.education}
+          </h2>,
+          estimateHeight("sectionTitle", null),
         );
-        addToPage(eduEl, estimateHeight("educationItem", edu));
-      });
-    }
 
-    // Skills
-    if (skills.length > 0) {
-      addToPage(
-        <h2
-          key="skills-title"
-          onClick={() => onJumpToSection?.("skills")}
-          className={cn(
-            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
-            templateId === "modern" &&
-              "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
-            templateId === "minimal" &&
-              "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
-          )}
-        >
-          {t.skills}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+        education.forEach((edu, i) => {
+          const eduEl = (
+            <div
+              key={`edu-${i}`}
+              className={cn("mb-3", clickableClass)}
+              onClick={() => onJumpToSection?.(`education-${edu.id}`)}
+            >
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3 className="text-[11px] font-bold">
+                  {edu.degree} {edu.major}
+                </h3>
+                <span className="text-[10px] font-medium text-slate-500">
+                  {edu.startYear} —{" "}
+                  {edu.endYear || (edu.isCurrentlyStudying ? t.present : "")}
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-700">
+                {edu.institution}
+              </div>
+              {edu.gpa && (
+                <div className="text-[10px] text-slate-500">
+                  {t.gpa}: {edu.gpa}
+                </div>
+              )}
+              {edu.description && renderBulletList(edu.description)}
+            </div>
+          );
+          addToPage(eduEl, estimateHeight("educationItem", edu));
+        });
+      }
 
-      skills.forEach((skill, i) => {
-        const skillEl = (
-          <div
-            key={`skill-${i}`}
-            className={cn("mb-1 text-[11px] leading-relaxed", clickableClass)}
+      if (sectionId === "skills" && skills.length > 0) {
+        addToPage(
+          <h2
+            key="skills-title"
             onClick={() => onJumpToSection?.("skills")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" &&
+                "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" &&
+                "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+            )}
           >
-            <span className="font-bold">{skill.category}: </span>
-            <span className="text-slate-700">{skill.items.join(", ")}</span>
-          </div>
+            {t.skills}
+          </h2>,
+          estimateHeight("sectionTitle", null),
         );
-        addToPage(skillEl, estimateHeight("skillItem", skill));
-      });
-    }
 
-    // Projects
-    if (projects.length > 0) {
-      addToPage(
-        <h2
-          key="projects-title"
-          onClick={() => onJumpToSection?.("projects")}
-          className={cn(
-            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
-            templateId === "modern" &&
-              "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
-            templateId === "minimal" &&
-              "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
-          )}
-        >
-          {t.projects}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
-
-      projects.forEach((project, i) => {
-        const projEl = (
-          <div
-            key={`proj-${i}`}
-            className={cn("mb-3", clickableClass)}
-            onClick={() => onJumpToSection?.(`projects-${project.id}`)}
-          >
-            <div className="mb-0.5 flex items-baseline justify-between">
-              <h3 className="text-[11px] font-bold">{project.name}</h3>
-              {(project.startDate || project.endDate) && (
-                <span className="text-[10px] font-medium text-slate-500">
-                  {project.startDate}{" "}
-                  {project.endDate ? `— ${project.endDate}` : ""}
-                </span>
-              )}
+        skills.forEach((skill, i) => {
+          const skillEl = (
+            <div
+              key={`skill-${i}`}
+              className={cn("mb-1 text-[11px] leading-relaxed", clickableClass)}
+              onClick={() => onJumpToSection?.("skills")}
+            >
+              <span className="font-bold">{skill.category}: </span>
+              <span className="text-slate-700">{skill.items.join(", ")}</span>
             </div>
-            {project.link && (
-              <div className="font-mono text-[9px] tracking-tight text-slate-500">
-                {cleanUrl(project.link)}
-              </div>
+          );
+          addToPage(skillEl, estimateHeight("skillItem", skill));
+        });
+      }
+
+      if (sectionId === "projects" && projects.length > 0) {
+        addToPage(
+          <h2
+            key="projects-title"
+            onClick={() => onJumpToSection?.("projects")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" &&
+                "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" &&
+                "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
-            {renderBulletList(project.description)}
-          </div>
-        );
-        addToPage(projEl, estimateHeight("projectItem", project));
-      });
-    }
-
-    // Custom Sections
-    (customSections || []).forEach((section, sIndex) => {
-      addToPage(
-        <h2
-          key={`custom-title-${sIndex}`}
-          onClick={() => onJumpToSection?.(`custom-${section.id}`)}
-          className={cn(
-            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
-            templateId === "modern" &&
-              "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
-            templateId === "minimal" &&
-              "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
-          )}
-        >
-          {section.title}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
-
-      section.items.forEach((item, iIndex) => {
-        const itemEl = (
-          <div
-            key={`custom-${sIndex}-${iIndex}`}
-            className={cn("mb-3", clickableClass)}
-            onClick={() => onJumpToSection?.(`custom-${section.id}-${item.id}`)}
           >
-            <div className="mb-0.5 flex items-baseline justify-between">
-              <h3 className="text-[11px] font-bold">{item.title}</h3>
-              {item.date && (
-                <span className="text-[10px] font-medium text-slate-500">
-                  {item.date}
-                </span>
-              )}
-            </div>
-            {item.subtitle && (
-              <div className="text-[11px] text-slate-700">{item.subtitle}</div>
-            )}
-            {item.link && (
-              <div className="font-mono text-[9px] tracking-tight text-slate-500">
-                {cleanUrl(item.link)}
-              </div>
-            )}
-            {renderBulletList(item.description)}
-          </div>
+            {t.projects}
+          </h2>,
+          estimateHeight("sectionTitle", null),
         );
-        addToPage(itemEl, estimateHeight("customItem", item));
-      });
+
+        projects.forEach((project, i) => {
+          const projEl = (
+            <div
+              key={`proj-${i}`}
+              className={cn("mb-3", clickableClass)}
+              onClick={() => onJumpToSection?.(`projects-${project.id}`)}
+            >
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3 className="text-[11px] font-bold">{project.name}</h3>
+                {(project.startDate || project.endDate) && (
+                  <span className="text-[10px] font-medium text-slate-500">
+                    {project.startDate}{" "}
+                    {project.endDate ? `— ${project.endDate}` : ""}
+                  </span>
+                )}
+              </div>
+              {project.link && (
+                <div className="font-mono text-[9px] tracking-tight text-slate-500">
+                  {cleanUrl(project.link)}
+                </div>
+              )}
+              {renderBulletList(project.description)}
+            </div>
+          );
+          addToPage(projEl, estimateHeight("projectItem", project));
+        });
+      }
+
+      if (
+        sectionId === "custom" &&
+        customSections &&
+        customSections.length > 0
+      ) {
+        customSections.forEach((section, sIndex) => {
+          addToPage(
+            <h2
+              key={`custom-title-${sIndex}`}
+              onClick={() => onJumpToSection?.(`custom-${section.id}`)}
+              className={cn(
+                "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+                templateId === "modern" &&
+                  "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+                templateId === "minimal" &&
+                  "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+              )}
+            >
+              {section.title}
+            </h2>,
+            estimateHeight("sectionTitle", null),
+          );
+
+          section.items.forEach((item, iIndex) => {
+            const itemEl = (
+              <div
+                key={`custom-${sIndex}-${iIndex}`}
+                className={cn("mb-3", clickableClass)}
+                onClick={() =>
+                  onJumpToSection?.(`custom-${section.id}-${item.id}`)
+                }
+              >
+                <div className="mb-0.5 flex items-baseline justify-between">
+                  <h3 className="text-[11px] font-bold">{item.title}</h3>
+                  {item.date && (
+                    <span className="text-[10px] font-medium text-slate-500">
+                      {item.date}
+                    </span>
+                  )}
+                </div>
+                {item.subtitle && (
+                  <div className="text-[11px] text-slate-700">
+                    {item.subtitle}
+                  </div>
+                )}
+                {item.link && (
+                  <div className="font-mono text-[9px] tracking-tight text-slate-500">
+                    {cleanUrl(item.link)}
+                  </div>
+                )}
+                {renderBulletList(item.description)}
+              </div>
+            );
+            addToPage(itemEl, estimateHeight("customItem", item));
+          });
+        });
+      }
     });
 
     return result;
@@ -483,6 +502,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     skills,
     projects,
     customSections,
+    data.sectionOrder,
     templateId,
     t,
     onJumpToSection,

@@ -69,6 +69,7 @@ export function ResumeBuilderClient({
     updateCustomSectionItemList,
     removeCustomSectionItem,
     updateStyle,
+    updateSectionOrder,
     save,
     setContent,
     setIsDirty,
@@ -347,6 +348,7 @@ export function ResumeBuilderClient({
             updateCustomSectionItemList={updateCustomSectionItemList}
             removeCustomSectionItem={removeCustomSectionItem}
             updateStyle={updateStyle}
+            updateSectionOrder={updateSectionOrder}
             jumpTarget={jumpTarget}
             onJumpEnd={() => setJumpTarget(null)}
           />

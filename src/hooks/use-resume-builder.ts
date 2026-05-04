@@ -33,6 +33,7 @@ const DEFAULT_RESUME: ResumeContent = {
     fontFamily: "font-serif",
     fontSize: "text-sm",
   },
+  sectionOrder: ["experience", "education", "skills", "projects", "custom"],
 };
 
 export function useResumeBuilder(
@@ -381,6 +382,11 @@ export function useResumeBuilder(
     [],
   );
 
+  const updateSectionOrder = useCallback((sectionOrder: string[]) => {
+    setContent((prev: ResumeContent) => ({ ...prev, sectionOrder }));
+    setIsDirty(true);
+  }, []);
+
   const save = useCallback(
     async (idToSave?: string, title?: string) => {
       const activeId = idToSave || resumeId;
@@ -441,6 +447,7 @@ export function useResumeBuilder(
     updateCustomSectionItemList,
     removeCustomSectionItem,
     updateStyle,
+    updateSectionOrder,
     save,
     setContent,
     setIsDirty,

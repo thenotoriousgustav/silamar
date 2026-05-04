@@ -83,6 +83,7 @@ export interface ResumeContent {
   projects: ResumeProject[];
   customSections?: ResumeCustomSection[];
   style?: ResumeStyle;
+  sectionOrder?: string[];
 }
 
 export interface AtsAnalysisResult {
