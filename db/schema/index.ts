@@ -1,12 +1,12 @@
 export * from "./auth";
 export * from "./resumes";
-export * from "./jobs";
+export * from "./job-applications";
 export * from "./ai";
 export * from "./billing";
 
 import { users } from "./auth";
 import { resumes } from "./resumes";
-import { jobApplications } from "./jobs";
+import { jobApplications } from "./job-applications";
 import { coverLetters } from "./resumes";
 import { aiUsageLogs } from "./ai";
 import { transactions } from "./billing";

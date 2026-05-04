@@ -120,6 +120,7 @@ export function ExperienceSection({
                 {content.experience.map((exp: ResumeExperience) => (
                   <SortableItem key={exp.id} value={exp.id}>
                     <AccordionItem
+                      id={`experience-${exp.id}`}
                       value={exp.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >
@@ -352,175 +353,173 @@ export function ExperienceSection({
                               </Button>
                             </div>
 
-                              <Sortable
-                                value={exp.description || []}
-                                onValueChange={(newBullets) => {
-                                  updateExperience(exp.id, {
-                                    description: newBullets,
-                                  });
-                                }}
-                                getItemValue={(item) => item.id}
-                              >
-                                <SortableContent className="space-y-2">
-                                  {(exp.description || []).map(
-                                    (bullet, idx) => (
-                                      <SortableItem
-                                        key={bullet.id}
-                                        value={bullet.id}
-                                        className="bg-background group flex items-start gap-2"
-                                      >
-                                        <SortableItemHandle
-                                          asChild
-                                          className="text-muted-foreground hover:text-primary mt-2.5 cursor-grab transition-colors"
-                                        >
-                                          <GripVertical className="h-3.5 w-3.5" />
-                                        </SortableItemHandle>
-                                        <Input
-                                          value={bullet.text || ""}
-                                          onChange={(e) => {
-                                            const newBullets = [
-                                              ...(exp.description || []),
-                                            ];
-                                            newBullets[idx] = {
-                                              ...newBullets[idx],
-                                              text: e.target.value,
-                                            };
-                                            updateExperience(exp.id, {
-                                              description: newBullets,
-                                            });
-                                          }}
-                                          placeholder={
-                                            lang === "id"
-                                              ? "Contoh: Meningkatkan efisiensi sistem sebesar 20%..."
-                                              : "Example: Improved system efficiency by 20%..."
-                                          }
-                                          className="bg-background border-border h-9 text-sm"
-                                        />
-                                        <div className="border-border bg-background flex shrink-0 items-center overflow-hidden rounded-none border shadow-sm">
-                                          <DropdownMenu>
-                                            <DropdownMenuTrigger
-                                              render={
-                                                <Button
-                                                  type="button"
-                                                  variant="ghost"
-                                                  size="icon"
-                                                  disabled={
-                                                    optimizingId ===
-                                                    `${exp.id}-${idx}`
-                                                  }
-                                                  className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
-                                                  title="AI Assistant"
-                                                >
-                                                  {optimizingId ===
-                                                  `${exp.id}-${idx}` ? (
-                                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                                  ) : (
-                                                    <Sparkles className="h-3 w-3" />
-                                                  )}
-                                                </Button>
+                            <Sortable
+                              value={exp.description || []}
+                              onValueChange={(newBullets) => {
+                                updateExperience(exp.id, {
+                                  description: newBullets,
+                                });
+                              }}
+                              getItemValue={(item) => item.id}
+                            >
+                              <SortableContent className="space-y-2">
+                                {(exp.description || []).map((bullet, idx) => (
+                                  <SortableItem
+                                    key={bullet.id}
+                                    value={bullet.id}
+                                    className="bg-background group flex items-start gap-2"
+                                  >
+                                    <SortableItemHandle
+                                      asChild
+                                      className="text-muted-foreground hover:text-primary mt-2.5 cursor-grab transition-colors"
+                                    >
+                                      <GripVertical className="h-3.5 w-3.5" />
+                                    </SortableItemHandle>
+                                    <Input
+                                      value={bullet.text || ""}
+                                      onChange={(e) => {
+                                        const newBullets = [
+                                          ...(exp.description || []),
+                                        ];
+                                        newBullets[idx] = {
+                                          ...newBullets[idx],
+                                          text: e.target.value,
+                                        };
+                                        updateExperience(exp.id, {
+                                          description: newBullets,
+                                        });
+                                      }}
+                                      placeholder={
+                                        lang === "id"
+                                          ? "Contoh: Meningkatkan efisiensi sistem sebesar 20%..."
+                                          : "Example: Improved system efficiency by 20%..."
+                                      }
+                                      className="bg-background border-border h-9 text-sm"
+                                    />
+                                    <div className="border-border bg-background flex shrink-0 items-center overflow-hidden rounded-none border shadow-sm">
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger
+                                          render={
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="icon"
+                                              disabled={
+                                                optimizingId ===
+                                                `${exp.id}-${idx}`
                                               }
-                                            />
-                                            <DropdownMenuContent
-                                              align="start"
-                                              className="w-56"
+                                              className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
+                                              title="AI Assistant"
                                             >
-                                              <DropdownMenuItem
-                                                onClick={() =>
-                                                  handleOptimize(
-                                                    exp.id,
-                                                    idx,
-                                                    bullet.text,
-                                                    "optimize",
-                                                  )
-                                                }
-                                                className="gap-2 py-2"
-                                              >
-                                                <FileText className="text-brand-500 h-4 w-4" />
-                                                <div>
-                                                  <p className="text-xs font-bold">
-                                                    Optimalkan Kalimat
-                                                  </p>
-                                                  <p className="text-muted-foreground text-[10px]">
-                                                    Gunakan kata kerja yang
-                                                    lebih kuat
-                                                  </p>
-                                                </div>
-                                              </DropdownMenuItem>
-                                              <DropdownMenuItem
-                                                onClick={() =>
-                                                  handleOptimize(
-                                                    exp.id,
-                                                    idx,
-                                                    bullet.text,
-                                                    "quantify",
-                                                  )
-                                                }
-                                                className="gap-2 py-2"
-                                              >
-                                                <TrendingUp className="h-4 w-4 text-emerald-500" />
-                                                <div>
-                                                  <p className="text-xs font-bold">
-                                                    Tambahkan Metrik
-                                                  </p>
-                                                  <p className="text-muted-foreground text-[10px]">
-                                                    Sertakan angka pencapaian
-                                                  </p>
-                                                </div>
-                                              </DropdownMenuItem>
-                                              <DropdownMenuItem
-                                                onClick={() =>
-                                                  handleOptimize(
-                                                    exp.id,
-                                                    idx,
-                                                    bullet.text,
-                                                    "grammar",
-                                                  )
-                                                }
-                                                className="gap-2 py-2"
-                                              >
-                                                <SpellCheck className="h-4 w-4 text-amber-500" />
-                                                <div>
-                                                  <p className="text-xs font-bold">
-                                                    Perbaiki Grammar
-                                                  </p>
-                                                  <p className="text-muted-foreground text-[10px]">
-                                                    Cek typo dan tata bahasa
-                                                  </p>
-                                                </div>
-                                              </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                          </DropdownMenu>
-                                          <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => {
-                                              const newBullets =
-                                                exp.description.filter(
-                                                  (_, i) => i !== idx,
-                                                );
-                                              updateExperience(exp.id, {
-                                                description:
-                                                  newBullets.length > 0
-                                                    ? newBullets
-                                                    : [
-                                                        {
-                                                          id: crypto.randomUUID(),
-                                                          text: "",
-                                                        },
-                                                      ],
-                                              });
-                                            }}
-                                            className="hover:text-destructive h-8 w-8 rounded-none"
+                                              {optimizingId ===
+                                              `${exp.id}-${idx}` ? (
+                                                <Loader2 className="h-3 w-3 animate-spin" />
+                                              ) : (
+                                                <Sparkles className="h-3 w-3" />
+                                              )}
+                                            </Button>
+                                          }
+                                        />
+                                        <DropdownMenuContent
+                                          align="start"
+                                          className="w-56"
+                                        >
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              handleOptimize(
+                                                exp.id,
+                                                idx,
+                                                bullet.text,
+                                                "optimize",
+                                              )
+                                            }
+                                            className="gap-2 py-2"
                                           >
-                                            <Trash2 className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      </SortableItem>
-                                    ),
-                                  )}
-                                </SortableContent>
-                              </Sortable>
+                                            <FileText className="text-brand-500 h-4 w-4" />
+                                            <div>
+                                              <p className="text-xs font-bold">
+                                                Optimalkan Kalimat
+                                              </p>
+                                              <p className="text-muted-foreground text-[10px]">
+                                                Gunakan kata kerja yang lebih
+                                                kuat
+                                              </p>
+                                            </div>
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              handleOptimize(
+                                                exp.id,
+                                                idx,
+                                                bullet.text,
+                                                "quantify",
+                                              )
+                                            }
+                                            className="gap-2 py-2"
+                                          >
+                                            <TrendingUp className="h-4 w-4 text-emerald-500" />
+                                            <div>
+                                              <p className="text-xs font-bold">
+                                                Tambahkan Metrik
+                                              </p>
+                                              <p className="text-muted-foreground text-[10px]">
+                                                Sertakan angka pencapaian
+                                              </p>
+                                            </div>
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              handleOptimize(
+                                                exp.id,
+                                                idx,
+                                                bullet.text,
+                                                "grammar",
+                                              )
+                                            }
+                                            className="gap-2 py-2"
+                                          >
+                                            <SpellCheck className="h-4 w-4 text-amber-500" />
+                                            <div>
+                                              <p className="text-xs font-bold">
+                                                Perbaiki Grammar
+                                              </p>
+                                              <p className="text-muted-foreground text-[10px]">
+                                                Cek typo dan tata bahasa
+                                              </p>
+                                            </div>
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newBullets =
+                                            exp.description.filter(
+                                              (_, i) => i !== idx,
+                                            );
+                                          updateExperience(exp.id, {
+                                            description:
+                                              newBullets.length > 0
+                                                ? newBullets
+                                                : [
+                                                    {
+                                                      id: crypto.randomUUID(),
+                                                      text: "",
+                                                    },
+                                                  ],
+                                          });
+                                        }}
+                                        className="hover:text-destructive h-8 w-8 rounded-none"
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  </SortableItem>
+                                ))}
+                              </SortableContent>
+                            </Sortable>
                             {(exp.description || []).length > 0 && (
                               <p className="text-muted-foreground text-[10px] italic">
                                 * Kamu bisa memindahkan urutan atau menghapus

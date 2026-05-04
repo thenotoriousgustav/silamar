@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Accordion } from "@/components/ui/accordion";
@@ -59,6 +59,8 @@ interface ResumeFormProps {
   ) => void;
   removeCustomSectionItem: (sectionId: string, itemId: string) => void;
   updateStyle: (style: Partial<ResumeContent["style"]>) => void;
+  jumpTarget?: string | null;
+  onJumpEnd?: () => void;
 }
 
 export function ResumeForm({
@@ -89,7 +91,10 @@ export function ResumeForm({
   updateCustomSectionItemList,
   removeCustomSectionItem,
   updateStyle,
+  jumpTarget,
+  onJumpEnd,
 }: ResumeFormProps) {
+  const [expandedItems, setExpandedItems] = useState<string[]>(["personal"]);
   const [atsResult, setAtsResult] = useState<{
     score: number;
     feedback: string;
@@ -98,6 +103,51 @@ export function ResumeForm({
     readabilityScore: number;
   } | null>(null);
   const [optimizingId, setOptimizingId] = useState<string | null>(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!jumpTarget) return;
+
+    const [section, id] = jumpTarget.split("-");
+    const sectionToExpand =
+      section === "experience" ||
+      section === "education" ||
+      section === "projects" ||
+      section === "skills" ||
+      section === "custom" ||
+      section === "personal"
+        ? section
+        : null;
+
+    if (sectionToExpand) {
+      setExpandedItems((prev) =>
+        prev.includes(sectionToExpand) ? prev : [...prev, sectionToExpand],
+      );
+
+      // Wait for accordion to expand then scroll
+      setTimeout(() => {
+        const element = document.getElementById(jumpTarget);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Optional: highlight effect
+          element.classList.add("ring-2", "ring-primary", "ring-offset-2");
+          setTimeout(() => {
+            element.classList.remove("ring-2", "ring-primary", "ring-offset-2");
+          }, 2000);
+        } else {
+          // If specific item ID not found, scroll to section header
+          const sectionElement = document.getElementById(`section-${section}`);
+          if (sectionElement) {
+            sectionElement.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }
+        onJumpEnd?.();
+      }, 300);
+    }
+  }, [jumpTarget, onJumpEnd]);
 
   const optimizeMutation = useMutation({
     mutationFn: async ({
@@ -181,7 +231,10 @@ export function ResumeForm({
   };
 
   return (
-    <div className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6">
+    <div
+      ref={scrollContainerRef}
+      className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6"
+    >
       {/* ATS & Completeness Dashboard */}
       <ATSDashboard
         content={content}
@@ -192,60 +245,73 @@ export function ResumeForm({
       />
 
       <Accordion
-        defaultValue={["personal"]}
+        value={expandedItems}
+        onValueChange={setExpandedItems}
         multiple
         className="w-full space-y-4 border-none"
       >
-        <PersonalInfoSection
-          content={content}
-          updatePersonalInfo={updatePersonalInfo}
-        />
+        <div id="section-personal">
+          <PersonalInfoSection
+            content={content}
+            updatePersonalInfo={updatePersonalInfo}
+          />
+        </div>
 
-        <ExperienceSection
-          content={content}
-          addExperience={addExperience}
-          updateExperience={updateExperience}
-          updateExperienceList={updateExperienceList}
-          removeExperience={removeExperience}
-          handleOptimize={handleOptimize}
-          optimizingId={optimizingId}
-        />
+        <div id="section-experience">
+          <ExperienceSection
+            content={content}
+            addExperience={addExperience}
+            updateExperience={updateExperience}
+            updateExperienceList={updateExperienceList}
+            removeExperience={removeExperience}
+            handleOptimize={handleOptimize}
+            optimizingId={optimizingId}
+          />
+        </div>
 
-        <EducationSection
-          content={content}
-          addEducation={addEducation}
-          updateEducation={updateEducation}
-          updateEducationList={updateEducationList}
-          removeEducation={removeEducation}
-        />
+        <div id="section-education">
+          <EducationSection
+            content={content}
+            addEducation={addEducation}
+            updateEducation={updateEducation}
+            updateEducationList={updateEducationList}
+            removeEducation={removeEducation}
+          />
+        </div>
 
-        <ProjectSection
-          content={content}
-          addProject={addProject}
-          updateProject={updateProject}
-          updateProjectList={updateProjectList}
-          removeProject={removeProject}
-        />
+        <div id="section-projects">
+          <ProjectSection
+            content={content}
+            addProject={addProject}
+            updateProject={updateProject}
+            updateProjectList={updateProjectList}
+            removeProject={removeProject}
+          />
+        </div>
 
-        <SkillsSection
-          content={content}
-          addSkillCategory={addSkillCategory}
-          updateSkillCategory={updateSkillCategory}
-          removeSkillCategory={removeSkillCategory}
-          updateSkills={updateSkills}
-        />
+        <div id="section-skills">
+          <SkillsSection
+            content={content}
+            addSkillCategory={addSkillCategory}
+            updateSkillCategory={updateSkillCategory}
+            removeSkillCategory={removeSkillCategory}
+            updateSkills={updateSkills}
+          />
+        </div>
 
-        <CustomSection
-          content={content}
-          addCustomSection={addCustomSection}
-          updateCustomSection={updateCustomSection}
-          updateCustomSectionList={updateCustomSectionList}
-          removeCustomSection={removeCustomSection}
-          addCustomSectionItem={addCustomSectionItem}
-          updateCustomSectionItem={updateCustomSectionItem}
-          updateCustomSectionItemList={updateCustomSectionItemList}
-          removeCustomSectionItem={removeCustomSectionItem}
-        />
+        <div id="section-custom">
+          <CustomSection
+            content={content}
+            addCustomSection={addCustomSection}
+            updateCustomSection={updateCustomSection}
+            updateCustomSectionList={updateCustomSectionList}
+            removeCustomSection={removeCustomSection}
+            addCustomSectionItem={addCustomSectionItem}
+            updateCustomSectionItem={updateCustomSectionItem}
+            updateCustomSectionItemList={updateCustomSectionItemList}
+            removeCustomSectionItem={removeCustomSectionItem}
+          />
+        </div>
 
         <VisualSettingsSection content={content} updateStyle={updateStyle} />
       </Accordion>

@@ -1,4 +1,4 @@
-import { getJobsDTO } from "@/server/queries/jobs";
+import { getJobsDTO } from "@/server/queries/job-applications";
 import { JobTrackerClient } from "@/app/(dashboard)/job-tracker/components/job-tracker-client";
 import { cookies } from "next/headers";
 

@@ -94,6 +94,7 @@ export function EducationSection({
                 {content.education.map((edu: ResumeEducation) => (
                   <SortableItem key={edu.id} value={edu.id}>
                     <AccordionItem
+                      id={`education-${edu.id}`}
                       value={edu.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >

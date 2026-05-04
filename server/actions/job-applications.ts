@@ -7,7 +7,7 @@ import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { getJobsDTO } from "@/server/queries/jobs";
+import { getJobsDTO } from "@/server/queries/job-applications";
 import { getResumesDTO } from "@/server/queries/resumes";
 
 /**

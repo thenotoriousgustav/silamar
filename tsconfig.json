@@ -19,7 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/db": ["./db/index.ts"],
+      "@/db/*": ["./db/*"],
+      "@/server": ["./server"],
+      "@/server/*": ["./server/*"]
     }
   },
   "include": [
@@ -28,7 +32,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "db/**/*.ts",
+    "server/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

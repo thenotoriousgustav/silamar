@@ -94,6 +94,7 @@ export function ProjectSection({
                 {content.projects.map((project: ResumeProject) => (
                   <SortableItem key={project.id} value={project.id}>
                     <AccordionItem
+                      id={`projects-${project.id}`}
                       value={project.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >

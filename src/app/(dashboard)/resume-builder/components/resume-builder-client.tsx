@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useRef } from "react";
-import { useResumeBuilder } from "@/hooks/useResumeBuilder";
+import { useResumeBuilder } from "@/hooks/use-resume-builder";
 import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -80,6 +80,7 @@ export function ResumeBuilderClient({
   const [viewMode, setViewMode] = useState<"split" | "form" | "preview">(
     "split",
   );
+  const [jumpTarget, setJumpTarget] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
@@ -346,6 +347,8 @@ export function ResumeBuilderClient({
             updateCustomSectionItemList={updateCustomSectionItemList}
             removeCustomSectionItem={removeCustomSectionItem}
             updateStyle={updateStyle}
+            jumpTarget={jumpTarget}
+            onJumpEnd={() => setJumpTarget(null)}
           />
         </div>
 
@@ -361,7 +364,13 @@ export function ResumeBuilderClient({
           )}
         >
           <div className="flex h-full w-full items-center justify-center p-4 lg:p-8">
-            <ResumePreview content={content} />
+            <ResumePreview
+              content={content}
+              onJumpToSection={(target) => {
+                if (viewMode === "preview") setViewMode("split");
+                setJumpTarget(target);
+              }}
+            />
           </div>
         </div>
       </main>

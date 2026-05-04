@@ -2,16 +2,12 @@
 
 import * as React from "react";
 import {
-  LayoutDashboard,
-  FileText,
-  Target,
-  Briefcase,
   Zap,
   Settings,
   LogOut,
   ChevronUp,
-  Monitor,
 } from "lucide-react";
+import { menuItems } from "@/config/sidebar";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -41,13 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const menuItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/resume-builder", icon: FileText, label: "Resume Builder" },
-  { href: "/cover-letter", icon: FileText, label: "Cover Letter" },
-  { href: "/job-tracker", icon: Briefcase, label: "Job Tracker" },
-  { href: "/skill-gap", icon: Target, label: "Skill Gap" },
-];
+
 
 export function AppSidebar() {
   const pathname = usePathname();

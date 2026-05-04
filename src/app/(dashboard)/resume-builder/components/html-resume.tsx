@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface HtmlResumeProps {
   data: ResumeContent;
+  onJumpToSection?: (sectionId: string) => void;
 }
 
 const translations = {
@@ -31,7 +32,7 @@ const A4_HEIGHT = 1123;
 const PAGE_PADDING = 100; // Total vertical padding (top + bottom)
 const CONTENT_HEIGHT_LIMIT = A4_HEIGHT - PAGE_PADDING;
 
-export function HtmlResume({ data }: HtmlResumeProps) {
+export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
   const {
     personalInfo,
     experience,
@@ -114,6 +115,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
     }
   };
 
+  const clickableClass =
+    "group/clickable relative cursor-pointer rounded-sm hover:ring-2 hover:ring-primary/30 hover:bg-primary/[0.02] transition-all";
+
   // Pagination Logic
   const pages = useMemo(() => {
     const result: React.ReactNode[][] = [[]];
@@ -137,8 +141,10 @@ export function HtmlResume({ data }: HtmlResumeProps) {
     const headerEl = (
       <header
         key="header"
+        onClick={() => onJumpToSection?.("personal")}
         className={cn(
           "mb-6 flex flex-col",
+          clickableClass,
           templateId === "classic" && "items-center text-center",
           templateId === "modern" &&
             "flex-row items-end justify-between border-b-2 border-blue-600 pb-4 text-left",
@@ -212,7 +218,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
     // Summary
     if (personalInfo.summary) {
       const summaryEl = (
-        <section key="summary" className="mb-5">
+        <section
+          key="summary"
+          className={cn("mb-5", clickableClass)}
+          onClick={() => onJumpToSection?.("personal")}
+        >
           <h2
             className={cn(
               "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
@@ -237,8 +247,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       addToPage(
         <h2
           key="exp-title"
+          onClick={() => onJumpToSection?.("experience")}
           className={cn(
-            "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
+            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
             templateId === "modern" &&
               "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
             templateId === "minimal" &&
@@ -252,7 +263,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
 
       experience.forEach((exp, i) => {
         const expEl = (
-          <div key={`exp-${i}`} className="mb-4">
+          <div
+            key={`exp-${i}`}
+            className={cn("mb-4", clickableClass)}
+            onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
+          >
             <div className="mb-0.5 flex items-baseline justify-between">
               <h3
                 className={cn(
@@ -287,8 +302,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       addToPage(
         <h2
           key="edu-title"
+          onClick={() => onJumpToSection?.("education")}
           className={cn(
-            "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
+            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
             templateId === "modern" &&
               "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
             templateId === "minimal" &&
@@ -302,7 +318,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
 
       education.forEach((edu, i) => {
         const eduEl = (
-          <div key={`edu-${i}`} className="mb-3">
+          <div
+            key={`edu-${i}`}
+            className={cn("mb-3", clickableClass)}
+            onClick={() => onJumpToSection?.(`education-${edu.id}`)}
+          >
             <div className="mb-0.5 flex items-baseline justify-between">
               <h3 className="text-[11px] font-bold">
                 {edu.degree} {edu.major}
@@ -330,8 +350,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       addToPage(
         <h2
           key="skills-title"
+          onClick={() => onJumpToSection?.("skills")}
           className={cn(
-            "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
+            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
             templateId === "modern" &&
               "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
             templateId === "minimal" &&
@@ -345,7 +366,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
 
       skills.forEach((skill, i) => {
         const skillEl = (
-          <div key={`skill-${i}`} className="mb-1 text-[11px] leading-relaxed">
+          <div
+            key={`skill-${i}`}
+            className={cn("mb-1 text-[11px] leading-relaxed", clickableClass)}
+            onClick={() => onJumpToSection?.("skills")}
+          >
             <span className="font-bold">{skill.category}: </span>
             <span className="text-slate-700">{skill.items.join(", ")}</span>
           </div>
@@ -359,8 +384,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       addToPage(
         <h2
           key="projects-title"
+          onClick={() => onJumpToSection?.("projects")}
           className={cn(
-            "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
+            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
             templateId === "modern" &&
               "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
             templateId === "minimal" &&
@@ -374,7 +400,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
 
       projects.forEach((project, i) => {
         const projEl = (
-          <div key={`proj-${i}`} className="mb-3">
+          <div
+            key={`proj-${i}`}
+            className={cn("mb-3", clickableClass)}
+            onClick={() => onJumpToSection?.(`projects-${project.id}`)}
+          >
             <div className="mb-0.5 flex items-baseline justify-between">
               <h3 className="text-[11px] font-bold">{project.name}</h3>
               {(project.startDate || project.endDate) && (
@@ -401,8 +431,9 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       addToPage(
         <h2
           key={`custom-title-${sIndex}`}
+          onClick={() => onJumpToSection?.(`custom-${section.id}`)}
           className={cn(
-            "mb-2 border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase",
+            "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
             templateId === "modern" &&
               "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
             templateId === "minimal" &&
@@ -416,7 +447,11 @@ export function HtmlResume({ data }: HtmlResumeProps) {
 
       section.items.forEach((item, iIndex) => {
         const itemEl = (
-          <div key={`custom-${sIndex}-${iIndex}`} className="mb-3">
+          <div
+            key={`custom-${sIndex}-${iIndex}`}
+            className={cn("mb-3", clickableClass)}
+            onClick={() => onJumpToSection?.(`custom-${section.id}-${item.id}`)}
+          >
             <div className="mb-0.5 flex items-baseline justify-between">
               <h3 className="text-[11px] font-bold">{item.title}</h3>
               {item.date && (
@@ -450,6 +485,7 @@ export function HtmlResume({ data }: HtmlResumeProps) {
     customSections,
     templateId,
     t,
+    onJumpToSection,
   ]);
 
   return (

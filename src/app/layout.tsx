@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { siteConfig } from "@/config/site";
 
 const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
@@ -20,27 +21,34 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "SiLamar — Lamar Kerja Lebih Cerdas",
-    template: "%s | SiLamar",
+    default: `${siteConfig.name} — Lamar Kerja Lebih Cerdas`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Platform AI-powered untuk membantu fresh graduate Indonesia melamar kerja lebih cerdas. Buat CV ATS-friendly, analisis resume, dan track lamaran kerja kamu.",
-  keywords: [
-    "lamar kerja",
-    "fresh graduate",
-    "Resume builder",
-    "resume ATS",
-    "AI interview",
-    "job tracker",
-    "indonesia",
-  ],
-  authors: [{ name: "SiLamar" }],
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: siteConfig.authors,
   openGraph: {
-    title: "SiLamar — Lamar Kerja Lebih Cerdas",
-    description:
-      "Platform AI-powered untuk fresh graduate Indonesia. Buat CV ATS-friendly & track lamaran kerja kamu.",
+    title: `${siteConfig.name} — Lamar Kerja Lebih Cerdas`,
+    description: siteConfig.description,
     type: "website",
     locale: "id_ID",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+    creator: "@silamar",
   },
 };
 

@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { JobApplication, JobStatus } from "@/types/job";
 import { KANBAN_COLUMNS } from "@/types/job";
-import { getJobsAction, deleteJobAction, updateJobAction } from "@/server/actions/jobs";
+import { getJobsAction, deleteJobAction, updateJobAction } from "@/server/actions/job-applications";
 import { useDataTable } from "@/hooks/use-data-table";
 import type { DragEndEvent } from "@dnd-kit/core";
 

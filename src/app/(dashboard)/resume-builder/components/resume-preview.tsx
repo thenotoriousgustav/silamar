@@ -11,12 +11,16 @@ import { HtmlResume } from "./html-resume";
 
 interface ResumePreviewProps {
   content: ResumeContent;
+  onJumpToSection?: (sectionId: string) => void;
 }
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
 
-export function ResumePreview({ content }: ResumePreviewProps) {
+export function ResumePreview({
+  content,
+  onJumpToSection,
+}: ResumePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale] = useState(1);
@@ -186,7 +190,7 @@ export function ResumePreview({ content }: ResumePreviewProps) {
               transform: `scale(${finalScale})`,
             }}
           >
-            <HtmlResume data={content} />
+            <HtmlResume data={content} onJumpToSection={onJumpToSection} />
           </div>
         </div>
       </div>
