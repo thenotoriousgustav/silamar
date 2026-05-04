@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { users, aiUsageLogs } from "@/lib/db/schema";
+import { db } from "@/db";
+import { users, aiUsageLogs } from "@/db/schema";
 import { callAI } from "@/lib/ai/gemini";
 import {
   buildResumeAnalyzeJdPrompt,

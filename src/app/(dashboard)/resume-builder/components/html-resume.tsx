@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type { ResumeContent } from "@/types/resume";
+import type { ResumeContent, DescriptionItem } from "@/types/resume";
 import { cn } from "@/lib/utils";
 
 interface HtmlResumeProps {
@@ -62,11 +62,13 @@ export function HtmlResume({ data }: HtmlResumeProps) {
       .replace(/\/$/, "");
   };
 
-  const renderBulletList = (items: string[] | string | undefined) => {
+  const renderBulletList = (
+    items: DescriptionItem[] | string[] | string | undefined,
+  ) => {
     if (!items) return null;
     const bulletArray = Array.isArray(items)
-      ? items
-      : items.split("\n").filter(Boolean);
+      ? items.map((item) => (typeof item === "string" ? item : item.text))
+      : (items as string).split("\n").filter(Boolean);
     if (bulletArray.length === 0) return null;
 
     return (

@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import type { ResumeContent } from "@/types/resume";
+import type { ResumeContent, DescriptionItem } from "@/types/resume";
 
 // Register custom fonts
 Font.register({
@@ -59,7 +59,10 @@ const colors = {
   accent: "#2563eb", // Blue accent for Modern template
 };
 
-const getStyles = (fontFamily: string = "Helvetica", templateId: string = "classic") => {
+const getStyles = (
+  fontFamily: string = "Helvetica",
+  templateId: string = "classic",
+) => {
   // Map common names or use fallback
   const validFonts = [
     "Calibri",
@@ -288,7 +291,12 @@ const getStyles = (fontFamily: string = "Helvetica", templateId: string = "class
     };
   } else if (templateId === "minimal") {
     styles.page = { ...styles.page, padding: 45 };
-    styles.header = { ...styles.header, marginBottom: 20, textAlign: "center", borderBottomWidth: 0 };
+    styles.header = {
+      ...styles.header,
+      marginBottom: 20,
+      textAlign: "center",
+      borderBottomWidth: 0,
+    };
     styles.name = {
       ...styles.name,
       fontSize: 20,
@@ -334,13 +342,13 @@ function BulletList({
   items,
   styles,
 }: {
-  items: string[] | string;
+  items: DescriptionItem[] | string[] | string;
   styles: any;
 }) {
   if (!items) return null;
   const bulletArray = Array.isArray(items)
-    ? items
-    : items.split("\n").filter(Boolean);
+    ? items.map((item) => (typeof item === "string" ? item : item.text))
+    : (items as string).split("\n").filter(Boolean);
   if (bulletArray.length === 0) return null;
 
   return (
@@ -403,15 +411,13 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
               )}
             </View>
             <View style={styles.headerContentRight}>
-              <Text style={styles.contactInfo}>
-                {personalInfo.email}
-              </Text>
-              <Text style={styles.contactInfo}>
-                {personalInfo.phone}
-              </Text>
+              <Text style={styles.contactInfo}>{personalInfo.email}</Text>
+              <Text style={styles.contactInfo}>{personalInfo.phone}</Text>
               {(personalInfo.location || personalInfo.linkedin) && (
                 <Text style={styles.contactInfo}>
-                  {[personalInfo.location, cleanUrl(personalInfo.linkedin)].filter(Boolean).join(" | ")}
+                  {[personalInfo.location, cleanUrl(personalInfo.linkedin)]
+                    .filter(Boolean)
+                    .join(" | ")}
                 </Text>
               )}
             </View>

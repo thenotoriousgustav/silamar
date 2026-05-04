@@ -275,7 +275,10 @@ export function ProjectSection({
                                 onClick={() => {
                                   const current = project.description || [];
                                   updateProject(project.id, {
-                                    description: [...current, ""],
+                                    description: [
+                                      ...current,
+                                      { id: crypto.randomUUID(), text: "" },
+                                    ],
                                   });
                                 }}
                                 className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
@@ -286,51 +289,70 @@ export function ProjectSection({
                             </div>
 
                             <div className="space-y-2">
-                              {(project.description || []).map(
-                                (bullet, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="group flex items-start gap-2"
-                                  >
-                                    <div className="bg-primary/20 text-primary mt-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-none text-[10px] font-bold">
-                                      {idx + 1}
-                                    </div>
-                                    <div className="relative flex-1">
-                                      <textarea
-                                        value={bullet || ""}
-                                        onChange={(e) => {
-                                          const newDesc = [
-                                            ...(project.description || []),
-                                          ];
-                                          newDesc[idx] = e.target.value;
-                                          updateProject(project.id, {
-                                            description: newDesc,
-                                          });
-                                        }}
-                                        placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
-                                        className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
-                                        rows={2}
-                                      />
-                                    </div>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => {
-                                        const newDesc = [
-                                          ...(project.description || []),
-                                        ];
-                                        newDesc.splice(idx, 1);
-                                        updateProject(project.id, {
-                                          description: newDesc,
-                                        });
-                                      }}
-                                      className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </Button>
-                                  </div>
-                                ),
-                              )}
+                              <Sortable
+                                value={project.description || []}
+                                onValueChange={(newBullets) => {
+                                  updateProject(project.id, {
+                                    description: newBullets,
+                                  });
+                                }}
+                                getItemValue={(item) => item.id}
+                              >
+                                <SortableContent className="space-y-2">
+                                  {(project.description || []).map(
+                                    (bullet, idx) => (
+                                      <SortableItem
+                                        key={bullet.id}
+                                        value={bullet.id}
+                                        className="group flex items-start gap-2"
+                                      >
+                                        <SortableItemHandle
+                                          asChild
+                                          className="text-muted-foreground hover:text-primary mt-3 cursor-grab transition-colors"
+                                        >
+                                          <GripVertical className="h-3.5 w-3.5" />
+                                        </SortableItemHandle>
+                                        <div className="relative flex-1">
+                                          <textarea
+                                            value={bullet.text || ""}
+                                            onChange={(e) => {
+                                              const newDesc = [
+                                                ...(project.description || []),
+                                              ];
+                                              newDesc[idx] = {
+                                                ...newDesc[idx],
+                                                text: e.target.value,
+                                              };
+                                              updateProject(project.id, {
+                                                description: newDesc,
+                                              });
+                                            }}
+                                            placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
+                                            className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
+                                            rows={2}
+                                          />
+                                        </div>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => {
+                                            const newDesc =
+                                              project.description.filter(
+                                                (_, i) => i !== idx,
+                                              );
+                                            updateProject(project.id, {
+                                              description: newDesc,
+                                            });
+                                          }}
+                                          className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                      </SortableItem>
+                                    ),
+                                  )}
+                                </SortableContent>
+                              </Sortable>
                               {(project.description || []).length === 0 && (
                                 <p className="text-muted-foreground py-2 text-center text-xs italic">
                                   Belum ada deskripsi yang ditambahkan.

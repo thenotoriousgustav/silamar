@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getResumeDTO } from "@/data/resumes";
+import { getResumeDTO } from "@/server/queries/resumes";
 import { ResumeBuilderClient } from "../components/resume-builder-client";
 import type { ResumeContent } from "@/types/resume";
 

@@ -42,7 +42,7 @@ import {
   createResumeAction,
   getResumesAction,
   createEmptyResumeAction,
-} from "../server";
+} from "@/server/actions/resumes";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
 import type { ResumeTemplateId } from "@/types/resume";

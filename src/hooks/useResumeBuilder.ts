@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateResumeAction } from "@/app/(dashboard)/resume-builder/server";
+import { updateResumeAction } from "@/server/actions/resumes";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -40,24 +40,14 @@ export function useResumeBuilder(
   initialContent?: Partial<ResumeContent>,
 ) {
   const router = useRouter();
-  // Migration: Handle old skills format (string[]) and convert to ResumeSkill[]
-  const migratedSkills =
-    Array.isArray(initialContent?.skills) &&
-    initialContent.skills.length > 0 &&
-    typeof initialContent.skills[0] === "string"
-      ? [
-          {
-            id: "legacy-skills",
-            category: "Skills",
-            items: initialContent.skills as unknown as string[],
-          },
-        ]
-      : (initialContent?.skills as ResumeSkill[]) || [];
-
   const [content, setContent] = useState<ResumeContent>({
     ...DEFAULT_RESUME,
     ...initialContent,
-    skills: migratedSkills,
+    personalInfo: initialContent?.personalInfo || DEFAULT_RESUME.personalInfo,
+    experience: initialContent?.experience || [],
+    education: initialContent?.education || [],
+    projects: initialContent?.projects || [],
+    skills: initialContent?.skills || [],
     customSections: initialContent?.customSections || [],
   });
   const [isSaving, setIsSaving] = useState(false);

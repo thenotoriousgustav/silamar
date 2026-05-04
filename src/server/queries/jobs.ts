@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { jobApplications } from "@/lib/db/schema";
+import { db } from "@/db";
+import { jobApplications } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { desc, eq, and, ilike, inArray, gte, lte, or, asc } from "drizzle-orm";
 import { headers } from "next/headers";

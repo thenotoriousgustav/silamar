@@ -18,7 +18,7 @@ import { ResumePreview } from "./resume-preview";
 import type { ResumeContent } from "@/types/resume";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateResumeAction } from "../server";
+import { updateResumeAction } from "@/server/actions/resumes";
 
 interface ResumeBuilderClientProps {
   id: string;

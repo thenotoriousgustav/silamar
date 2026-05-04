@@ -53,7 +53,7 @@ import {
   createJobAction,
   updateJobAction,
   getUserResumesAction,
-} from "../server";
+} from "@/server/actions/jobs";
 import { useQuery } from "@tanstack/react-query";
 import { ResumeSelectorDialog } from "./resume-selector-dialog";
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { users, transactions } from "@/lib/db/schema";
+import { db } from "@/db";
+import { users, transactions } from "@/db/schema";
 import {
   verifyMidtransSignature,
   isPaymentSuccessful,

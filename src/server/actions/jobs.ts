@@ -1,14 +1,14 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { jobApplications } from "@/lib/db/schema";
+import { db } from "@/db";
+import { jobApplications } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { getJobsDTO } from "@/data/jobs";
-import { getResumesDTO } from "@/data/resumes";
+import { getJobsDTO } from "@/server/queries/jobs";
+import { getResumesDTO } from "@/server/queries/resumes";
 
 /**
  * Server Actions for Job Tracker

@@ -1,14 +1,13 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { resumes } from "@/lib/db/schema";
+import { db } from "@/db";
+import { resumes } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import type { ResumeContent } from "@/types/resume";
-import { getResumesDTO } from "@/data/resumes";
+import { getResumesDTO } from "@/server/queries/resumes";
 
 /**
  * Server Actions for Resume Builder

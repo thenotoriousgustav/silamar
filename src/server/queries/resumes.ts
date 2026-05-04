@@ -1,12 +1,11 @@
 import "server-only";
 
-import { db } from "@/lib/db";
-import { resumes } from "@/lib/db/schema";
+import { db } from "@/db";
+import { resumes } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { eq, and, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 import { cache } from "react";
-import { redirect } from "next/navigation";
 
 /**
  * Get current session user, redirected to login if not found.

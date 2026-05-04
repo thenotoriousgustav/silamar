@@ -7,8 +7,11 @@ export interface ResumePersonalInfo {
   linkedin?: string;
   website?: string;
   summary?: string;
-  summaryEn?: string;
-  summaryId?: string;
+}
+
+export interface DescriptionItem {
+  id: string;
+  text: string;
 }
 
 export interface ResumeExperience {
@@ -18,7 +21,7 @@ export interface ResumeExperience {
   startDate: string;
   endDate?: string;
   isCurrentJob: boolean;
-  description: string[];
+  description: DescriptionItem[];
   location?: string;
 }
 
@@ -31,13 +34,13 @@ export interface ResumeEducation {
   endYear?: string;
   isCurrentlyStudying: boolean;
   gpa?: string;
-  description: string[];
+  description: DescriptionItem[];
 }
 
 export interface ResumeProject {
   id: string;
   name: string;
-  description: string[];
+  description: DescriptionItem[];
   technologies: string[];
   link?: string;
   startDate?: string;
@@ -55,7 +58,7 @@ export interface ResumeCustomSectionItem {
   title: string;
   subtitle?: string;
   date?: string;
-  description?: string[];
+  description?: DescriptionItem[];
   link?: string;
 }
 

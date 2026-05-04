@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { resumes, jobApplications, aiUsageLogs } from "@/lib/db/schema";
+import { db } from "@/db";
+import { resumes, jobApplications, aiUsageLogs } from "@/db/schema";
 import { eq, count, desc } from "drizzle-orm";
 import Link from "next/link";
 import {

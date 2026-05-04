@@ -124,7 +124,10 @@ export function ResumeForm({
       const currentExp = content.experience.find((e) => e.id === data.expId);
       if (currentExp) {
         const currentBullets = [...(currentExp.description || [])];
-        currentBullets[data.idx] = data.result;
+        currentBullets[data.idx] = {
+          ...currentBullets[data.idx],
+          text: data.result,
+        };
         updateExperience(data.expId, { description: currentBullets });
         toast.success("Teks berhasil dioptimasi!");
       }
