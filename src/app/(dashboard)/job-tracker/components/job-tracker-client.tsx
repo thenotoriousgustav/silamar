@@ -279,6 +279,7 @@ export function JobTrackerClient({
           queryClient.invalidateQueries({ queryKey: ["jobs"] })
         }
         onConfirmDelete={(id) => deleteMutation.mutate(id)}
+        trackerId={currentQueryParams.trackerId}
       />
     </div>
   );

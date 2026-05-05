@@ -26,14 +26,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+import { getTrackersAction } from "@/server/actions/job-applications";
+import { useQuery } from "@tanstack/react-query";
+import { CreateTrackerDialog } from "@/components/features/job-tracker/create-tracker-dialog";
+import { TrackerActions } from "@/components/features/job-tracker/tracker-actions";
+import { Briefcase } from "lucide-react";
+
 export function AppSidebar() {
   const { data: session } = useSession();
   const user = session?.user;
+
+  const { data: trackers } = useQuery({
+    queryKey: ["trackers"],
+    queryFn: () => getTrackersAction(),
+  });
 
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  const dynamicTrackers = React.useMemo(() => {
+    const base = [...sidebarData.navTrackers];
+    if (!trackers || trackers.length === 0) return base;
+
+    const items = trackers.map((t) => ({
+      title: t.name,
+      url: `/job-tracker?trackerId=${t.id}`,
+      icon: Briefcase,
+      actions: <TrackerActions tracker={t} />,
+    }));
+
+    return [...base, ...items];
+  }, [trackers]);
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -54,7 +79,13 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={sidebarData.navMain} />
+        <NavMain items={sidebarData.navMain} label="Utama" />
+        <NavMain
+          items={dynamicTrackers}
+          label="Trackers"
+          action={<CreateTrackerDialog />}
+        />
+        <NavMain items={sidebarData.navSecondary} label="Analisis" />
       </SidebarContent>
 
       <SidebarFooter className="flex flex-col gap-2 p-4">

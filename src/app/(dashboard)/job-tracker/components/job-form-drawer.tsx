@@ -62,6 +62,7 @@ const formSchema = z.object({
   position: z.string().min(1, "Posisi pekerjaan wajib diisi"),
   location: z.string().optional(),
   status: z.enum(["dilamar", "interview", "penawaran", "ditolak"]),
+  trackerId: z.string().optional().nullable(),
   type: z.enum([
     "full-time",
     "part-time",
@@ -85,6 +86,7 @@ interface JobFormDrawerProps {
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
   onDelete?: (job: JobApplication) => void;
+  trackerId?: string | null;
 }
 
 import { triggerSuccessConfetti } from "@/lib/utils/confetti";
@@ -95,6 +97,7 @@ export function JobFormDrawer({
   onOpenChange,
   onSuccess,
   onDelete,
+  trackerId,
 }: JobFormDrawerProps) {
   const queryClient = useQueryClient();
   const [isResumeSelectorOpen, setIsResumeSelectorOpen] = useState(false);
@@ -105,7 +108,7 @@ export function JobFormDrawer({
       if (isEdit && job) {
         return updateJobAction(job.id, values);
       }
-      return createJobAction(values);
+      return createJobAction({ ...values, trackerId: values.trackerId || trackerId });
     },
     onSuccess: (data, variables) => {
       toast.success(isEdit ? "Lamaran diperbarui" : "Lamaran ditambahkan");
@@ -137,6 +140,7 @@ export function JobFormDrawer({
       appliedDate: new Date(),
       interviewDate: undefined,
       description: "",
+      trackerId: trackerId || null,
     },
   });
 

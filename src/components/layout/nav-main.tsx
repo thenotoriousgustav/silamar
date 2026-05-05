@@ -23,18 +23,17 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
+function NavMainItem({
+  item,
+  pathname,
+}: {
+  item: any;
+  pathname: string;
+}) {
   const isParentActive =
     pathname === item.url ||
     item.items?.some((sub: any) => pathname === sub.url);
   const [isOpen, setIsOpen] = React.useState(isParentActive);
-
-  // Sync open state with navigation
-  // React.useEffect(() => {
-  //   if (isParentActive) {
-  //     setIsOpen(true);
-  //   }
-  // }, [isParentActive]);
 
   if (item.items && item.items.length > 0) {
     return (
@@ -85,30 +84,41 @@ function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
         {item.icon && <item.icon />}
         <span>{item.title}</span>
       </SidebarMenuButton>
+      {item.actions && item.actions}
     </SidebarMenuItem>
   );
 }
 
 export function NavMain({
   items,
+  label,
+  action,
 }: {
   items: {
     title: string;
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    actions?: React.ReactNode;
     items?: {
       title: string;
       url: string;
       icon?: LucideIcon;
     }[];
   }[];
+  label?: string;
+  action?: React.ReactNode;
 }) {
   const pathname = usePathname();
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
+      {label && (
+        <div className="flex items-center justify-between pr-2">
+          <SidebarGroupLabel>{label}</SidebarGroupLabel>
+          {action}
+        </div>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (

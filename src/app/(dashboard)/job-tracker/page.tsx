@@ -7,8 +7,13 @@ export const revalidate = 0;
 
 import { VIEW_PREFERENCE_KEY, COLUMN_ORDER_KEY } from "./constants";
 
-export default async function JobTrackerPage() {
-  const userJobs = await getJobsDTO();
+export default async function JobTrackerPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
+  const trackerId = searchParams.trackerId as string | undefined;
+
+  const userJobs = await getJobsDTO({ trackerId });
   const cookieStore = await cookies();
   
   const initialView =

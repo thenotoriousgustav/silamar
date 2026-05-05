@@ -1,13 +1,13 @@
 "use server";
 
 import { db } from "@/db";
-import { jobApplications } from "@/db/schema";
+import { jobApplications, jobTrackers } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import { getJobsDTO } from "@/server/queries/job-applications";
+import { getJobsDTO, getTrackersDTO } from "@/server/queries/job-applications";
 import { getResumesDTO } from "@/server/queries/resumes";
 
 /**
@@ -26,6 +26,73 @@ async function getSession() {
 
 export async function getJobsAction(params: any = {}) {
   return await getJobsDTO(params);
+}
+
+export async function getTrackersAction() {
+  return await getTrackersDTO();
+}
+
+export async function createTrackerAction(data: {
+  name: string;
+  description?: string;
+}) {
+  const session = await getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const newTracker = await db
+    .insert(jobTrackers)
+    .values({
+      id: uuidv4(),
+      userId: session.user.id,
+      name: data.name,
+      description: data.description,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  revalidatePath("/dashboard", "layout");
+  return newTracker[0];
+}
+
+export async function updateTrackerAction(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+  },
+) {
+  const session = await getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const updated = await db
+    .update(jobTrackers)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)),
+    )
+    .returning();
+
+  revalidatePath("/dashboard", "layout");
+  return updated[0];
+}
+
+export async function deleteTrackerAction(id: string) {
+  const session = await getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const deleted = await db
+    .delete(jobTrackers)
+    .where(
+      and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)),
+    )
+    .returning();
+
+  revalidatePath("/dashboard", "layout");
+  return deleted[0];
 }
 
 export async function createJobAction(data: any) {

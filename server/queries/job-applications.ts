@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { jobApplications } from "@/db/schema";
+import { jobApplications, jobTrackers } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { desc, eq, and, ilike, inArray, gte, lte, or, asc } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -21,6 +21,22 @@ async function getSession() {
 }
 
 /**
+ * Fetch job trackers for the current user
+ */
+export const getTrackersDTO = cache(async () => {
+  const session = await getSession();
+  if (!session?.user) return [];
+
+  const trackers = await db
+    .select()
+    .from(jobTrackers)
+    .where(eq(jobTrackers.userId, session.user.id))
+    .orderBy(desc(jobTrackers.updatedAt));
+
+  return trackers;
+});
+
+/**
  * Fetch job applications for the current user with optional filtering and sorting
  */
 export const getJobsDTO = cache(async (params: any = {}) => {
@@ -28,6 +44,7 @@ export const getJobsDTO = cache(async (params: any = {}) => {
   if (!session?.user) return [];
 
   const {
+    trackerId,
     position,
     company,
     type,
@@ -40,6 +57,10 @@ export const getJobsDTO = cache(async (params: any = {}) => {
   } = params;
 
   const filters = [eq(jobApplications.userId, session.user.id)];
+
+  if (trackerId) {
+    filters.push(eq(jobApplications.trackerId, trackerId));
+  }
 
   if (position) {
     filters.push(ilike(jobApplications.position, `%${position}%`));

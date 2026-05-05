@@ -17,11 +17,25 @@ export const jobStatusEnum = pgEnum("job_status", [
   "ditolak",
 ]);
 
+export const jobTrackers = pgTable("job_trackers", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const jobApplications = pgTable("job_applications", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  trackerId: text("tracker_id").references(() => jobTrackers.id, {
+    onDelete: "cascade",
+  }),
   resumeId: text("resume_id").references(() => resumes.id, {
     onDelete: "set null",
   }),

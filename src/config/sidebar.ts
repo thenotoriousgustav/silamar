@@ -36,16 +36,24 @@ export const sidebarData = {
       icon: Files,
       items: [
         { title: "Resumes", url: "/documents/resumes", icon: FileUser },
-        { title: "Cover Letter", url: "/documents/cover-letter", icon: ScrollText },
+        {
+          title: "Cover Letter",
+          url: "/documents/cover-letter",
+          icon: ScrollText,
+        },
         { title: "Certificates", url: "/documents/certificates", icon: Award },
         { title: "Portfolio", url: "/documents/portfolio", icon: FolderOpen },
       ],
     },
+  ],
+  navTrackers: [
     {
       title: "Job Tracker",
       url: "/job-tracker",
       icon: Briefcase,
     },
+  ],
+  navSecondary: [
     {
       title: "Skill Gap",
       url: "/skill-gap",

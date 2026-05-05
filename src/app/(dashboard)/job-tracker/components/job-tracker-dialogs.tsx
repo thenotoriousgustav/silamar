@@ -24,6 +24,7 @@ interface JobTrackerDialogsProps {
   onAddSuccess: () => void;
   onDetailSuccess: () => void;
   onConfirmDelete: (id: string) => void;
+  trackerId?: string | null;
 }
 
 export function JobTrackerDialogs({
@@ -37,6 +38,7 @@ export function JobTrackerDialogs({
   onAddSuccess,
   onDetailSuccess,
   onConfirmDelete,
+  trackerId,
 }: JobTrackerDialogsProps) {
   return (
     <>
@@ -45,6 +47,7 @@ export function JobTrackerDialogs({
         open={isAddOpen}
         onOpenChange={setIsAddOpen}
         onSuccess={onAddSuccess}
+        trackerId={trackerId}
       />
 
       <JobFormDrawer
