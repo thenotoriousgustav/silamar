@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateResumeAction } from "@/server/actions/resumes";
+import { updateResumeAction } from "@/server/actions/documents/resumes";
 import type {
   ResumeContent,
   ResumeExperience,

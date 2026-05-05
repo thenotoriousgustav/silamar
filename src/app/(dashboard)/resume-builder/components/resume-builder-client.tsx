@@ -18,7 +18,7 @@ import { ResumePreview } from "./resume-preview";
 import type { ResumeContent } from "@/types/resume";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateResumeAction } from "@/server/actions/resumes";
+import { updateResumeAction } from "@/server/actions/documents/resumes";
 
 interface ResumeBuilderClientProps {
   id: string;
@@ -171,7 +171,7 @@ export function ResumeBuilderClient({
     setTitle(
       <div className="flex items-center gap-3">
         <Link
-          href="/resume-builder"
+          href="/documents/resumes"
           className="hover:bg-muted text-muted-foreground shrink-0 rounded-none p-1 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

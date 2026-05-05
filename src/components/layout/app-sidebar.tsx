@@ -1,18 +1,12 @@
 "use client";
 
 import * as React from "react";
-import {
-  Zap,
-  Settings,
-  LogOut,
-  ChevronUp,
-} from "lucide-react";
-import { menuItems } from "@/config/sidebar";
+import { Zap, Settings, LogOut, ChevronUp } from "lucide-react";
+import { sidebarData } from "@/config/sidebar";
+import { NavMain } from "@/components/layout/nav-main";
 import { ModeToggle } from "@/components/layout/mode-toggle";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth/client";
-import { useTheme } from "next-themes";
 import {
   Sidebar,
   SidebarContent,
@@ -21,10 +15,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarTrigger,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
@@ -33,16 +23,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-
-
 export function AppSidebar() {
-  const pathname = usePathname();
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
   const user = session?.user;
 
   const [mounted, setMounted] = React.useState(false);
@@ -51,7 +36,7 @@ export function AppSidebar() {
   }, []);
 
   return (
-    <Sidebar collapsible="offcanvas" variant="sidebar">
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader className="flex h-16 items-center justify-center">
         <div className="flex w-full items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -69,41 +54,10 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground group-data-[collapsible=icon]:hidden">
-            Menu
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      render={<Link href={item.href} />}
-                      isActive={isActive}
-                      tooltip={item.label}
-                      className={
-                        isActive
-                          ? "bg-primary/10 text-primary hover:bg-primary/20"
-                          : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      }
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavMain items={sidebarData.navMain} />
       </SidebarContent>
 
       <SidebarFooter className="flex flex-col gap-2 p-4">
-        {/* Theme Toggle (Inline when expanded, dropdown when collapsed? Or just part of user menu) */}
-        {/* Let's put it in the user menu for a cleaner look when icon-only */}
-
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -112,25 +66,28 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  />
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={user?.image || ""}
+                        alt={user?.name || ""}
+                      />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {mounted ? user?.name?.charAt(0) : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                      <span className="text-foreground truncate font-semibold">
+                        {mounted ? user?.name || "User" : "User"}
+                      </span>
+                      <span className="text-muted-foreground truncate text-xs">
+                        {mounted ? user?.email : ""}
+                      </span>
+                    </div>
+                    <ChevronUp className="text-muted-foreground ml-auto h-4 w-4 group-data-[collapsible=icon]:hidden" />
+                  </SidebarMenuButton>
                 }
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {mounted ? user?.name?.charAt(0) : "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="text-foreground truncate font-semibold">
-                    {mounted ? user?.name || "User" : "User"}
-                  </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {mounted ? user?.email : ""}
-                  </span>
-                </div>
-                <ChevronUp className="text-muted-foreground ml-auto h-4 w-4 group-data-[collapsible=icon]:hidden" />
-              </DropdownMenuTrigger>
+              />
               <DropdownMenuContent
                 side="top"
                 className="bg-popover border-border text-popover-foreground w-[--radix-dropdown-menu-trigger-width] min-w-56"

@@ -414,7 +414,7 @@ export function JobFormDrawer({
                   <p className="text-muted-foreground text-[10px]">
                     Kamu belum memiliki resume.{" "}
                     <a
-                      href="/resume-builder"
+                      href="/documents/resumes"
                       className="text-primary font-bold hover:underline"
                     >
                       Buat sekarang?

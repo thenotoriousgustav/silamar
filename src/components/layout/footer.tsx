@@ -3,10 +3,10 @@ import { Zap } from "lucide-react";
 
 const footerLinks = {
   Produk: [
-    { label: "Resume Builder", href: "/resume-builder" },
+    { label: "Resume Builder", href: "/documents/resumes" },
     { label: "Job Tracker", href: "/job-tracker" },
     { label: "Analisis Resume", href: "/resume-analysis" },
-    { label: "Cover Letter", href: "/cover-letter" },
+    { label: "Cover Letter", href: "/documents/cover-letter" },
   ],
   Perusahaan: [
     { label: "Tentang Kami", href: "#tentang" },

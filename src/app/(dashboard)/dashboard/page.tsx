@@ -58,7 +58,7 @@ async function getDashboardData(userId: string) {
 
 const quickActions = [
   {
-    href: "/resume-builder",
+    href: "/documents/resumes",
     icon: FileText,
     label: "Buat Resume",
     color: "primary",
@@ -69,7 +69,7 @@ const quickActions = [
     label: "Analisis Resume",
     color: "purple",
   },
-  { href: "/cover-letter", icon: Mail, label: "Cover Letter", color: "blue" },
+  { href: "/documents/cover-letter", icon: Mail, label: "Cover Letter", color: "blue" },
   {
     href: "/job-tracker",
     icon: Briefcase,
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
               <FileText className="h-4 w-4 text-primary" />
             </div>
             <Link
-              href="/resume-builder"
+              href="/documents/resumes"
               className="text-xs text-muted-foreground hover:text-foreground"
             >
               Lihat →

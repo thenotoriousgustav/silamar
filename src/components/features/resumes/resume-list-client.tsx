@@ -6,8 +6,6 @@ import {
   FileText,
   Plus,
   ArrowRight,
-  Sparkles,
-  PencilLine,
   Loader2,
   Trash2,
   AlertTriangle,
@@ -16,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
+import { calculateCompleteness } from "@/lib/resume/completeness";
 import {
   Dialog,
   DialogContent,
@@ -23,9 +22,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { ResumeContent, ResumeTemplateId } from "@/types/resume";
+import {
+  createResumeAction,
+  createEmptyResumeAction,
+  deleteResumeAction,
+  getResumesAction,
+} from "@/server/actions/documents/resumes";
+import { ResumeImportDialog } from "./resume-import-dialog";
+import { TemplateSelectionDialog } from "./template-selection-dialog";
+import { Sparkles, PencilLine } from "lucide-react";
+import { toast } from "sonner";
 
-import type { ResumeContent } from "@/types/resume";
-import { calculateCompleteness } from "@/lib/resume/completeness";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,16 +44,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
-import {
-  deleteResumeAction,
-  createResumeAction,
-  getResumesAction,
-  createEmptyResumeAction,
-} from "@/server/actions/resumes";
-import { ResumeImportDialog } from "./resume-import-dialog";
-import { TemplateSelectionDialog } from "./template-selection-dialog";
-import type { ResumeTemplateId } from "@/types/resume";
 
 interface Resume {
   id: string;
@@ -398,7 +396,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
       {(createMutation.isPending || createEmptyMutation.isPending) &&
         !isTemplateSelectOpen && (
-          <div className="bg-background/80 fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-sm">
+          <div className="bg-background/80 fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
             <Loader2 className="text-primary h-12 w-12 animate-spin" />
             <p className="text-foreground mt-4 font-medium italic">
               Sedang menyiapkan resume kamu...

@@ -7,7 +7,7 @@ interface HtmlResumeProps {
   onJumpToSection?: (sectionId: string) => void;
 }
 
-const translations = {
+const RESUME_TRANSLATIONS = {
   id: {
     professionalSummary: "Ringkasan Profesional",
     workExperience: "Pengalaman Kerja",
@@ -43,7 +43,9 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     customSections,
   } = data;
   const lang = style?.language || "id";
-  const t = translations[lang as keyof typeof translations] || translations.id;
+  const translations =
+    RESUME_TRANSLATIONS[lang as keyof typeof RESUME_TRANSLATIONS] ||
+    RESUME_TRANSLATIONS.id;
   const templateId = style?.templateId || "classic";
   const fontFamily = style?.fontFamily || "Helvetica";
 
@@ -232,7 +234,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
           >
-            {t.professionalSummary}
+            {translations.professionalSummary}
           </h2>
           <p className="text-justify text-[11px] leading-relaxed text-slate-700">
             {personalInfo.summary}
@@ -264,7 +266,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
           >
-            {t.workExperience}
+            {translations.workExperience}
           </h2>,
           estimateHeight("sectionTitle", null),
         );
@@ -287,7 +289,8 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 </h3>
                 <span className="text-[10px] font-medium text-slate-500">
                   {exp.startDate} —{" "}
-                  {exp.endDate || (exp.isCurrentJob ? t.present : "")}
+                  {exp.endDate ||
+                    (exp.isCurrentJob ? translations.present : "")}
                 </span>
               </div>
               <div className="mb-1 flex items-baseline justify-between">
@@ -320,7 +323,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
           >
-            {t.education}
+            {translations.education}
           </h2>,
           estimateHeight("sectionTitle", null),
         );
@@ -338,7 +341,8 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 </h3>
                 <span className="text-[10px] font-medium text-slate-500">
                   {edu.startYear} —{" "}
-                  {edu.endYear || (edu.isCurrentlyStudying ? t.present : "")}
+                  {edu.endYear ||
+                    (edu.isCurrentlyStudying ? translations.present : "")}
                 </span>
               </div>
               <div className="text-[11px] text-slate-700">
@@ -346,7 +350,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               </div>
               {edu.gpa && (
                 <div className="text-[10px] text-slate-500">
-                  {t.gpa}: {edu.gpa}
+                  {translations.gpa}: {edu.gpa}
                 </div>
               )}
               {edu.description && renderBulletList(edu.description)}
@@ -369,7 +373,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
           >
-            {t.skills}
+            {translations.skills}
           </h2>,
           estimateHeight("sectionTitle", null),
         );
@@ -402,7 +406,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
             )}
           >
-            {t.projects}
+            {translations.projects}
           </h2>,
           estimateHeight("sectionTitle", null),
         );
@@ -504,7 +508,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     customSections,
     data.sectionOrder,
     templateId,
-    t,
+    translations,
     onJumpToSection,
   ]);
 

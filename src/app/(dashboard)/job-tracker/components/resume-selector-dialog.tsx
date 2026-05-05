@@ -174,7 +174,7 @@ export function ResumeSelectorDialog({
 
             <div className="border-border/50 bg-muted/20 border-t p-4">
               <a
-                href="/resume-builder"
+                href="/documents/resumes"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "xs" }),
                   "hover:border-primary hover:text-primary h-8 w-full rounded-none border-dashed transition-all",

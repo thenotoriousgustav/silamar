@@ -43,7 +43,7 @@ export async function createResumeAction(data: {
     })
     .returning();
 
-  revalidatePath("/resume-builder");
+  revalidatePath("/documents/resumes");
   return newResume[0];
 }
 
@@ -67,7 +67,7 @@ export async function updateResumeAction(
     .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)))
     .returning();
 
-  revalidatePath("/resume-builder");
+  revalidatePath("/documents/resumes");
   revalidatePath(`/resume-builder/${id}`);
   return updatedResume[0];
 }
@@ -110,7 +110,7 @@ export async function createEmptyResumeAction(
     })
     .returning();
 
-  revalidatePath("/resume-builder");
+  revalidatePath("/documents/resumes");
   return newResume[0];
 }
 
@@ -122,6 +122,6 @@ export async function deleteResumeAction(id: string) {
     .delete(resumes)
     .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
 
-  revalidatePath("/resume-builder");
+  revalidatePath("/documents/resumes");
   return { success: true };
 }
