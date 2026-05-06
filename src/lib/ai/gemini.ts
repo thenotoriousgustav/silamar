@@ -1,4 +1,4 @@
-import { generateObject, type GenerateObjectResult } from "ai";
+import { generateObject } from "ai";
 import { defaultModel } from "./index";
 import { z } from "zod";
 
@@ -16,14 +16,4 @@ export async function callAI<T>(
   });
 
   return object;
-}
-
-// Keep callGemini as an alias for backward compatibility or refactor existing calls
-export async function callGemini<T>(
-  prompt: string,
-): Promise<T> {
-  // Note: Since we are migrating to Vercel AI SDK, we need the schema.
-  // In the transition, we might need to handle this differently or refactor all calls.
-  // For now, this is a placeholder that might fail if called without a schema refactor.
-  throw new Error("callGemini is deprecated. Use callAI(prompt, schema) instead.");
 }

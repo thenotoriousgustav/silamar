@@ -13,13 +13,12 @@ export function buildCoverLetterPrompt(
   jobTitle: string,
   company: string,
   jobDescription?: string,
-  tone: "formal" | "friendly" | "professional" = "professional"
+  tone: "formal" | "friendly" | "professional" = "professional",
 ): string {
   const toneGuide = {
     formal: "sangat formal, sopan, dan tradisional",
     friendly: "hangat, antusias, dan personal namun tetap profesional",
-    professional:
-      "profesional, percaya diri, dan terstruktur dengan baik",
+    professional: "profesional, percaya diri, dan terstruktur dengan baik",
   };
 
   return `

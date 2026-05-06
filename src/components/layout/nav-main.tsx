@@ -23,13 +23,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-function NavMainItem({
-  item,
-  pathname,
-}: {
-  item: any;
-  pathname: string;
-}) {
+function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
   const isParentActive =
     pathname === item.url ||
     item.items?.some((sub: any) => pathname === sub.url);

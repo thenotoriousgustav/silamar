@@ -39,9 +39,10 @@ export const coverLetters = pgTable("cover_letters", {
   resumeId: text("resume_id").references(() => resumes.id, {
     onDelete: "set null",
   }),
-  jobTitle: text("job_title").notNull(),
-  company: text("company").notNull(),
-  content: text("content").notNull(),
+  title: text("title").notNull().default("Cover Letter Tanpa Judul"),
+  jobTitle: text("job_title"),
+  company: text("company"),
+  content: jsonb("content_json"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
