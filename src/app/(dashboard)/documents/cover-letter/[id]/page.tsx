@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getCoverLetterDTO } from "@/server/queries/cover-letters";
-import { CoverLetterBuilderData } from "../components/schema";
-import { CoverLetterBuilderClient } from "../components/cover-letter-builder-client";
+import { getCoverLetterDTO } from "@/features/cover-letters/queries";
+import { CoverLetterBuilderData } from "@/features/cover-letters/components/schema";
+import { CoverLetterBuilderClient } from "@/features/cover-letters/components/cover-letter-builder-client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

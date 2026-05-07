@@ -23,7 +23,9 @@
       "@/db": ["./db/index.ts"],
       "@/db/*": ["./db/*"],
       "@/server": ["./server"],
-      "@/server/*": ["./server/*"]
+      "@/server/*": ["./server/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/shared/*": ["./src/components/shared/*"]
     }
   },
   "include": [

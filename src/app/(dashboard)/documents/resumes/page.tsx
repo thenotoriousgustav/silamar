@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { getResumesDTO } from "@/server/queries/resumes";
-import { ResumeListClient } from "@/components/features/resumes/resume-list-client";
+import { getResumesDTO } from "@/features/resumes/queries";
+import { ResumeListClient } from "@/features/resumes/components/resume-list-client";
 
 export const metadata: Metadata = { title: "Daftar Resume — SiLamar" };
 export const dynamic = "force-dynamic";

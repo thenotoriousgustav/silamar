@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { getTrackersAction } from "@/server/actions/job-applications";
+import { getTrackersAction } from "@/features/job-tracker/actions";
 import { useQuery } from "@tanstack/react-query";
-import { CreateTrackerDialog } from "@/components/features/job-tracker/create-tracker-dialog";
-import { TrackerActions } from "@/components/features/job-tracker/tracker-actions";
+import { CreateTrackerDialog } from "@/features/job-tracker/components/create-tracker-dialog";
+import { TrackerActions } from "@/features/job-tracker/components/tracker-actions";
 import { Briefcase } from "lucide-react";
 
 export function AppSidebar() {

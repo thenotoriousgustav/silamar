@@ -1,11 +1,11 @@
-import { getJobsDTO } from "@/server/queries/job-applications";
-import { JobTrackerClient } from "@/app/(dashboard)/job-tracker/components/job-tracker-client";
+import { getJobsDTO } from "@/features/job-tracker/queries";
+import { JobTrackerClient } from "@/features/job-tracker/components/job-tracker-client";
 import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { VIEW_PREFERENCE_KEY, COLUMN_ORDER_KEY } from "./constants";
+import { VIEW_PREFERENCE_KEY, COLUMN_ORDER_KEY } from "@/features/job-tracker/constants";
 
 export default async function JobTrackerPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

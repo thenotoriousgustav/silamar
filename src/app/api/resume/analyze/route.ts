@@ -1,7 +1,7 @@
 import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { ResumeContentSchema } from "@/types/resume-schema";
-import { extractPdfText } from "@/lib/resume/pdf-extractor";
+import { ResumeContentSchema } from "@/features/resumes/types/resume-schema";
+import { extractPdfText } from "@/features/resumes/utils/pdf-extractor";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
