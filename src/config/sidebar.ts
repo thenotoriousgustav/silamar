@@ -34,6 +34,7 @@ export const sidebarData = {
       title: "Documents",
       url: "#",
       icon: Files,
+      isActive: true,
       items: [
         { title: "Resumes", url: "/documents/resumes", icon: FileUser },
         {

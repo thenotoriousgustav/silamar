@@ -27,7 +27,7 @@ function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
   const isParentActive =
     pathname === item.url ||
     item.items?.some((sub: any) => pathname === sub.url);
-  const [isOpen, setIsOpen] = React.useState(isParentActive);
+  const [isOpen, setIsOpen] = React.useState(isParentActive || item.isActive);
 
   if (item.items && item.items.length > 0) {
     return (
