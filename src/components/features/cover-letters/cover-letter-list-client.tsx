@@ -14,6 +14,8 @@ import {
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
+import { DocumentCard } from "../documents/document-card";
+import { CoverLetterPreviewDrawer } from "./cover-letter-preview-drawer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +47,10 @@ export function CoverLetterListClient({
   const [coverLetterToDelete, setCoverLetterToDelete] = useState<string | null>(
     null,
   );
+  const [selectedLetterForPreview, setSelectedLetterForPreview] =
+    useState<CoverLetter | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -105,45 +111,20 @@ export function CoverLetterListClient({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {initialCoverLetters.map((letter) => (
-            <div
+            <DocumentCard
               key={letter.id}
-              className="glass group hover:border-primary/30 hover:shadow-primary/10 flex flex-col p-6 transition-all hover:shadow-lg"
-            >
-              <div className="mb-4 flex items-start justify-between">
-                <div className="bg-primary/20 flex h-12 w-12 items-center justify-center">
-                  <Mail className="text-primary h-6 w-6" />
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:text-destructive hover:bg-destructive/10 text-muted-foreground -mt-2 -mr-2 h-8 w-8 transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCoverLetterToDelete(letter.id);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <h3 className="group-hover:text-primary text-foreground truncate font-semibold transition-colors">
-                {letter.jobTitle}
-              </h3>
-              <p className="text-muted-foreground truncate text-sm">
-                {letter.company}
-              </p>
-              <p className="text-muted-foreground mt-4 text-xs">
-                Diupdate {formatDate(letter.updatedAt)}
-              </p>
-
-              <div className="mt-auto flex items-center justify-between pt-4">
-                <Link
-                  href={`/documents/cover-letter/${letter.id}`}
-                  className="text-muted-foreground group-hover:text-foreground flex items-center gap-1 text-xs transition-colors"
-                >
-                  Lihat Detail <ArrowRight className="h-3 w-3" />
-                </Link>
-              </div>
-            </div>
+              title={letter.jobTitle}
+              subtitle={letter.company}
+              updatedAt={letter.updatedAt}
+              icon={<Mail className="text-primary h-6 w-6" />}
+              onDelete={() => setCoverLetterToDelete(letter.id)}
+              onClick={() => {
+                setSelectedLetterForPreview(letter);
+                setIsPreviewOpen(true);
+              }}
+              href={`/documents/cover-letter/${letter.id}`}
+              linkText="Edit Detail"
+            />
           ))}
 
           {/* New cover letter card */}
@@ -160,6 +141,12 @@ export function CoverLetterListClient({
           </Link>
         </div>
       )}
+
+      <CoverLetterPreviewDrawer
+        isOpen={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        coverLetter={selectedLetterForPreview}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog

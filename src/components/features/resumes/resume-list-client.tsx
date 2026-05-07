@@ -22,6 +22,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import type { ResumeContent, ResumeTemplateId } from "@/types/resume";
 import {
   createResumeAction,
@@ -31,6 +39,8 @@ import {
 } from "@/server/actions/documents/resumes";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
+import { ResumePreviewDrawer } from "./resume-preview-drawer";
+import { DocumentCard } from "../documents/document-card";
 import { Sparkles, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,6 +73,9 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
+  const [selectedResumeForPreview, setSelectedResumeForPreview] =
+    useState<Resume | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [pendingCreationType, setPendingCreationType] = useState<
     "empty" | "import" | null
   >(null);
@@ -196,34 +209,19 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {resumesList.map((resume) => (
-            <Link
+            <DocumentCard
               key={resume.id}
+              title={resume.title}
+              updatedAt={resume.updatedAt}
+              icon={<FileText className="text-primary h-6 w-6" />}
+              onDelete={() => setResumeToDelete(resume.id)}
+              onClick={() => {
+                setSelectedResumeForPreview(resume);
+                setIsPreviewOpen(true);
+              }}
               href={`/resume-builder/${resume.id}`}
-              className="glass group hover:border-primary/30 hover:shadow-primary/10 p-6 transition-all hover:shadow-lg"
+              linkText="Edit Resume"
             >
-              <div className="mb-4 flex items-start justify-between">
-                <div className="bg-primary/20 flex h-12 w-12 items-center justify-center">
-                  <FileText className="text-primary h-6 w-6" />
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:text-destructive hover:bg-destructive/10 text-muted-foreground -mt-2 -mr-2 h-8 w-8 transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setResumeToDelete(resume.id);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <h3 className="group-hover:text-primary text-foreground font-semibold transition-colors">
-                {resume.title}
-              </h3>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Diupdate {formatDate(resume.updatedAt)}
-              </p>
               {resume.atsScore !== null && (
                 <div className="mt-3 flex items-center gap-2">
                   <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-none">
@@ -256,11 +254,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                   />
                 </div>
               </div>
-
-              <div className="text-muted-foreground group-hover:text-foreground mt-4 flex items-center gap-1 text-xs transition-colors">
-                Edit Resume <ArrowRight className="h-3 w-3" />
-              </div>
-            </Link>
+            </DocumentCard>
           ))}
 
           {/* New resume card */}
@@ -392,6 +386,12 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         onOpenChange={setIsTemplateSelectOpen}
         onSelect={handleTemplateSelect}
         isLoading={createEmptyMutation.isPending || createMutation.isPending}
+      />
+
+      <ResumePreviewDrawer
+        isOpen={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        resume={selectedResumeForPreview}
       />
 
       {(createMutation.isPending || createEmptyMutation.isPending) &&
