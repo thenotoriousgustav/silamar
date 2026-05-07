@@ -9,9 +9,7 @@ import { clsx } from "clsx";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import {
-  useHeaderDispatch,
-} from "@/components/providers/header-provider";
+import { useHeaderDispatch } from "@/components/providers/header-provider";
 import { CoverLetterForm } from "./cover-letter-form";
 import { CoverLetterPreview } from "./cover-letter-preview";
 import { CoverLetterBuilderData } from "./schema";
@@ -214,7 +212,7 @@ export function CoverLetterBuilderClient({
             if (result) {
               toast.success("Cover letter berhasil disimpan");
               queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
-              
+
               if (id === "new" && result.id) {
                 router.push(`/documents/cover-letter/${result.id}`);
               } else {
@@ -273,7 +271,7 @@ export function CoverLetterBuilderClient({
         {/* Right Side: Preview */}
         <div
           className={clsx(
-            "bg-muted/30 flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
+            "flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
             viewMode === "preview"
               ? "w-full"
               : viewMode === "split"

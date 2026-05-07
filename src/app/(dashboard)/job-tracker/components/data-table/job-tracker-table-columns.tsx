@@ -32,7 +32,7 @@ import { format, isToday, isAfter, addDays, startOfDay } from "date-fns";
 import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils/cn";
 import { STATUS_BADGE } from "../../constants";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface GetColumnsProps {
   onEdit: (job: JobApplication) => void;
@@ -240,23 +240,17 @@ export function getJobTrackerColumns({
       cell: ({ row }) => (
         <div className="flex justify-end">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              render={(triggerProps) => (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-none"
-                  {...triggerProps}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    triggerProps.onClick?.(e);
-                  }}
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              )}
-            />
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-none"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="rounded-none">
               <DropdownMenuItem
                 onClick={(e) => {

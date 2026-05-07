@@ -115,32 +115,9 @@ export function DataTable<TData>({
                 if (renderContextMenu) {
                   return (
                     <ContextMenu key={row.id}>
-                      <ContextMenuTrigger render={(props) => (
-                         <tr {...props} 
-                           className={cn(
-                             "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-                             onRowClick && "cursor-pointer"
-                           )}
-                           onClick={(e) => {
-                             onRowClick?.(row.original);
-                             props.onClick?.(e);
-                           }}
-                         >
-                           {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                              key={cell.id}
-                              style={{
-                                ...getColumnPinningStyle({ column: cell.column }),
-                              }}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
-                            </TableCell>
-                          ))}
-                         </tr>
-                      )} />
+                      <ContextMenuTrigger asChild>
+                        {rowContent}
+                      </ContextMenuTrigger>
                       <ContextMenuContent className="rounded-none">
                         {renderContextMenu(row.original)}
                       </ContextMenuContent>

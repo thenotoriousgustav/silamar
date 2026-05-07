@@ -33,31 +33,30 @@ function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
     return (
       <Collapsible
         key={item.title}
-        render={<div />}
         open={isOpen}
         onOpenChange={setIsOpen}
         className="group/collapsible"
       >
         <SidebarMenuItem>
-          <CollapsibleTrigger
-            render={
-              <SidebarMenuButton tooltip={item.title} isActive={isParentActive}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-              </SidebarMenuButton>
-            }
-          />
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton tooltip={item.title} isActive={isParentActive}>
+              {item.icon && <item.icon />}
+              <span>{item.title}</span>
+              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
           <CollapsibleContent>
             <SidebarMenuSub>
               {item.items?.map((subItem: any) => (
                 <SidebarMenuSubItem key={subItem.title}>
                   <SidebarMenuSubButton
-                    render={<Link href={subItem.url} />}
+                    asChild
                     isActive={pathname === subItem.url}
                   >
-                    {subItem.icon && <subItem.icon className="h-4 w-4" />}
-                    <span>{subItem.title}</span>
+                    <Link href={subItem.url}>
+                      {subItem.icon && <subItem.icon className="h-4 w-4" />}
+                      <span>{subItem.title}</span>
+                    </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
               ))}
@@ -71,12 +70,14 @@ function NavMainItem({ item, pathname }: { item: any; pathname: string }) {
   return (
     <SidebarMenuItem key={item.title}>
       <SidebarMenuButton
-        render={<Link href={item.url} />}
+        asChild
         tooltip={item.title}
         isActive={pathname === item.url}
       >
-        {item.icon && <item.icon />}
-        <span>{item.title}</span>
+        <Link href={item.url}>
+          {item.icon && <item.icon />}
+          <span>{item.title}</span>
+        </Link>
       </SidebarMenuButton>
       {item.actions && item.actions}
     </SidebarMenuItem>

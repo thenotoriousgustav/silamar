@@ -55,11 +55,10 @@ export function EducationSection({
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
       <AccordionTrigger
-        nativeButton={false}
-        render={<div />}
+        asChild
         className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
       >
-        <div className="flex w-full items-center justify-between pr-4">
+        <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
               <GraduationCap className="h-4 w-4" />
@@ -106,11 +105,10 @@ export function EducationSection({
                           <GripVertical className="h-4 w-4" />
                         </SortableItemHandle>
                         <AccordionTrigger
-                          nativeButton={false}
-                          render={<div />}
+                          asChild
                           className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
                         >
-                          <div className="flex w-full flex-1 items-center justify-between text-left">
+                          <div className="flex w-full flex-1 items-center justify-between text-left cursor-pointer">
                             <div className="flex flex-col gap-0.5">
                               <span className="text-sm font-bold">
                                 {edu.institution || "Nama Institusi"}
@@ -205,20 +203,17 @@ export function EducationSection({
                               Bulan/Tahun Mulai
                             </Label>
                             <Popover>
-                              <PopoverTrigger
-                                nativeButton={false}
-                                render={
-                                  <div className="relative">
-                                    <Input
-                                      readOnly
-                                      value={edu.startYear || ""}
-                                      placeholder="Pilih bulan & tahun"
-                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                    />
-                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                  </div>
-                                }
-                              />
+                              <PopoverTrigger asChild>
+                                <div className="relative cursor-pointer">
+                                  <Input
+                                    readOnly
+                                    value={edu.startYear || ""}
+                                    placeholder="Pilih bulan & tahun"
+                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                  />
+                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                </div>
+                              </PopoverTrigger>
                               <PopoverContent
                                 className="w-auto p-0"
                                 align="start"
@@ -255,20 +250,17 @@ export function EducationSection({
                               Bulan/Tahun Lulus
                             </Label>
                             <Popover>
-                              <PopoverTrigger
-                                nativeButton={false}
-                                render={
-                                  <div className="relative">
-                                    <Input
-                                      readOnly
-                                      value={edu.endYear || ""}
-                                      placeholder="Pilih bulan & tahun"
-                                      className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                    />
-                                    <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                  </div>
-                                }
-                              />
+                              <PopoverTrigger asChild>
+                                <div className="relative cursor-pointer">
+                                  <Input
+                                    readOnly
+                                    value={edu.endYear || ""}
+                                    placeholder="Pilih bulan & tahun"
+                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
+                                  />
+                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                </div>
+                              </PopoverTrigger>
                               <PopoverContent
                                 className="w-auto p-0"
                                 align="start"

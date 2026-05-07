@@ -74,14 +74,12 @@ export function TrackerActions({ tracker }: TrackerActionsProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <SidebarMenuAction showOnHover>
-              <DotsThree weight="bold" />
-              <span className="sr-only">Aksi</span>
-            </SidebarMenuAction>
-          }
-        />
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuAction showOnHover>
+            <DotsThree weight="bold" />
+            <span className="sr-only">Aksi</span>
+          </SidebarMenuAction>
+        </DropdownMenuTrigger>
         <DropdownMenuContent side="right" align="start">
           <DropdownMenuItem onClick={() => setIsRenameOpen(true)}>
             <PencilSimple className="mr-2 h-4 w-4" />

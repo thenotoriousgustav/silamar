@@ -92,33 +92,31 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user?.image || ""}
-                        alt={user?.name || ""}
-                      />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {mounted ? user?.name?.charAt(0) : "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                      <span className="text-foreground truncate font-semibold">
-                        {mounted ? user?.name || "User" : "User"}
-                      </span>
-                      <span className="text-muted-foreground truncate text-xs">
-                        {mounted ? user?.email : ""}
-                      </span>
-                    </div>
-                    <ChevronUp className="text-muted-foreground ml-auto h-4 w-4 group-data-[collapsible=icon]:hidden" />
-                  </SidebarMenuButton>
-                }
-              />
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={user?.image || ""}
+                      alt={user?.name || ""}
+                    />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {mounted ? user?.name?.charAt(0) : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                    <span className="text-foreground truncate font-semibold">
+                      {mounted ? user?.name || "User" : "User"}
+                    </span>
+                    <span className="text-muted-foreground truncate text-xs">
+                      {mounted ? user?.email : ""}
+                    </span>
+                  </div>
+                  <ChevronUp className="text-muted-foreground ml-auto h-4 w-4 group-data-[collapsible=icon]:hidden" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="top"
                 className="bg-popover border-border text-popover-foreground w-[--radix-dropdown-menu-trigger-width] min-w-56"

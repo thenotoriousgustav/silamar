@@ -30,11 +30,10 @@ export function VisualSettingsSection({
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
       <AccordionTrigger
-        nativeButton={false}
-        render={<div />}
+        asChild
         className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 cursor-pointer">
           <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
             <Settings2 className="h-4 w-4" />
           </div>
@@ -104,7 +103,7 @@ export function VisualSettingsSection({
                     (content.style?.templateId || "classic") === template.id
                       ? "default"
                       : "outline"
-                  }
+                   }
                   className="h-11 flex-1 transition-all"
                   onClick={() =>
                     updateStyle({ templateId: template.id as any })

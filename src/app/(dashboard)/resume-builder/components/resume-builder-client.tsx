@@ -357,7 +357,7 @@ export function ResumeBuilderClient({
         {/* Right Side: Preview */}
         <div
           className={clsx(
-            "bg-muted/30 flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
+            "flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
             viewMode === "preview"
               ? "w-full"
               : viewMode === "split"

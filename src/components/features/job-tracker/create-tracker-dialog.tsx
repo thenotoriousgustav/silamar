@@ -70,15 +70,13 @@ export function CreateTrackerDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          trigger || (
-            <Button variant="ghost" size="icon" className="h-6 w-6">
-              <Plus className="h-4 w-4" />
-            </Button>
-          )
-        }
-      />
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button variant="ghost" size="icon" className="h-6 w-6">
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
@@ -110,7 +108,9 @@ export function CreateTrackerDialog({
             </Field>
           </FieldGroup>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline">Batal</Button>} />
+            <DialogClose asChild>
+              <Button variant="outline">Batal</Button>
+            </DialogClose>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? "Menyimpan..." : "Buat Tracker"}
             </Button>

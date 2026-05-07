@@ -78,7 +78,7 @@
 }
 
 :root {
-  --radius: 0px;
+  --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -152,7 +152,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply antialiased bg-background text-foreground;
     line-height: 1.6;
     min-height: 100dvh;
   }
@@ -169,6 +169,9 @@
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 }

@@ -94,14 +94,12 @@ export function CoverLetterForm({
             open={isTemplateModalOpen}
             onOpenChange={setIsTemplateModalOpen}
           >
-            <DialogTrigger
-              render={
-                <Button variant="outline" size="sm" className="h-8 gap-2">
-                  <Layout className="h-3.5 w-3.5" />
-                  <span className="text-[11px] font-semibold">Template</span>
-                </Button>
-              }
-            />
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-2">
+                <Layout className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-semibold">Template</span>
+              </Button>
+            </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle className="text-xl font-bold">
@@ -132,18 +130,16 @@ export function CoverLetterForm({
 
           {/* AI Generate */}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger
-              render={
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-primary/50 text-primary hover:bg-primary/10 h-8 gap-2 transition-all"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span className="text-[11px] font-semibold">AI Generate</span>
-                </Button>
-              }
-            />
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-primary/50 text-primary hover:bg-primary/10 h-8 gap-2 transition-all"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-semibold">AI Generate</span>
+              </Button>
+            </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>AI Cover Letter Generator</DialogTitle>
@@ -223,7 +219,7 @@ export function CoverLetterForm({
       <Accordion
         value={expandedItems}
         onValueChange={setExpandedItems}
-        multiple
+        type="multiple"
         className="w-full space-y-4 border-none"
       >
         <PersonalInfoSection content={content} updateContent={updateContent} />

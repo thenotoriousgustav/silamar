@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Accordion } from "@/components/ui/accordion";
-import {
-  GripVertical,
-} from "lucide-react";
+import { GripVertical } from "lucide-react";
 import {
   Sortable,
   SortableContent,
@@ -258,7 +256,7 @@ export function ResumeForm({
       <Accordion
         value={expandedItems}
         onValueChange={setExpandedItems}
-        multiple
+        type="multiple"
         className="w-full space-y-4 border-none"
       >
         <div id="section-personal">
@@ -343,7 +341,9 @@ export function ResumeForm({
                         removeCustomSection={removeCustomSection}
                         addCustomSectionItem={addCustomSectionItem}
                         updateCustomSectionItem={updateCustomSectionItem}
-                        updateCustomSectionItemList={updateCustomSectionItemList}
+                        updateCustomSectionItemList={
+                          updateCustomSectionItemList
+                        }
                         removeCustomSectionItem={removeCustomSectionItem}
                       />
                     )}

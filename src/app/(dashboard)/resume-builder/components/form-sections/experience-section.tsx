@@ -81,11 +81,10 @@ export function ExperienceSection({
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
       <AccordionTrigger
-        nativeButton={false}
-        render={<div />}
+        asChild
         className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
       >
-        <div className="flex w-full items-center justify-between pr-4">
+        <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
               <Briefcase className="h-4 w-4" />
@@ -132,11 +131,10 @@ export function ExperienceSection({
                           <GripVertical className="h-4 w-4" />
                         </SortableItemHandle>
                         <AccordionTrigger
-                          nativeButton={false}
-                          render={<div />}
+                          asChild
                           className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
                         >
-                          <div className="flex w-full flex-1 items-center justify-between text-left">
+                          <div className="flex w-full flex-1 items-center justify-between text-left cursor-pointer">
                             <div className="flex flex-col gap-0.5">
                               <span className="text-sm font-bold">
                                 {exp.company || "Nama Perusahaan"}
@@ -203,24 +201,22 @@ export function ExperienceSection({
                               Tanggal Mulai
                             </Label>
                             <Popover>
-                              <PopoverTrigger
-                                render={
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "bg-background border-border w-full justify-start text-left font-normal",
-                                      !exp.startDate && "text-muted-foreground",
-                                    )}
-                                  >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {exp.startDate ? (
-                                      exp.startDate
-                                    ) : (
-                                      <span>Pilih tanggal</span>
-                                    )}
-                                  </Button>
-                                }
-                              />
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "bg-background border-border w-full justify-start text-left font-normal",
+                                    !exp.startDate && "text-muted-foreground",
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {exp.startDate ? (
+                                    exp.startDate
+                                  ) : (
+                                    <span>Pilih tanggal</span>
+                                  )}
+                                </Button>
+                              </PopoverTrigger>
                               <PopoverContent
                                 className="w-auto p-0"
                                 align="start"
@@ -256,27 +252,25 @@ export function ExperienceSection({
                               Tanggal Selesai
                             </Label>
                             <Popover>
-                              <PopoverTrigger
-                                render={
-                                  <Button
-                                    variant="outline"
-                                    disabled={exp.isCurrentJob}
-                                    className={cn(
-                                      "bg-background border-border w-full justify-start text-left font-normal",
-                                      !exp.endDate && "text-muted-foreground",
-                                    )}
-                                  >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {exp.isCurrentJob ? (
-                                      "Present"
-                                    ) : exp.endDate ? (
-                                      exp.endDate
-                                    ) : (
-                                      <span>Pilih tanggal</span>
-                                    )}
-                                  </Button>
-                                }
-                              />
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  disabled={exp.isCurrentJob}
+                                  className={cn(
+                                    "bg-background border-border w-full justify-start text-left font-normal",
+                                    !exp.endDate && "text-muted-foreground",
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {exp.isCurrentJob ? (
+                                    "Present"
+                                  ) : exp.endDate ? (
+                                    exp.endDate
+                                  ) : (
+                                    <span>Pilih tanggal</span>
+                                  )}
+                                </Button>
+                              </PopoverTrigger>
                               <PopoverContent
                                 className="w-auto p-0"
                                 align="start"
@@ -398,28 +392,26 @@ export function ExperienceSection({
                                     />
                                     <div className="border-border bg-background flex shrink-0 items-center overflow-hidden rounded-none border shadow-sm">
                                       <DropdownMenu>
-                                        <DropdownMenuTrigger
-                                          render={
-                                            <Button
-                                              type="button"
-                                              variant="ghost"
-                                              size="icon"
-                                              disabled={
-                                                optimizingId ===
-                                                `${exp.id}-${idx}`
-                                              }
-                                              className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
-                                              title="AI Assistant"
-                                            >
-                                              {optimizingId ===
-                                              `${exp.id}-${idx}` ? (
-                                                <Loader2 className="h-3 w-3 animate-spin" />
-                                              ) : (
-                                                <Sparkles className="h-3 w-3" />
-                                              )}
-                                            </Button>
-                                          }
-                                        />
+                                        <DropdownMenuTrigger asChild>
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            disabled={
+                                              optimizingId ===
+                                              `${exp.id}-${idx}`
+                                            }
+                                            className="text-brand-500 hover:bg-brand-500/10 hover:text-brand-600 h-8 w-8 rounded-none border-r"
+                                            title="AI Assistant"
+                                          >
+                                            {optimizingId ===
+                                            `${exp.id}-${idx}` ? (
+                                              <Loader2 className="h-3 w-3 animate-spin" />
+                                            ) : (
+                                              <Sparkles className="h-3 w-3" />
+                                            )}
+                                          </Button>
+                                        </DropdownMenuTrigger>
                                         <DropdownMenuContent
                                           align="start"
                                           className="w-56"

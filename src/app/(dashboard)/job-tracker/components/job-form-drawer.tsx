@@ -437,26 +437,24 @@ export function JobFormDrawer({
                     name="appliedDate"
                     render={({ field }) => (
                       <Popover>
-                        <PopoverTrigger
-                          render={
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "bg-background h-9 w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? (
-                                format(field.value, "d MMM yyyy", {
-                                  locale: id,
-                                })
-                              ) : (
-                                <span>Pilih tanggal</span>
-                              )}
-                            </Button>
-                          }
-                        />
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "bg-background h-9 w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "d MMM yyyy", {
+                                locale: id,
+                              })
+                            ) : (
+                              <span>Pilih tanggal</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
                         <PopoverContent
                           className="pointer-events-auto z-100 w-auto p-0"
                           align="start"
@@ -483,26 +481,24 @@ export function JobFormDrawer({
                     name="interviewDate"
                     render={({ field }) => (
                       <Popover>
-                        <PopoverTrigger
-                          render={
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "bg-background h-9 w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? (
-                                format(field.value, "d MMM yyyy", {
-                                  locale: id,
-                                })
-                              ) : (
-                                <span>Pilih tanggal</span>
-                              )}
-                            </Button>
-                          }
-                        />
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "bg-background h-9 w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "d MMM yyyy", {
+                                locale: id,
+                              })
+                            ) : (
+                              <span>Pilih tanggal</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
                         <PopoverContent
                           className="pointer-events-auto z-100 w-auto p-0"
                           align="start"
