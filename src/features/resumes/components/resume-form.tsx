@@ -290,7 +290,7 @@ export function ResumeForm({
             ).map((sectionId) => (
               <SortableItem key={sectionId} value={sectionId}>
                 <div className="group relative">
-                  <SortableItemHandle className="absolute top-5 left-1 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                  <SortableItemHandle className="absolute top-7 left-1 z-10 opacity-0 transition-opacity group-hover:opacity-100">
                     <GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
                   </SortableItemHandle>
                   <div id={`section-${sectionId}`}>
