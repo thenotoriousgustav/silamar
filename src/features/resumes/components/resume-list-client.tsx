@@ -9,6 +9,7 @@ import {
   Trash2,
   AlertTriangle,
   FileText,
+  Briefcase,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,6 @@ import {
   getResumesAction,
 } from "@/features/resumes/actions";
 import { ResumeImportDialog } from "./resume-import-dialog";
-import { LinkedInImportDialog } from "./linkedin-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
 import { ResumePreviewDrawer } from "./resume-preview-drawer";
 import { DocumentCard } from "@/shared/document-card";
@@ -59,6 +59,7 @@ interface Resume {
   updatedAt: Date;
   atsScore: number | null;
   content: any; // Add content to calculate completeness
+  trackers?: { id: string; name: string }[];
 }
 
 interface ResumeListClientProps {
@@ -253,6 +254,35 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                     }}
                   />
                 </div>
+              </div>
+              {/* Trackers Usage */}
+              <div className="border-border/50 mt-4 border-t pt-4">
+                <div className="text-muted-foreground mb-2 flex items-center justify-between text-[10px] font-bold tracking-wider uppercase">
+                  <div className="flex items-center gap-1.5">
+                    <Briefcase className="h-3 w-3" />
+                    <span>Tracker Usage</span>
+                  </div>
+                  <span className="text-primary/60">
+                    {resume.trackers?.length || 0}
+                  </span>
+                </div>
+
+                {resume.trackers && resume.trackers.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {resume.trackers.map((tracker) => (
+                      <span
+                        key={tracker.id}
+                        className="bg-primary text-primary-foreground px-2 py-0.5 text-[9px] font-bold tracking-tight uppercase"
+                      >
+                        {tracker.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground/60 text-[10px] italic">
+                    Belum digunakan di tracker mana pun
+                  </p>
+                )}
               </div>
             </DocumentCard>
           ))}

@@ -14,6 +14,7 @@ import { CoverLetterForm } from "./cover-letter-form";
 import { CoverLetterPreview } from "./cover-letter-preview";
 import { CoverLetterBuilderData } from "./schema";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface CoverLetterBuilderClientProps {
   id: string;
@@ -29,6 +30,7 @@ export function CoverLetterBuilderClient({
   initialData,
 }: CoverLetterBuilderClientProps) {
   const router = useRouter();
+  const { setOpen } = useSidebar();
   const [coverLetterTitle, setCoverLetterTitle] = useState(
     initialData?.title || "Cover Letter Tanpa Judul",
   );
@@ -56,6 +58,11 @@ export function CoverLetterBuilderClient({
   useEffect(() => {
     titleRef.current = coverLetterTitle;
   }, [coverLetterTitle]);
+
+  // Collapse sidebar on mount
+  useEffect(() => {
+    setOpen(false);
+  }, [setOpen]);
 
   const saveRef = useRef(save);
   useEffect(() => {

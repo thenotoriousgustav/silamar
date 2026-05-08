@@ -19,6 +19,7 @@ import type { ResumeContent } from "@/features/resumes/types/resume";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { updateResumeAction } from "@/features/resumes/actions";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface ResumeBuilderClientProps {
   id: string;
@@ -34,6 +35,7 @@ export function ResumeBuilderClient({
   initialData,
 }: ResumeBuilderClientProps) {
   const router = useRouter();
+  const { setOpen } = useSidebar();
   const [resumeTitle, setResumeTitle] = useState(
     initialData?.title || "Resume Tanpa Judul",
   );
@@ -101,6 +103,11 @@ export function ResumeBuilderClient({
   useEffect(() => {
     titleRef.current = resumeTitle;
   }, [resumeTitle]);
+
+  // Collapse sidebar on mount
+  useEffect(() => {
+    setOpen(false);
+  }, [setOpen]);
 
   const saveRef = useRef(save);
   useEffect(() => {
