@@ -176,7 +176,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Resume Builder"
+        title="Resume"
         description="Buat dan kelola resume ATS-friendly kamu"
       >
         <Button
