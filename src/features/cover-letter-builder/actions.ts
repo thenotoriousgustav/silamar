@@ -14,34 +14,7 @@ async function getSession() {
   });
 }
 
-export async function createCoverLetterAction(data: {
-  title: string;
-  content: CoverLetterBuilderData;
-}) {
-  const session = await getSession();
-  if (!session?.user) throw new Error("Unauthorized");
 
-  const newId = crypto.randomUUID();
-
-  const insertData: any = {
-    id: newId,
-    userId: session.user.id,
-    title: data.title || "Cover Letter Tanpa Judul",
-    content: data.content,
-    company: data.content.companyName || "",
-    jobTitle: data.content.subject || "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  const newLetter = await db
-    .insert(coverLetters)
-    .values(insertData)
-    .returning();
-
-  revalidatePath("/documents/cover-letter");
-  return newLetter[0];
-}
 
 export async function updateCoverLetterAction(
   id: string,
@@ -73,4 +46,39 @@ export async function updateCoverLetterAction(
   revalidatePath("/documents/cover-letter");
   revalidatePath(`/cover-letter-builder/${id}`);
   return updated[0];
+}
+
+export async function createEmptyCoverLetterAction() {
+  const session = await getSession();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const newLetter = await db
+    .insert(coverLetters)
+    .values({
+      id: crypto.randomUUID(),
+      userId: session.user.id,
+      title: "Cover Letter Tanpa Judul",
+      content: {
+        fullName: "",
+        phone: "",
+        email: "",
+        address: "",
+        cityAndPostal: "",
+        recipientName: "",
+        companyName: "",
+        department: "",
+        recipientAddress: "",
+        recipientCityAndPostal: "",
+        subject: "",
+        content: "",
+      },
+      company: "",
+      jobTitle: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  revalidatePath("/documents/cover-letter");
+  return newLetter[0];
 }

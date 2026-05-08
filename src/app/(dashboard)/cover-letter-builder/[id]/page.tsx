@@ -13,19 +13,15 @@ export default async function CoverLetterBuilderPage({
 }) {
   const { id } = await params;
 
-  let initialData = undefined;
+  const coverLetter = await getCoverLetterDTO(id);
 
-  if (id !== "new") {
-    const coverLetter = await getCoverLetterDTO(id);
+  if (!coverLetter) notFound();
 
-    if (!coverLetter) notFound();
-
-    initialData = {
-      title: coverLetter.title,
-      content: coverLetter.content as CoverLetterBuilderData,
-      updatedAt: coverLetter.updatedAt,
-    };
-  }
+  const initialData = {
+    title: coverLetter.title,
+    content: coverLetter.content as CoverLetterBuilderData,
+    updatedAt: coverLetter.updatedAt,
+  };
 
   return <CoverLetterBuilderClient id={id} initialData={initialData} />;
 }

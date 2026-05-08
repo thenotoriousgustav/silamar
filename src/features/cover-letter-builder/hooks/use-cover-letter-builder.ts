@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   updateCoverLetterAction,
-  createCoverLetterAction,
 } from "@/features/cover-letter-builder/actions";
 import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
@@ -76,18 +75,10 @@ export function useCoverLetterBuilder(
 
       setIsSaving(true);
       try {
-        let result;
-        if (activeId === "new") {
-          result = await createCoverLetterAction({
-            content: contentRef.current,
-            title: title || "Cover Letter Tanpa Judul",
-          });
-        } else {
-          result = await updateCoverLetterAction(activeId, {
-            content: contentRef.current,
-            title: title,
-          });
-        }
+        const result = await updateCoverLetterAction(activeId, {
+          content: contentRef.current,
+          title: title,
+        });
 
         setIsDirty(false);
         if (typeof window !== "undefined") {
