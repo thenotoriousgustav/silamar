@@ -10,6 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -146,229 +147,265 @@ export function CustomSection({
                       }
                       getItemValue={(i) => i.id}
                     >
-                      <SortableContent className="flex w-full flex-col gap-6">
-                        {section.items.map((item) => (
-                          <SortableItem key={item.id} value={item.id} asChild>
-                            <Card
-                              key={item.id}
-                              className="bg-muted/20 border-border relative overflow-hidden rounded-none"
-                            >
-                              <div className="bg-muted/50 border-border/50 flex items-center justify-between border-b px-6 py-2">
-                                <SortableItemHandle
-                                  asChild
-                                  className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
-                                >
-                                  <GripVertical className="h-4 w-4" />
-                                </SortableItemHandle>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() =>
-                                    removeCustomSectionItem(section.id, item.id)
-                                  }
-                                  className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-7 w-7 transition-colors"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                              <CardContent className="p-6">
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                  <div className="space-y-2">
-                                    <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                      Judul / Nama
-                                    </Label>
-                                    <Input
-                                      value={item.title || ""}
-                                      onChange={(e) =>
-                                        updateCustomSectionItem(
-                                          section.id,
-                                          item.id,
-                                          {
-                                            title: e.target.value,
-                                          },
-                                        )
-                                      }
-                                      className="bg-background border-border"
-                                      placeholder="Misal: Sertifikat Google Cloud"
-                                    />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                      Subjudul (Opsional)
-                                    </Label>
-                                    <Input
-                                      value={item.subtitle || ""}
-                                      onChange={(e) =>
-                                        updateCustomSectionItem(
-                                          section.id,
-                                          item.id,
-                                          {
-                                            subtitle: e.target.value,
-                                          },
-                                        )
-                                      }
-                                      className="bg-background border-border"
-                                      placeholder="Misal: Dikeluarkan oleh Google"
-                                    />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                      Tanggal / Periode
-                                    </Label>
-                                    <div className="relative">
-                                      <Input
-                                        value={item.date || ""}
-                                        onChange={(e) =>
-                                          updateCustomSectionItem(
-                                            section.id,
-                                            item.id,
-                                            {
-                                              date: e.target.value,
-                                            },
-                                          )
-                                        }
-                                        className="bg-background border-border pr-10"
-                                        placeholder="Misal: Jan 2024"
-                                      />
-                                      <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                      <SortableContent className="flex w-full flex-col gap-4">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full space-y-4"
+                        >
+                          {section.items.map((item) => (
+                            <SortableItem key={item.id} value={item.id} asChild>
+                              <AccordionItem
+                                id={`custom-${item.id}`}
+                                value={item.id}
+                                className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
+                              >
+                                <div className="flex w-full items-center">
+                                  <SortableItemHandle
+                                    asChild
+                                    className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
+                                  >
+                                    <GripVertical className="h-4 w-4" />
+                                  </SortableItemHandle>
+                                  <AccordionTrigger
+                                    asChild
+                                    className="hover:bg-muted/30 flex-1 px-4 hover:no-underline"
+                                  >
+                                    <div className="flex w-full flex-1 cursor-pointer items-center justify-between text-left">
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="text-sm font-bold">
+                                          {item.title || "Judul / Nama"}
+                                        </span>
+                                        <span className="text-muted-foreground text-xs font-medium">
+                                          {item.subtitle ||
+                                            "Subjudul (Opsional)"}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <div className="text-muted-foreground text-[10px] font-medium uppercase">
+                                          {item.date || "Tanggal"}
+                                        </div>
+                                        <div
+                                          role="button"
+                                          tabIndex={0}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeCustomSectionItem(
+                                              section.id,
+                                              item.id,
+                                            );
+                                          }}
+                                          className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
+                                          title="Hapus Item"
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </div>
+                                        <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                      Link (Opsional)
-                                    </Label>
-                                    <div className="relative">
-                                      <Input
-                                        value={item.link || ""}
-                                        onChange={(e) =>
-                                          updateCustomSectionItem(
-                                            section.id,
-                                            item.id,
-                                            {
-                                              link: e.target.value,
-                                            },
-                                          )
-                                        }
-                                        className="bg-background border-border pr-10"
-                                        placeholder="https://..."
-                                      />
-                                      <ExternalLink className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                    </div>
-                                  </div>
-                                  <div className="space-y-2 md:col-span-2">
-                                    <div className="flex items-center justify-between">
+                                  </AccordionTrigger>
+                                </div>
+                                <AccordionContent className="border-t border-dashed px-6 py-6">
+                                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
                                       <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                        Deskripsi Poin (Opsional)
+                                        Judul / Nama
                                       </Label>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                          const bullets = [
-                                            ...(item.description || []),
-                                          ];
-                                          bullets.push({
-                                            id: crypto.randomUUID(),
-                                            text: "",
-                                          });
+                                      <Input
+                                        value={item.title || ""}
+                                        onChange={(e) =>
                                           updateCustomSectionItem(
                                             section.id,
                                             item.id,
                                             {
-                                              description: bullets,
+                                              title: e.target.value,
                                             },
-                                          );
-                                        }}
-                                        className="h-7 gap-1 px-2 text-[10px] font-bold"
-                                      >
-                                        <Plus className="h-3 w-3" /> Add Point
-                                      </Button>
+                                          )
+                                        }
+                                        className="bg-background border-border"
+                                        placeholder="Misal: Sertifikat Google Cloud"
+                                      />
                                     </div>
                                     <div className="space-y-2">
-                                      <Sortable
-                                        value={item.description || []}
-                                        onValueChange={(newBullets) => {
+                                      <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                        Subjudul (Opsional)
+                                      </Label>
+                                      <Input
+                                        value={item.subtitle || ""}
+                                        onChange={(e) =>
                                           updateCustomSectionItem(
                                             section.id,
                                             item.id,
                                             {
-                                              description: newBullets,
+                                              subtitle: e.target.value,
                                             },
-                                          );
-                                        }}
-                                        getItemValue={(i) => i.id}
-                                      >
-                                        <SortableContent className="space-y-2">
-                                          {(item.description || []).map(
-                                            (bullet, idx) => (
-                                              <SortableItem
-                                                key={bullet.id}
-                                                value={bullet.id}
-                                                className="flex items-center gap-2"
-                                              >
-                                                <SortableItemHandle
-                                                  asChild
-                                                  className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
+                                          )
+                                        }
+                                        className="bg-background border-border"
+                                        placeholder="Misal: Dikeluarkan oleh Google"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                        Tanggal / Periode
+                                      </Label>
+                                      <div className="relative">
+                                        <Input
+                                          value={item.date || ""}
+                                          onChange={(e) =>
+                                            updateCustomSectionItem(
+                                              section.id,
+                                              item.id,
+                                              {
+                                                date: e.target.value,
+                                              },
+                                            )
+                                          }
+                                          className="bg-background border-border pr-10"
+                                          placeholder="Misal: Jan 2024"
+                                        />
+                                        <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                        Link (Opsional)
+                                      </Label>
+                                      <div className="relative">
+                                        <Input
+                                          value={item.link || ""}
+                                          onChange={(e) =>
+                                            updateCustomSectionItem(
+                                              section.id,
+                                              item.id,
+                                              {
+                                                link: e.target.value,
+                                              },
+                                            )
+                                          }
+                                          className="bg-background border-border pr-10"
+                                          placeholder="https://..."
+                                        />
+                                        <ExternalLink className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2 md:col-span-2">
+                                      <div className="flex items-center justify-between">
+                                        <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                          Deskripsi Poin (Opsional)
+                                        </Label>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            const bullets = [
+                                              ...(item.description || []),
+                                            ];
+                                            bullets.push({
+                                              id: crypto.randomUUID(),
+                                              text: "",
+                                            });
+                                            updateCustomSectionItem(
+                                              section.id,
+                                              item.id,
+                                              {
+                                                description: bullets,
+                                              },
+                                            );
+                                          }}
+                                          className="h-7 gap-1 px-2 text-[10px] font-bold"
+                                        >
+                                          <Plus className="h-3 w-3" /> Add Point
+                                        </Button>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Sortable
+                                          value={item.description || []}
+                                          onValueChange={(newBullets) => {
+                                            updateCustomSectionItem(
+                                              section.id,
+                                              item.id,
+                                              {
+                                                description: newBullets,
+                                              },
+                                            );
+                                          }}
+                                          getItemValue={(i) => i.id}
+                                        >
+                                          <SortableContent className="space-y-2">
+                                            {(item.description || []).map(
+                                              (bullet, idx) => (
+                                                <SortableItem
+                                                  key={bullet.id}
+                                                  value={bullet.id}
+                                                  className="flex items-center gap-2"
                                                 >
-                                                  <GripVertical className="h-3.5 w-3.5" />
-                                                </SortableItemHandle>
-                                                <Input
-                                                  value={bullet.text || ""}
-                                                  onChange={(e) => {
-                                                    const newBullets = [
-                                                      ...(item.description ||
-                                                        []),
-                                                    ];
-                                                    newBullets[idx] = {
-                                                      ...newBullets[idx],
-                                                      text: e.target.value,
-                                                    };
-                                                    updateCustomSectionItem(
-                                                      section.id,
-                                                      item.id,
-                                                      {
-                                                        description: newBullets,
-                                                      },
-                                                    );
-                                                  }}
-                                                  className="bg-background border-border h-9 text-sm"
-                                                  placeholder="Detail tambahan..."
-                                                />
-                                                <Button
-                                                  type="button"
-                                                  variant="ghost"
-                                                  size="icon"
-                                                  onClick={() => {
-                                                    const newBullets = (
-                                                      item.description || []
-                                                    ).filter(
-                                                      (_, i) => i !== idx,
-                                                    );
-                                                    updateCustomSectionItem(
-                                                      section.id,
-                                                      item.id,
-                                                      {
-                                                        description: newBullets,
-                                                      },
-                                                    );
-                                                  }}
-                                                  className="hover:text-destructive h-9 w-9 shrink-0"
-                                                >
-                                                  <Trash2 className="h-3.5 w-3.5" />
-                                                </Button>
-                                              </SortableItem>
-                                            ),
-                                          )}
-                                        </SortableContent>
-                                      </Sortable>
+                                                  <SortableItemHandle
+                                                    asChild
+                                                    className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
+                                                  >
+                                                    <GripVertical className="h-3.5 w-3.5" />
+                                                  </SortableItemHandle>
+                                                  <Input
+                                                    value={bullet.text || ""}
+                                                    onChange={(e) => {
+                                                      const newBullets = [
+                                                        ...(item.description ||
+                                                          []),
+                                                      ];
+                                                      newBullets[idx] = {
+                                                        ...newBullets[idx],
+                                                        text: e.target.value,
+                                                      };
+                                                      updateCustomSectionItem(
+                                                        section.id,
+                                                        item.id,
+                                                        {
+                                                          description:
+                                                            newBullets,
+                                                        },
+                                                      );
+                                                    }}
+                                                    className="bg-background border-border h-9 text-sm"
+                                                    placeholder="Detail tambahan..."
+                                                  />
+                                                  <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => {
+                                                      const newBullets = (
+                                                        item.description || []
+                                                      ).filter(
+                                                        (_, i) => i !== idx,
+                                                      );
+                                                      updateCustomSectionItem(
+                                                        section.id,
+                                                        item.id,
+                                                        {
+                                                          description:
+                                                            newBullets,
+                                                        },
+                                                      );
+                                                    }}
+                                                    className="hover:text-destructive h-9 w-9 shrink-0"
+                                                  >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                  </Button>
+                                                </SortableItem>
+                                              ),
+                                            )}
+                                          </SortableContent>
+                                        </Sortable>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </SortableItem>
-                        ))}
+                                </AccordionContent>
+                              </AccordionItem>
+                            </SortableItem>
+                          ))}
+                        </Accordion>
                       </SortableContent>
                     </Sortable>
                     {section.items.length === 0 && (

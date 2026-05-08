@@ -2,6 +2,7 @@
 
 import { Code2, Plus, Trash2, GripVertical, ChevronDown } from "lucide-react";
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -48,69 +49,96 @@ function SortableSkillItem({
 }: SortableSkillItemProps) {
   return (
     <SortableItem value={skill.id} asChild>
-      <div className="bg-muted/30 border-border hover:border-primary/30 overflow-hidden border transition-all">
-        <div className="bg-muted/50 border-border/50 flex items-center justify-between border-b px-4 py-1.5">
+      <AccordionItem
+        id={`skills-${skill.id}`}
+        value={skill.id}
+        className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
+      >
+        <div className="flex w-full items-center">
           <SortableItemHandle
             asChild
-            className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
+            className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
           >
-            <GripVertical className="h-3.5 w-3.5" />
+            <GripVertical className="h-4 w-4" />
           </SortableItemHandle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => removeSkillCategory(skill.id)}
-            className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-6 w-6 transition-all"
-            title="Hapus Kategori"
+          <AccordionTrigger
+            asChild
+            className="hover:bg-muted/30 flex-1 px-4 hover:no-underline"
           >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+            <div className="flex w-full flex-1 cursor-pointer items-center justify-between text-left">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-foreground text-sm font-bold">
+                  {skill.category || "Nama Kategori"}
+                </span>
+                <span className="text-muted-foreground text-[10px]">
+                  {skill.items.length} Skill • Klik untuk expand
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeSkillCategory(skill.id);
+                  }}
+                  className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
+                  title="Hapus Kategori"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </div>
+                <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
+              </div>
+            </div>
+          </AccordionTrigger>
         </div>
-        <div className="space-y-4 p-4">
-          <div className="space-y-2">
-            <Label className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-              Nama Kategori
-            </Label>
-            <Input
-              value={skill.category || ""}
-              onChange={(e) =>
-                updateSkillCategory(skill.id, {
-                  category: e.target.value,
-                })
-              }
-              placeholder="Contoh: Frameworks, Languages, Tools..."
-              className="bg-background border-border h-9 text-sm focus:ring-1"
-            />
-          </div>
+        <AccordionContent className="border-t border-dashed px-6 py-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                Nama Kategori
+              </Label>
+              <Input
+                value={skill.category || ""}
+                onChange={(e) =>
+                  updateSkillCategory(skill.id, {
+                    category: e.target.value,
+                  })
+                }
+                placeholder="Contoh: Frameworks, Languages, Tools..."
+                className="bg-background border-border h-9 text-sm focus:ring-1"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-              Daftar Skill
-            </Label>
-            <TagsInput
-              value={skill.items}
-              onValueChange={(items) =>
-                updateSkillCategory(skill.id, { items })
-              }
-              editable
-              addOnPaste
-              className="w-full"
-            >
-              <TagsInputList className="border-border bg-background focus-within:ring-primary/50 rounded-none border shadow-sm focus-within:ring-1">
-                {skill.items.map((item, index) => (
-                  <TagsInputItem key={index} value={item}>
-                    {item}
-                  </TagsInputItem>
-                ))}
-                <TagsInputInput
-                  placeholder="Ketik skill & tekan Enter..."
-                  className="text-xs"
-                />
-              </TagsInputList>
-            </TagsInput>
+            <div className="space-y-2">
+              <Label className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                Daftar Skill
+              </Label>
+              <TagsInput
+                value={skill.items}
+                onValueChange={(items) =>
+                  updateSkillCategory(skill.id, { items })
+                }
+                editable
+                addOnPaste
+                className="w-full"
+              >
+                <TagsInputList className="border-border bg-background focus-within:ring-primary/50 rounded-none border shadow-sm focus-within:ring-1">
+                  {skill.items.map((item, index) => (
+                    <TagsInputItem key={index} value={item}>
+                      {item}
+                    </TagsInputItem>
+                  ))}
+                  <TagsInputInput
+                    placeholder="Ketik skill & tekan Enter..."
+                    className="text-xs"
+                  />
+                </TagsInputList>
+              </TagsInput>
+            </div>
           </div>
-        </div>
-      </div>
+        </AccordionContent>
+      </AccordionItem>
     </SortableItem>
   );
 }
@@ -165,14 +193,16 @@ export function SkillsSection({
             getItemValue={(s) => s.id}
           >
             <SortableContent className="flex w-full flex-col gap-4">
-              {content.skills.map((skill) => (
-                <SortableSkillItem
-                  key={skill.id}
-                  skill={skill}
-                  updateSkillCategory={updateSkillCategory}
-                  removeSkillCategory={removeSkillCategory}
-                />
-              ))}
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {content.skills.map((skill) => (
+                  <SortableSkillItem
+                    key={skill.id}
+                    skill={skill}
+                    updateSkillCategory={updateSkillCategory}
+                    removeSkillCategory={removeSkillCategory}
+                  />
+                ))}
+              </Accordion>
             </SortableContent>
           </Sortable>
 
