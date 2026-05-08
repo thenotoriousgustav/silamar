@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -27,15 +27,18 @@ export function PersonalInfoSection({
     >
       <AccordionTrigger
         asChild
-        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+        className="data-[state=open]:bg-muted/30 px-5 hover:no-underline"
       >
-        <div className="flex cursor-pointer items-center gap-4">
-          <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
-            <User className="h-4 w-4" />
+        <div className="flex w-full cursor-pointer items-center justify-between pr-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
+              <User className="h-4 w-4" />
+            </div>
+            <span className="text-foreground font-semibold tracking-tight">
+              Informasi Pribadi
+            </span>
           </div>
-          <span className="text-foreground font-semibold tracking-tight">
-            Informasi Pribadi
-          </span>
+          <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">

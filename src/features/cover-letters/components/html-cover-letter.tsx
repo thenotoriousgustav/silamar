@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { CoverLetterBuilderData } from "./schema";
+import { CoverLetterBuilderData } from "../schema";
 
 interface HtmlCoverLetterProps {
   data: Partial<CoverLetterBuilderData>;
@@ -96,7 +96,7 @@ export function HtmlCoverLetter({ data }: HtmlCoverLetterProps) {
       {pages.map((pageContent, idx) => (
         <div
           key={idx}
-          className="relative min-h-[1123px] w-[794px] bg-white p-[50px] text-gray-900 shadow-2xl transition-all"
+          className="relative min-h-280.75 w-198.5 bg-white p-12.5 text-gray-900 shadow-2xl transition-all"
         >
           <div className="relative z-10 h-full w-full">{pageContent}</div>
           {pages.length > 1 && (

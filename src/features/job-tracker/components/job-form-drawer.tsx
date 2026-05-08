@@ -60,7 +60,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ResumeSelectorDialog } from "./resume-selector-dialog";
 import { jobApplicationSchema, type JobApplicationFormValues } from "../schema";
 
-
 interface JobFormDrawerProps {
   job: JobApplication | null;
   open: boolean;
@@ -89,7 +88,10 @@ export function JobFormDrawer({
       if (isEdit && job) {
         return updateJobAction(job.id, values);
       }
-      return createJobAction({ ...values, trackerId: values.trackerId || trackerId });
+      return createJobAction({
+        ...values,
+        trackerId: values.trackerId || trackerId,
+      });
     },
     onSuccess: (data, variables) => {
       toast.success(isEdit ? "Lamaran diperbarui" : "Lamaran ditambahkan");
@@ -99,8 +101,8 @@ export function JobFormDrawer({
       }
 
       if (!isEdit) form.reset();
+      if (!isEdit) onOpenChange(false);
       onSuccess?.();
-      onOpenChange(false);
     },
     onError: (error) => {
       console.error(error);
@@ -180,7 +182,7 @@ export function JobFormDrawer({
         }}
         direction="right"
       >
-        <DrawerContent className="flex h-full w-full flex-col sm:max-w-xl">
+        <DrawerContent className="flex h-full w-full flex-col data-[vaul-drawer-direction=right]:sm:max-w-2xl">
           <DrawerHeader className="shrink-0 border-b pb-4">
             <div className="flex items-center justify-between">
               <div>

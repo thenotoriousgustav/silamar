@@ -42,8 +42,6 @@ export const sidebarData = {
           url: "/documents/cover-letter",
           icon: ScrollText,
         },
-        { title: "Certificates", url: "/documents/certificates", icon: Award },
-        { title: "Portfolio", url: "/documents/portfolio", icon: FolderOpen },
       ],
     },
   ],

@@ -40,7 +40,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { ResumeContent, ResumeExperience } from "@/features/resumes/types/resume";
+import type {
+  ResumeContent,
+  ResumeExperience,
+} from "@/features/resumes/types/resume";
 import { EmptyState } from "./empty-state";
 import {
   Sortable,
@@ -82,48 +85,56 @@ export function ExperienceSection({
     >
       <AccordionTrigger
         asChild
-        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+        className="data-[state=open]:bg-muted/30 px-5 hover:no-underline"
       >
-        <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
+        <div className="flex w-full cursor-pointer items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
               <Briefcase className="h-4 w-4" />
             </div>
-            <span className="text-foreground font-semibold tracking-tight">
-              Pengalaman Kerja
-            </span>
+            <div className="flex flex-col items-start">
+              <span className="text-foreground font-semibold tracking-tight">
+                Pengalaman Kerja
+              </span>
+              <p className="text-muted-foreground text-[10px]">
+                {content.experience.length} Pengalaman • Klik untuk expand
+              </p>
+            </div>
           </div>
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={(e) => {
-              e.stopPropagation();
-              addExperience();
-            }}
-            className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
-            title="Tambah Pengalaman"
-          >
-            <Plus className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                addExperience();
+              }}
+              className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
+              title="Tambah Pengalaman"
+            >
+              <Plus className="h-4 w-4" />
+            </div>
+            <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
           </div>
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">
-        <div className="flex flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           <Sortable
             value={content.experience}
             onValueChange={updateExperienceList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="flex flex-col gap-4">
-              <Accordion className="w-full space-y-4">
+            <SortableContent className="w-full flex flex-col gap-4">
+              <Accordion type="single" collapsible className="w-full space-y-4">
                 {content.experience.map((exp: ResumeExperience) => (
-                  <SortableItem key={exp.id} value={exp.id}>
+                  <SortableItem key={exp.id} value={exp.id} asChild>
                     <AccordionItem
                       id={`experience-${exp.id}`}
                       value={exp.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >
-                      <div className="flex items-center">
+                      <div className="flex w-full items-center">
                         <SortableItemHandle
                           asChild
                           className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
@@ -132,24 +143,29 @@ export function ExperienceSection({
                         </SortableItemHandle>
                         <AccordionTrigger
                           asChild
-                          className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
+                          className="hover:bg-muted/30 flex-1 px-4 hover:no-underline"
                         >
-                          <div className="flex w-full flex-1 items-center justify-between text-left cursor-pointer">
-                            <div className="flex flex-col gap-0.5">
-                              <span className="text-sm font-bold">
+                          <div className="flex w-full flex-1 cursor-pointer items-center justify-between text-left">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-foreground text-sm font-bold">
                                 {exp.company || "Nama Perusahaan"}
                               </span>
-                              <span className="text-muted-foreground text-xs font-medium">
-                                {exp.position || "Posisi / Jabatan"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="text-muted-foreground text-[10px] font-medium uppercase">
-                                {exp.startDate || "Mulai"} —{" "}
-                                {exp.isCurrentJob
-                                  ? "Present"
-                                  : exp.endDate || "Selesai"}
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground text-[10px]">
+                                  {exp.position || "Posisi"}
+                                </span>
+                                <span className="text-muted-foreground/30 text-[10px]">
+                                  •
+                                </span>
+                                <span className="text-muted-foreground text-[10px]">
+                                  {exp.startDate || "Mulai"} -{" "}
+                                  {exp.isCurrentJob
+                                    ? "Present"
+                                    : exp.endDate || "Selesai"}
+                                </span>
                               </div>
+                            </div>
+                            <div className="flex items-center gap-2">
                               <div
                                 role="button"
                                 tabIndex={0}
@@ -162,6 +178,7 @@ export function ExperienceSection({
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </div>
+                              <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
                             </div>
                           </div>
                         </AccordionTrigger>

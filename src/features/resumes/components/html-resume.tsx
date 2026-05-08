@@ -1,5 +1,8 @@
 import React, { useMemo } from "react";
-import type { ResumeContent, DescriptionItem } from "@/features/resumes/types/resume";
+import type {
+  ResumeContent,
+  DescriptionItem,
+} from "@/features/resumes/types/resume";
 import { cn } from "@/lib/utils";
 
 interface HtmlResumeProps {
@@ -386,7 +389,9 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               onClick={() => onJumpToSection?.("skills")}
             >
               <span className="font-bold">{skill.category}: </span>
-              <span className="text-slate-700">{skill.items.join(", ")}</span>
+              <span className="text-slate-700">
+                {(skill.items || []).join(", ")}
+              </span>
             </div>
           );
           addToPage(skillEl, estimateHeight("skillItem", skill));
@@ -517,7 +522,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
       {pages.map((pageContent, idx) => (
         <div
           key={idx}
-          className="hover:shadow-primary/5 relative min-h-[1123px] w-[794px] bg-white p-[50px] text-slate-900 shadow-2xl transition-all"
+          className="hover:shadow-primary/5 relative min-h-280.75 w-198.5 bg-white p-12.5 text-slate-900 shadow-2xl transition-all"
         >
           {/* Page Content */}
           <div className="relative z-10 h-full w-full">{pageContent}</div>

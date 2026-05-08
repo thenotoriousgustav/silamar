@@ -9,7 +9,10 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { siteConfig } from "@/config/site";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 

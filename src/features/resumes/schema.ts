@@ -52,7 +52,9 @@ export const ResumeEducationSchema = z.object({
 export const ResumeProjectSchema = z.object({
   id: z.string().describe("Unique identifier for the project item (UUID)"),
   name: z.string().describe("Name of the project"),
-  description: z.array(z.string()).describe("Detailed description of the project as bullet points"),
+  description: z
+    .array(z.string())
+    .describe("Detailed description of the project as bullet points"),
   technologies: z.array(z.string()).describe("List of technologies used"),
   link: z.string().describe("Project URL or GitHub link or empty string"),
   startDate: z.string().describe("Start date or empty string"),

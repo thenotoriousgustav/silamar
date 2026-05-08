@@ -7,6 +7,7 @@ import {
   Calendar as CalendarIcon,
   ExternalLink,
   GripVertical,
+  ChevronDown,
 } from "lucide-react";
 import {
   AccordionContent,
@@ -68,9 +69,9 @@ export function CustomSection({
         onValueChange={updateCustomSectionList}
         getItemValue={(s) => s.id}
       >
-        <SortableContent className="flex flex-col gap-4">
+        <SortableContent className="flex w-full flex-col gap-4">
           {sections.map((section) => (
-            <SortableItem key={section.id} value={section.id}>
+            <SortableItem key={section.id} value={section.id} asChild>
               <AccordionItem
                 key={section.id}
                 value={section.id}
@@ -78,9 +79,9 @@ export function CustomSection({
               >
                 <AccordionTrigger
                   asChild
-                  className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+                  className="data-[state=open]:bg-muted/30 px-5 hover:no-underline"
                 >
-                  <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
+                  <div className="flex w-full cursor-pointer items-center justify-between pr-4">
                     <div className="flex items-center gap-4">
                       <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
                         <LayoutGrid className="h-4 w-4" />
@@ -132,11 +133,12 @@ export function CustomSection({
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                      <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
                     </div>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pt-2 pb-6">
-                  <div className="flex flex-col gap-6">
+                  <div className="flex w-full flex-col gap-6">
                     <Sortable
                       value={section.items}
                       onValueChange={(items) =>
@@ -144,9 +146,9 @@ export function CustomSection({
                       }
                       getItemValue={(i) => i.id}
                     >
-                      <SortableContent className="flex flex-col gap-6">
+                      <SortableContent className="flex w-full flex-col gap-6">
                         {section.items.map((item) => (
-                          <SortableItem key={item.id} value={item.id}>
+                          <SortableItem key={item.id} value={item.id} asChild>
                             <Card
                               key={item.id}
                               className="bg-muted/20 border-border relative overflow-hidden rounded-none"
@@ -283,86 +285,84 @@ export function CustomSection({
                                         <Plus className="h-3 w-3" /> Add Point
                                       </Button>
                                     </div>
-                                      <div className="space-y-2">
-                                        <Sortable
-                                          value={item.description || []}
-                                          onValueChange={(newBullets) => {
-                                            updateCustomSectionItem(
-                                              section.id,
-                                              item.id,
-                                              {
-                                                description: newBullets,
-                                              },
-                                            );
-                                          }}
-                                          getItemValue={(i) => i.id}
-                                        >
-                                          <SortableContent className="space-y-2">
-                                            {(item.description || []).map(
-                                              (bullet, idx) => (
-                                                <SortableItem
-                                                  key={bullet.id}
-                                                  value={bullet.id}
-                                                  className="flex items-center gap-2"
+                                    <div className="space-y-2">
+                                      <Sortable
+                                        value={item.description || []}
+                                        onValueChange={(newBullets) => {
+                                          updateCustomSectionItem(
+                                            section.id,
+                                            item.id,
+                                            {
+                                              description: newBullets,
+                                            },
+                                          );
+                                        }}
+                                        getItemValue={(i) => i.id}
+                                      >
+                                        <SortableContent className="space-y-2">
+                                          {(item.description || []).map(
+                                            (bullet, idx) => (
+                                              <SortableItem
+                                                key={bullet.id}
+                                                value={bullet.id}
+                                                className="flex items-center gap-2"
+                                              >
+                                                <SortableItemHandle
+                                                  asChild
+                                                  className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
                                                 >
-                                                  <SortableItemHandle
-                                                    asChild
-                                                    className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
-                                                  >
-                                                    <GripVertical className="h-3.5 w-3.5" />
-                                                  </SortableItemHandle>
-                                                  <Input
-                                                    value={bullet.text || ""}
-                                                    onChange={(e) => {
-                                                      const newBullets = [
-                                                        ...(item.description ||
-                                                          []),
-                                                      ];
-                                                      newBullets[idx] = {
-                                                        ...newBullets[idx],
-                                                        text: e.target.value,
-                                                      };
-                                                      updateCustomSectionItem(
-                                                        section.id,
-                                                        item.id,
-                                                        {
-                                                          description:
-                                                            newBullets,
-                                                        },
-                                                      );
-                                                    }}
-                                                    className="bg-background border-border h-9 text-sm"
-                                                    placeholder="Detail tambahan..."
-                                                  />
-                                                  <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                      const newBullets = (
-                                                        item.description || []
-                                                      ).filter(
-                                                        (_, i) => i !== idx,
-                                                      );
-                                                      updateCustomSectionItem(
-                                                        section.id,
-                                                        item.id,
-                                                        {
-                                                          description:
-                                                            newBullets,
-                                                        },
-                                                      );
-                                                    }}
-                                                    className="hover:text-destructive h-9 w-9 shrink-0"
-                                                  >
-                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                  </Button>
-                                                </SortableItem>
-                                              ),
-                                            )}
-                                          </SortableContent>
-                                        </Sortable>
-                                      </div>
+                                                  <GripVertical className="h-3.5 w-3.5" />
+                                                </SortableItemHandle>
+                                                <Input
+                                                  value={bullet.text || ""}
+                                                  onChange={(e) => {
+                                                    const newBullets = [
+                                                      ...(item.description ||
+                                                        []),
+                                                    ];
+                                                    newBullets[idx] = {
+                                                      ...newBullets[idx],
+                                                      text: e.target.value,
+                                                    };
+                                                    updateCustomSectionItem(
+                                                      section.id,
+                                                      item.id,
+                                                      {
+                                                        description: newBullets,
+                                                      },
+                                                    );
+                                                  }}
+                                                  className="bg-background border-border h-9 text-sm"
+                                                  placeholder="Detail tambahan..."
+                                                />
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => {
+                                                    const newBullets = (
+                                                      item.description || []
+                                                    ).filter(
+                                                      (_, i) => i !== idx,
+                                                    );
+                                                    updateCustomSectionItem(
+                                                      section.id,
+                                                      item.id,
+                                                      {
+                                                        description: newBullets,
+                                                      },
+                                                    );
+                                                  }}
+                                                  className="hover:text-destructive h-9 w-9 shrink-0"
+                                                >
+                                                  <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
+                                              </SortableItem>
+                                            ),
+                                          )}
+                                        </SortableContent>
+                                      </Sortable>
+                                    </div>
                                   </div>
                                 </div>
                               </CardContent>

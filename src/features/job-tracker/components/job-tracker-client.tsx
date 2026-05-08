@@ -204,6 +204,13 @@ export function JobTrackerClient({
   ) => {
     const newOrder = Object.keys(newColumns);
     setColumnOrder(newOrder);
+
+    // Update localJobs to keep it in sync with the kanban state
+    const flattened = Object.entries(newColumns).flatMap(([status, items]) =>
+      items.map((item) => ({ ...item, status: status as JobStatus })),
+    );
+    setLocalJobs(flattened);
+
     const cookieValue = encodeURIComponent(JSON.stringify(newOrder));
     document.cookie = `${COLUMN_ORDER_KEY}=${cookieValue}; path=/; max-age=31536000; SameSite=Lax`;
   };
@@ -226,12 +233,21 @@ export function JobTrackerClient({
     const activeId = active.id as string;
     const overId = over.id as string;
 
+    // Resolve the status: it could be the column ID or the ID of an item inside the column
+    let newStatus = overId;
+    if (!KANBAN_COLUMNS.some((c) => c.id === overId)) {
+      const overJob = localJobs.find((j) => j.id === overId);
+      if (overJob) {
+        newStatus = overJob.status;
+      }
+    }
+
     const job = localJobs.find((j) => j.id === activeId);
-    if (job && dragStartStatusRef.current !== overId) {
-      updateStatusMutation.mutate({ id: activeId, status: overId });
+    if (job && dragStartStatusRef.current !== newStatus) {
+      updateStatusMutation.mutate({ id: activeId, status: newStatus });
       setLocalJobs((prev) =>
         prev.map((j) =>
-          j.id === activeId ? { ...j, status: overId as JobStatus } : j,
+          j.id === activeId ? { ...j, status: newStatus as JobStatus } : j,
         ),
       );
     }
@@ -282,9 +298,10 @@ export function JobTrackerClient({
         onAddSuccess={() =>
           queryClient.invalidateQueries({ queryKey: ["jobs"] })
         }
-        onDetailSuccess={() =>
-          queryClient.invalidateQueries({ queryKey: ["jobs"] })
-        }
+        onDetailSuccess={() => {
+          updateUrl(null);
+          queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        }}
         onConfirmDelete={(id) => deleteMutation.mutate(id)}
         trackerId={currentQueryParams.trackerId}
       />

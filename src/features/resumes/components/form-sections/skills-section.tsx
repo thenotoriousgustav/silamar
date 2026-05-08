@@ -1,6 +1,6 @@
 "use client";
 
-import { Code2, Plus, Trash2, GripVertical } from "lucide-react";
+import { Code2, Plus, Trash2, GripVertical, ChevronDown } from "lucide-react";
 import {
   AccordionContent,
   AccordionItem,
@@ -14,7 +14,10 @@ import {
   TagsInputItem,
   TagsInputList,
 } from "@/components/ui/tags-input";
-import type { ResumeContent, ResumeSkill } from "@/features/resumes/types/resume";
+import type {
+  ResumeContent,
+  ResumeSkill,
+} from "@/features/resumes/types/resume";
 import { Label } from "@/components/ui/label";
 
 import {
@@ -44,7 +47,7 @@ function SortableSkillItem({
   removeSkillCategory,
 }: SortableSkillItemProps) {
   return (
-    <SortableItem value={skill.id}>
+    <SortableItem value={skill.id} asChild>
       <div className="bg-muted/30 border-border hover:border-primary/30 overflow-hidden border transition-all">
         <div className="bg-muted/50 border-border/50 flex items-center justify-between border-b px-4 py-1.5">
           <SortableItemHandle
@@ -126,9 +129,9 @@ export function SkillsSection({
     >
       <AccordionTrigger
         asChild
-        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+        className="data-[state=open]:bg-muted/30 px-5 hover:no-underline"
       >
-        <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
+        <div className="flex w-full cursor-pointer items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
               <Code2 className="h-4 w-4" />
@@ -137,28 +140,31 @@ export function SkillsSection({
               Skills
             </span>
           </div>
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={(e) => {
-              e.stopPropagation();
-              addSkillCategory();
-            }}
-            className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
-            title="Tambah Kategori"
-          >
-            <Plus className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                addSkillCategory();
+              }}
+              className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
+              title="Tambah Kategori"
+            >
+              <Plus className="h-4 w-4" />
+            </div>
+            <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
           </div>
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">
-        <div className="flex flex-col gap-8">
+        <div className="flex w-full flex-col gap-8">
           <Sortable
             value={content.skills}
             onValueChange={updateSkills}
             getItemValue={(s) => s.id}
           >
-            <SortableContent className="flex flex-col gap-4">
+            <SortableContent className="flex w-full flex-col gap-4">
               {content.skills.map((skill) => (
                 <SortableSkillItem
                   key={skill.id}

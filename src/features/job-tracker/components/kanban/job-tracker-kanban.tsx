@@ -57,45 +57,65 @@ export function JobTrackerKanban({
       onDragEnd={onDragEnd}
     >
       <KanbanBoard className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Object.keys(columns).map((status) => {
+        {Object.entries(columns).map(([status, tasks]) => {
           const colInfo = KANBAN_COLUMNS.find((c) => c.id === status);
+          const statusId = status as JobStatus;
+
           return (
-            <JobColumn
+            <KanbanColumn
               key={status}
               value={status}
-              label={colInfo?.label || status}
-              tasks={columns[status] || []}
-              onItemClick={onItemClick}
-              onItemEdit={onItemEdit}
-              onItemDelete={onItemDelete}
-            />
+              className={cn("rounded-none border p-4", STATUS_COLORS[statusId])}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-foreground text-sm font-semibold">
+                    {colInfo?.label || status}
+                  </h3>
+                  <span
+                    className={cn(
+                      "rounded-none px-2 py-0.5 text-xs font-bold",
+                      STATUS_BADGE[statusId],
+                    )}
+                  >
+                    {tasks.length}
+                  </span>
+                </div>
+                <KanbanColumnHandle asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground h-8 w-8"
+                  >
+                    <GripVertical className="h-4 w-4" />
+                  </Button>
+                </KanbanColumnHandle>
+              </div>
+
+              <div className="flex min-h-25 flex-col gap-3">
+                {tasks.length === 0 && (
+                  <div className="border-border/50 bg-background/20 rounded-none border border-dashed py-8 text-center">
+                    <Briefcase className="text-muted-foreground/30 mx-auto mb-2 h-5 w-5" />
+                    <p className="text-muted-foreground/50 text-xs">Kosong</p>
+                  </div>
+                )}
+                {tasks.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    asHandle
+                    onItemClick={onItemClick}
+                    onItemEdit={onItemEdit}
+                    onItemDelete={onItemDelete}
+                  />
+                ))}
+              </div>
+            </KanbanColumn>
           );
         })}
       </KanbanBoard>
       <KanbanOverlay>
-        {({ value, variant }) => {
-          if (variant === "column") {
-            const col = KANBAN_COLUMNS.find((c) => c.id === value);
-            return (
-              <JobColumn
-                value={value}
-                label={col?.label || (value as string)}
-                tasks={columns[value] || []}
-                onItemClick={onItemClick}
-                onItemEdit={onItemEdit}
-                onItemDelete={onItemDelete}
-              />
-            );
-          }
-
-          const job = Object.values(columns)
-            .flat()
-            .find((j) => j.id === value);
-
-          if (!job) return null;
-
-          return <JobCard job={job} />;
-        }}
+        <div className="bg-primary/10 size-full rounded-none border-2 border-dashed" />
       </KanbanOverlay>
     </Kanban>
   );
@@ -179,78 +199,5 @@ function JobCard({
         </div>
       </div>
     </KanbanItem>
-  );
-}
-
-interface JobColumnProps extends Omit<
-  React.ComponentProps<typeof KanbanColumn>,
-  "children"
-> {
-  tasks: JobApplication[];
-  label: string;
-  onItemClick?: (job: JobApplication) => void;
-  onItemEdit?: (job: JobApplication) => void;
-  onItemDelete?: (job: JobApplication) => void;
-}
-
-function JobColumn({
-  value,
-  tasks,
-  label,
-  onItemClick,
-  onItemEdit,
-  onItemDelete,
-  ...props
-}: JobColumnProps) {
-  const statusId = value as JobStatus;
-
-  return (
-    <KanbanColumn
-      value={value}
-      className={cn("rounded-none border p-4", STATUS_COLORS[statusId])}
-      {...props}
-    >
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-foreground text-sm font-semibold">{label}</h3>
-          <span
-            className={cn(
-              "rounded-none px-2 py-0.5 text-xs font-bold",
-              STATUS_BADGE[statusId],
-            )}
-          >
-            {tasks.length}
-          </span>
-        </div>
-        <KanbanColumnHandle asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground h-8 w-8"
-          >
-            <GripVertical className="h-4 w-4" />
-          </Button>
-        </KanbanColumnHandle>
-      </div>
-
-      <div className="flex min-h-25 flex-col gap-3">
-        {tasks.length === 0 && (
-          <div className="border-border/50 bg-background/20 rounded-none border border-dashed py-8 text-center">
-            <Briefcase className="text-muted-foreground/30 mx-auto mb-2 h-5 w-5" />
-            <p className="text-muted-foreground/50 text-xs">Kosong</p>
-          </div>
-        )}
-        {tasks.map((job) => (
-          <JobCard
-            key={job.id}
-            job={job}
-            asHandle
-            onItemClick={onItemClick}
-            onItemEdit={onItemEdit}
-            onItemDelete={onItemDelete}
-          />
-        ))}
-      </div>
-    </KanbanColumn>
   );
 }

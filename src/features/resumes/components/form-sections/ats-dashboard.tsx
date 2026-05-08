@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Zap, 
-  ChevronRight, 
-  BarChart3, 
-  Loader2, 
-  CheckCircle2, 
-  Sparkles, 
-  AlertTriangle, 
+import {
+  Zap,
+  ChevronRight,
+  BarChart3,
+  Loader2,
+  CheckCircle2,
+  Sparkles,
+  AlertTriangle,
   CheckCircle,
-  Plus
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -114,9 +114,7 @@ export function ATSDashboard({
                   ) : (
                     <BarChart3 className="text-brand-500 h-3 w-3" />
                   )}
-                  {isAnalyzing
-                    ? "Menganalisis..."
-                    : "Analisis Skor ATS"}
+                  {isAnalyzing ? "Menganalisis..." : "Analisis Skor ATS"}
                 </Button>
                 <div className="border-border bg-background flex items-center gap-1.5 rounded-none border px-2.5 py-1 text-[10px] font-medium shadow-sm">
                   <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -253,9 +251,7 @@ export function ATSDashboard({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-bold">
               <Sparkles className="text-brand-500 h-6 w-6" />
-              {isAnalyzing
-                ? "Menganalisis..."
-                : "Analisis ATS AI"}
+              {isAnalyzing ? "Menganalisis..." : "Analisis ATS AI"}
             </DialogTitle>
             <DialogDescription>
               Hasil analisis mendalam untuk mengoptimalkan peluang Anda lolos
@@ -313,15 +309,17 @@ export function ATSDashboard({
                     Masalah Kritis
                   </h4>
                   <div className="space-y-2">
-                    {atsResult.criticalIssues.map((issue: string, i: number) => (
-                      <div
-                        key={i}
-                        className="bg-muted/50 flex items-start gap-3 rounded-none p-3 text-xs"
-                      >
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-none bg-amber-500" />
-                        {issue}
-                      </div>
-                    ))}
+                    {atsResult.criticalIssues.map(
+                      (issue: string, i: number) => (
+                        <div
+                          key={i}
+                          className="bg-muted/50 flex items-start gap-3 rounded-none p-3 text-xs"
+                        >
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-none bg-amber-500" />
+                          {issue}
+                        </div>
+                      ),
+                    )}
                     {atsResult.criticalIssues.length === 0 && (
                       <p className="text-muted-foreground text-xs italic">
                         Tidak ditemukan masalah kritis.

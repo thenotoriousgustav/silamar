@@ -6,6 +6,7 @@ import {
   Trash2,
   Calendar as CalendarIcon,
   GripVertical,
+  ChevronDown,
 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { id } from "date-fns/locale";
@@ -25,7 +26,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MonthPicker } from "@/components/ui/monthpicker";
-import type { ResumeContent, ResumeEducation } from "@/features/resumes/types/resume";
+import type {
+  ResumeContent,
+  ResumeEducation,
+} from "@/features/resumes/types/resume";
 import { EmptyState } from "./empty-state";
 import {
   Sortable,
@@ -56,9 +60,9 @@ export function EducationSection({
     >
       <AccordionTrigger
         asChild
-        className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
+        className="data-[state=open]:bg-muted/30 px-5 hover:no-underline"
       >
-        <div className="flex w-full items-center justify-between pr-4 cursor-pointer">
+        <div className="flex w-full cursor-pointer items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
               <GraduationCap className="h-4 w-4" />
@@ -67,37 +71,40 @@ export function EducationSection({
               Edukasi
             </span>
           </div>
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={(e) => {
-              e.stopPropagation();
-              addEducation();
-            }}
-            className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
-            title="Tambah Edukasi"
-          >
-            <Plus className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                addEducation();
+              }}
+              className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
+              title="Tambah Edukasi"
+            >
+              <Plus className="h-4 w-4" />
+            </div>
+            <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
           </div>
         </div>
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">
-        <div className="flex flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           <Sortable
             value={content.education}
             onValueChange={updateEducationList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="flex flex-col gap-4">
-              <Accordion className="w-full space-y-4">
+            <SortableContent className="w-full flex flex-col gap-4">
+              <Accordion type="single" collapsible className="w-full space-y-4">
                 {content.education.map((edu: ResumeEducation) => (
-                  <SortableItem key={edu.id} value={edu.id}>
+                  <SortableItem key={edu.id} value={edu.id} asChild>
                     <AccordionItem
                       id={`education-${edu.id}`}
                       value={edu.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >
-                      <div className="flex items-center">
+                      <div className="flex w-full items-center">
                         <SortableItemHandle
                           asChild
                           className="text-muted-foreground hover:text-primary ml-4 cursor-grab transition-colors"
@@ -106,9 +113,9 @@ export function EducationSection({
                         </SortableItemHandle>
                         <AccordionTrigger
                           asChild
-                          className="hover:bg-muted/30 flex-1 px-4 py-4 hover:no-underline"
+                          className="hover:bg-muted/30 flex-1 px-4 hover:no-underline"
                         >
-                          <div className="flex w-full flex-1 items-center justify-between text-left cursor-pointer">
+                          <div className="flex w-full flex-1 cursor-pointer items-center justify-between text-left">
                             <div className="flex flex-col gap-0.5">
                               <span className="text-sm font-bold">
                                 {edu.institution || "Nama Institusi"}
@@ -117,7 +124,7 @@ export function EducationSection({
                                 {edu.degree || "Gelar / Sertifikasi"}
                               </span>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               <div className="text-muted-foreground text-[10px] font-medium uppercase">
                                 {edu.startYear || "Mulai"} —{" "}
                                 {edu.endYear || "Selesai"}
@@ -134,6 +141,7 @@ export function EducationSection({
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </div>
+                              <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform duration-200 group-data-[state=open]/accordion-trigger:rotate-180" />
                             </div>
                           </div>
                         </AccordionTrigger>
