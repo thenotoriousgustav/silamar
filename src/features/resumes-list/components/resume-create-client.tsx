@@ -14,10 +14,10 @@ import { toast } from "sonner";
 import {
   createResumeAction,
   createEmptyResumeAction,
-} from "@/features/resumes/actions";
+} from "@/features/resumes-list/actions";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
-import type { ResumeContent, ResumeTemplateId } from "@/features/resumes/types/resume";
+import type { ResumeContent, ResumeTemplateId } from "@/features/resumes-list/types/resume";
 
 export function ResumeCreateClient() {
   const router = useRouter();

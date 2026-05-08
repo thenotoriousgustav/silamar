@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import type {
   ResumeContent,
   DescriptionItem,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 import { cn } from "@/lib/utils";
 
 interface HtmlResumeProps {

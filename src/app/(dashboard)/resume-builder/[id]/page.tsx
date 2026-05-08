@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getResumeDTO } from "@/features/resumes/queries";
-import { ResumeBuilderClient } from "@/features/resumes/components/resume-builder-client";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import { getResumeDTO } from "@/features/resume-builder/queries";
+import { ResumeBuilderClient } from "@/features/resume-builder/components/resume-builder-client";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

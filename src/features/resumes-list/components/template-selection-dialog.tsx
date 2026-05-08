@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check, LayoutTemplate } from "lucide-react";
-import type { ResumeTemplateId } from "@/features/resumes/types/resume";
+import type { ResumeTemplateId } from "@/features/resumes-list/types/resume";
 import { cn } from "@/lib/utils";
 
 interface TemplateSelectionDialogProps {

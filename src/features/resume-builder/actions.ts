@@ -6,21 +6,12 @@ import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { ResumeContent } from "@/features/resumes/types/resume";
-import { getResumesDTO } from "@/features/resumes/queries";
-
-/**
- * Server Actions for Resume Builder
- */
+import type { ResumeContent, ResumeTemplateId } from "@/features/resumes-list/types/resume";
 
 async function getSession() {
   return await auth.api.getSession({
     headers: await headers(),
   });
-}
-
-export async function getResumesAction() {
-  return await getResumesDTO();
 }
 
 export async function createResumeAction(data: {
@@ -73,7 +64,7 @@ export async function updateResumeAction(
 }
 
 export async function createEmptyResumeAction(
-  templateId: import("@/features/resumes/types/resume").ResumeTemplateId = "classic",
+  templateId: ResumeTemplateId = "classic",
 ) {
   const session = await getSession();
   if (!session?.user) throw new Error("Unauthorized");
@@ -113,16 +104,4 @@ export async function createEmptyResumeAction(
 
   revalidatePath("/documents/resumes");
   return newResume[0];
-}
-
-export async function deleteResumeAction(id: string) {
-  const session = await getSession();
-  if (!session?.user) throw new Error("Unauthorized");
-
-  await db
-    .delete(resumes)
-    .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
-
-  revalidatePath("/documents/resumes");
-  return { success: true };
 }

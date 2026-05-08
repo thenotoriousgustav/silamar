@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 interface ResumeImportDialogProps {
   isOpen: boolean;

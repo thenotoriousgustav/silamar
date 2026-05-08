@@ -1,7 +1,7 @@
 import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { ResumeContentSchema } from "@/features/resumes/schema";
-import { extractPdfText } from "@/features/resumes/utils/pdf-extractor";
+import { ResumeContentSchema } from "@/features/resumes-list/schema";
+import { extractPdfText } from "@/features/resume-builder/utils/pdf-extractor";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 

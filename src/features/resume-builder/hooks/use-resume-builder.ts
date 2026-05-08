@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateResumeAction } from "@/features/resumes/actions";
+import { updateResumeAction } from "@/features/resume-builder/actions";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -12,7 +12,7 @@ import type {
   ResumeSkill,
   ResumeCustomSection,
   ResumeCustomSectionItem,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 
 const DEFAULT_RESUME: ResumeContent = {
   personalInfo: {

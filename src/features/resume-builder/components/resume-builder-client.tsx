@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useRef } from "react";
-import { useResumeBuilder } from "@/features/resumes/hooks/use-resume-builder";
+import { useResumeBuilder } from "@/features/resume-builder/hooks/use-resume-builder";
 import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,11 +15,11 @@ import {
 } from "@/components/providers/header-provider";
 import { ResumeForm } from "./resume-form";
 import { ResumePreview } from "./resume-preview";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateResumeAction } from "@/features/resumes/actions";
 import { useSidebar } from "@/components/ui/sidebar";
+import { updateResumeAction } from "../actions";
 
 interface ResumeBuilderClientProps {
   id: string;
@@ -89,7 +89,7 @@ export function ResumeBuilderClient({
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (data: { title: string; content?: ResumeContent }) =>
+    mutationFn: (data: { title: string; content: ResumeContent }) =>
       updateResumeAction(id, data),
     onSuccess: (updatedResume) => {
       if (updatedResume) {

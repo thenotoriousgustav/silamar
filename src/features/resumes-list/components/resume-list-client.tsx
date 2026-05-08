@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { calculateCompleteness } from "@/features/resumes/utils/completeness";
+import { calculateCompleteness } from "@/features/resumes-list/utils/completeness";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +25,12 @@ import {
 import type {
   ResumeContent,
   ResumeTemplateId,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
+import { deleteResumeAction, getResumesAction } from "@/features/resumes-list/actions";
 import {
   createResumeAction,
   createEmptyResumeAction,
-  deleteResumeAction,
-  getResumesAction,
-} from "@/features/resumes/actions";
+} from "@/features/resume-builder/actions";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
 import { ResumePreviewDrawer } from "./resume-preview-drawer";

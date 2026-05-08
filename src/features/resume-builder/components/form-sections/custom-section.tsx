@@ -23,7 +23,7 @@ import type {
   ResumeContent,
   ResumeCustomSection,
   ResumeCustomSectionItem,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 import {
   Sortable,
   SortableContent,

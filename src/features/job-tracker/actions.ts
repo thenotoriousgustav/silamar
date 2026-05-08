@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { getJobsDTO, getTrackersDTO } from "@/features/job-tracker/queries";
-import { getResumesDTO } from "@/features/resumes/queries";
+import { getResumesDTO } from "@/features/resumes-list/queries";
 
 /**
  * Server Actions for Job Tracker

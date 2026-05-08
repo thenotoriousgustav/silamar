@@ -1,4 +1,4 @@
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 export interface CompletenessResult {
   score: number;

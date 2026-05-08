@@ -71,7 +71,7 @@ export async function updateCoverLetterAction(
     .returning();
 
   revalidatePath("/documents/cover-letter");
-  revalidatePath(`/documents/cover-letter/${id}`);
+  revalidatePath(`/cover-letter-builder/${id}`);
   return updated[0];
 }
 

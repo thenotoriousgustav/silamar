@@ -19,7 +19,7 @@ import type {
   ResumeSkill,
   ResumeCustomSection,
   ResumeCustomSectionItem,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 
 // Import Modular Sections
 import { ATSDashboard } from "./form-sections/ats-dashboard";

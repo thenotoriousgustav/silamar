@@ -42,7 +42,7 @@ import {
 import type {
   ResumeContent,
   ResumeExperience,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 import { EmptyState } from "./empty-state";
 import {
   Sortable,

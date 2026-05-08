@@ -120,7 +120,7 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
     onSuccess: (data) => {
       toast.success("Cover letter berhasil dibuat!");
       if (data.coverLetterId) {
-        router.push(`/documents/cover-letter/${data.coverLetterId}`);
+        router.push(`/cover-letter-builder/${data.coverLetterId}`);
       }
     },
     onError: (error: Error) => {

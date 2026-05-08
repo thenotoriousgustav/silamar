@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useHeaderDispatch } from "@/components/providers/header-provider";
 import { CoverLetterForm } from "./cover-letter-form";
 import { CoverLetterPreview } from "./cover-letter-preview";
-import { CoverLetterBuilderData } from "./schema";
+import { CoverLetterBuilderData } from "../schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSidebar } from "@/components/ui/sidebar";
 
@@ -221,7 +221,7 @@ export function CoverLetterBuilderClient({
               queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
 
               if (id === "new" && result.id) {
-                router.push(`/documents/cover-letter/${result.id}`);
+                router.push(`/cover-letter-builder/${result.id}`);
               } else {
                 router.refresh();
               }

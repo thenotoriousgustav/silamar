@@ -26,8 +26,8 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ResumePreview } from "@/features/resumes/components/resume-preview";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import { ResumePreview } from "@/features/resume-builder/components/resume-preview";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 interface Resume {
   id: string;

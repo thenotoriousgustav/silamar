@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import {
   calculateCompleteness,
   getCompletenessFeedback,
-} from "@/features/resumes/utils/completeness";
+} from "@/features/resumes-list/utils/completeness";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 interface ATSDashboardProps {
   content: ResumeContent;

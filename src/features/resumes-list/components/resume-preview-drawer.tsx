@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { PencilLine, X } from "lucide-react";
-import { ResumePreview } from "./resume-preview";
+import { ResumePreview } from "@/features/resume-builder/components/resume-preview";
 
 interface Resume {
   id: string;

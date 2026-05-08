@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import type { ResumeContent } from "@/features/resumes/types/resume";
+import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
 interface VisualSettingsSectionProps {
   content: ResumeContent;

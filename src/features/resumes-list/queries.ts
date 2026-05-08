@@ -84,18 +84,4 @@ export const getResumesDTO = async () => {
   });
 };
 
-export const getResumeDTO = async (id: string) => {
-  const user = await getSessionUser();
-  if (!user) return null;
 
-  const data = await db.query.resumes.findFirst({
-    where: and(eq(resumes.id, id), eq(resumes.userId, user.id)),
-  });
-
-  if (!data) return null;
-
-  return {
-    ...data,
-    content: data.content,
-  };
-};

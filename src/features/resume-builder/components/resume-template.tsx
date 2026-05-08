@@ -13,7 +13,7 @@ import {
 import type {
   ResumeContent,
   DescriptionItem,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 
 // Register custom fonts
 Font.register({

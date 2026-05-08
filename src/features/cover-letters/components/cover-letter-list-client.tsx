@@ -33,6 +33,7 @@ import { deleteCoverLetterAction } from "@/features/cover-letters/actions";
 
 interface CoverLetter {
   id: string;
+  title: string;
   jobTitle: string;
   company: string;
   updatedAt: Date;
@@ -80,7 +81,7 @@ export function CoverLetterListClient({
         title="Cover Letters"
         description="Kelola surat lamaran yang telah kamu buat"
       >
-        <Link href="/documents/cover-letter/new">
+        <Link href="/cover-letter-builder/new">
           <Button className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex items-center gap-2 px-4 py-5 text-sm font-semibold transition-all hover:shadow-md">
             <Plus className="h-4 w-4" />
             Buat Cover Letter Baru
@@ -94,7 +95,7 @@ export function CoverLetterListClient({
           title="Belum ada cover letter"
           description="Gunakan AI Generator kami untuk membuat surat lamaran yang profesional dalam hitungan detik."
           action={
-            <Link href="/documents/cover-letter/new">
+            <Link href="/cover-letter-builder/new">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 px-6 py-3 text-sm font-semibold">
                 <Plus className="h-4 w-4" />
                 Buat Cover Letter Pertama
@@ -107,8 +108,12 @@ export function CoverLetterListClient({
           {initialCoverLetters.map((letter) => (
             <DocumentCard
               key={letter.id}
-              title={letter.jobTitle}
-              subtitle={letter.company}
+              title={letter.title}
+              subtitle={
+                letter.jobTitle
+                  ? `${letter.jobTitle} @ ${letter.company}`
+                  : letter.company
+              }
               updatedAt={letter.updatedAt}
               icon={<Mail className="text-primary h-6 w-6" />}
               onDelete={() => setCoverLetterToDelete(letter.id)}
@@ -116,14 +121,14 @@ export function CoverLetterListClient({
                 setSelectedLetterForPreview(letter);
                 setIsPreviewOpen(true);
               }}
-              href={`/documents/cover-letter/${letter.id}`}
+              href={`/cover-letter-builder/${letter.id}`}
               linkText="Edit Detail"
             />
           ))}
 
           {/* New cover letter card */}
           <Link
-            href="/documents/cover-letter/new"
+            href="/cover-letter-builder/new"
             className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
             <div className="border-border mb-3 flex h-12 w-12 items-center justify-center border border-dashed">

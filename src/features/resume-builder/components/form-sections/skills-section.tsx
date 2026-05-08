@@ -18,7 +18,7 @@ import {
 import type {
   ResumeContent,
   ResumeSkill,
-} from "@/features/resumes/types/resume";
+} from "@/features/resumes-list/types/resume";
 import { Label } from "@/components/ui/label";
 
 import {

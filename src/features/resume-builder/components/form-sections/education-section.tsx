@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Code2,
+  GraduationCap,
   Plus,
   Trash2,
   Calendar as CalendarIcon,
@@ -28,8 +28,8 @@ import {
 import { MonthPicker } from "@/components/ui/monthpicker";
 import type {
   ResumeContent,
-  ResumeProject,
-} from "@/features/resumes/types/resume";
+  ResumeEducation,
+} from "@/features/resumes-list/types/resume";
 import { EmptyState } from "./empty-state";
 import {
   Sortable,
@@ -38,24 +38,24 @@ import {
   SortableItemHandle,
 } from "@/components/ui/sortable";
 
-interface ProjectSectionProps {
+interface EducationSectionProps {
   content: ResumeContent;
-  addProject: () => void;
-  updateProject: (id: string, data: Partial<ResumeProject>) => void;
-  updateProjectList: (projects: ResumeProject[]) => void;
-  removeProject: (id: string) => void;
+  addEducation: () => void;
+  updateEducation: (id: string, data: Partial<ResumeEducation>) => void;
+  updateEducationList: (education: ResumeEducation[]) => void;
+  removeEducation: (id: string) => void;
 }
 
-export function ProjectSection({
+export function EducationSection({
   content,
-  addProject,
-  updateProject,
-  updateProjectList,
-  removeProject,
-}: ProjectSectionProps) {
+  addEducation,
+  updateEducation,
+  updateEducationList,
+  removeEducation,
+}: EducationSectionProps) {
   return (
     <AccordionItem
-      value="projects"
+      value="education"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
     >
       <AccordionTrigger
@@ -65,10 +65,10 @@ export function ProjectSection({
         <div className="flex w-full cursor-pointer items-center justify-between pr-4">
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
-              <Code2 className="h-4 w-4" />
+              <GraduationCap className="h-4 w-4" />
             </div>
             <span className="text-foreground font-semibold tracking-tight">
-              Projects
+              Education
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -77,10 +77,10 @@ export function ProjectSection({
               tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
-                addProject();
+                addEducation();
               }}
               className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
-              title="Add Project"
+              title="Add Education"
             >
               <Plus className="h-4 w-4" />
             </div>
@@ -88,20 +88,20 @@ export function ProjectSection({
           </div>
         </div>
       </AccordionTrigger>
-      <AccordionContent className="w-full px-5 pt-2 pb-6">
+      <AccordionContent className="px-5 pt-2 pb-6">
         <div className="flex w-full flex-col gap-6">
           <Sortable
-            value={content.projects}
-            onValueChange={updateProjectList}
+            value={content.education}
+            onValueChange={updateEducationList}
             getItemValue={(e) => e.id}
           >
             <SortableContent className="flex w-full flex-col gap-4">
               <Accordion type="single" collapsible className="w-full space-y-4">
-                {content.projects.map((project: ResumeProject) => (
-                  <SortableItem key={project.id} value={project.id} asChild>
+                {content.education.map((edu: ResumeEducation) => (
+                  <SortableItem key={edu.id} value={edu.id} asChild>
                     <AccordionItem
-                      id={`projects-${project.id}`}
-                      value={project.id}
+                      id={`education-${edu.id}`}
+                      value={edu.id}
                       className="bg-muted/20 border-border group overflow-hidden rounded-none border shadow-sm transition-all"
                     >
                       <div className="flex w-full items-center">
@@ -118,26 +118,26 @@ export function ProjectSection({
                           <div className="flex w-full flex-1 cursor-pointer items-center justify-between text-left">
                             <div className="flex flex-col gap-0.5">
                               <span className="text-sm font-bold">
-                                {project.name || "Nama Projek"}
+                                {edu.institution || "Nama Institusi"}
                               </span>
                               <span className="text-muted-foreground text-xs font-medium">
-                                {project.link || "Tautan Projek"}
+                                {edu.degree || "Gelar / Sertifikasi"}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="text-muted-foreground text-[10px] font-medium uppercase">
-                                {project.startDate || "Mulai"} —{" "}
-                                {project.endDate || "Selesai"}
+                                {edu.startYear || "Mulai"} —{" "}
+                                {edu.endYear || "Selesai"}
                               </div>
                               <div
                                 role="button"
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeProject(project.id);
+                                  removeEducation(edu.id);
                                 }}
                                 className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
-                                title="Hapus Projek"
+                                title="Hapus Edukasi"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </div>
@@ -150,13 +150,13 @@ export function ProjectSection({
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Nama Projek
+                              Institusi / Sekolah
                             </Label>
                             <Input
-                              value={project.name || ""}
+                              value={edu.institution || ""}
                               onChange={(e) =>
-                                updateProject(project.id, {
-                                  name: e.target.value,
+                                updateEducation(edu.id, {
+                                  institution: e.target.value,
                                 })
                               }
                               className="bg-background border-border"
@@ -164,29 +164,58 @@ export function ProjectSection({
                           </div>
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Tautan Projek (Opsional)
+                              Gelar / Sertifikasi
                             </Label>
                             <Input
-                              value={project.link || ""}
+                              value={edu.degree || ""}
                               onChange={(e) =>
-                                updateProject(project.id, {
-                                  link: e.target.value,
+                                updateEducation(edu.id, {
+                                  degree: e.target.value,
                                 })
                               }
-                              placeholder="https://github.com/..."
                               className="bg-background border-border"
+                              placeholder="Misal: Sarjana Komputer"
                             />
                           </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Bidang Studi / Jurusan
+                            </Label>
+                            <Input
+                              value={edu.major || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, {
+                                  major: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                              placeholder="Misal: Teknik Informatika"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              IPK / Nilai (Opsional)
+                            </Label>
+                            <Input
+                              value={edu.gpa || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, { gpa: e.target.value })
+                              }
+                              className="bg-background border-border"
+                              placeholder="3.8/4.0"
+                            />
+                          </div>
+
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Bulan/Tahun Mulai
                             </Label>
                             <div className="relative">
                               <Input
-                                value={project.startDate || ""}
+                                value={edu.startYear || ""}
                                 onChange={(e) =>
-                                  updateProject(project.id, {
-                                    startDate: e.target.value,
+                                  updateEducation(edu.id, {
+                                    startYear: e.target.value,
                                   })
                                 }
                                 placeholder="MMM yyyy"
@@ -208,17 +237,17 @@ export function ProjectSection({
                                 >
                                   <MonthPicker
                                     selectedMonth={
-                                      project.startDate
+                                      edu.startYear
                                         ? (() => {
                                             const d = parse(
-                                              project.startDate,
+                                              edu.startYear,
                                               "MMM yyyy",
                                               new Date(),
                                               { locale: enUS },
                                             );
                                             if (!isNaN(d.getTime())) return d;
                                             return parse(
-                                              project.startDate,
+                                              edu.startYear,
                                               "MMMM yyyy",
                                               new Date(),
                                               { locale: enUS },
@@ -228,8 +257,8 @@ export function ProjectSection({
                                     }
                                     onMonthSelect={(date) => {
                                       if (date) {
-                                        updateProject(project.id, {
-                                          startDate: format(date, "MMM yyyy", {
+                                        updateEducation(edu.id, {
+                                          startYear: format(date, "MMM yyyy", {
                                             locale: enUS,
                                           }),
                                         });
@@ -240,16 +269,17 @@ export function ProjectSection({
                               </Popover>
                             </div>
                           </div>
+
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Bulan/Tahun Selesai
+                              Bulan/Tahun Lulus
                             </Label>
                             <div className="relative">
                               <Input
-                                value={project.endDate || ""}
+                                value={edu.endYear || ""}
                                 onChange={(e) =>
-                                  updateProject(project.id, {
-                                    endDate: e.target.value,
+                                  updateEducation(edu.id, {
+                                    endYear: e.target.value,
                                   })
                                 }
                                 placeholder="MMM yyyy"
@@ -271,17 +301,17 @@ export function ProjectSection({
                                 >
                                   <MonthPicker
                                     selectedMonth={
-                                      project.endDate
+                                      edu.endYear
                                         ? (() => {
                                             const d = parse(
-                                              project.endDate,
+                                              edu.endYear,
                                               "MMM yyyy",
                                               new Date(),
                                               { locale: enUS },
                                             );
                                             if (!isNaN(d.getTime())) return d;
                                             return parse(
-                                              project.endDate,
+                                              edu.endYear,
                                               "MMMM yyyy",
                                               new Date(),
                                               { locale: enUS },
@@ -291,8 +321,8 @@ export function ProjectSection({
                                     }
                                     onMonthSelect={(date) => {
                                       if (date) {
-                                        updateProject(project.id, {
-                                          endDate: format(date, "MMM yyyy", {
+                                        updateEducation(edu.id, {
+                                          endYear: format(date, "MMM yyyy", {
                                             locale: enUS,
                                           }),
                                         });
@@ -301,102 +331,6 @@ export function ProjectSection({
                                   />
                                 </PopoverContent>
                               </Popover>
-                            </div>
-                          </div>
-                          <div className="space-y-4 md:col-span-2">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                Deskripsi Projek
-                              </Label>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const current = project.description || [];
-                                  updateProject(project.id, {
-                                    description: [
-                                      ...current,
-                                      { id: crypto.randomUUID(), text: "" },
-                                    ],
-                                  });
-                                }}
-                                className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
-                              >
-                                <Plus className="h-3 w-3" />
-                                Tambah Poin
-                              </Button>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Sortable
-                                value={project.description || []}
-                                onValueChange={(newBullets) => {
-                                  updateProject(project.id, {
-                                    description: newBullets,
-                                  });
-                                }}
-                                getItemValue={(item) => item.id}
-                              >
-                                <SortableContent className="space-y-2">
-                                  {(project.description || []).map(
-                                    (bullet, idx) => (
-                                      <SortableItem
-                                        key={bullet.id}
-                                        value={bullet.id}
-                                        className="group flex items-start gap-2"
-                                      >
-                                        <SortableItemHandle
-                                          asChild
-                                          className="text-muted-foreground hover:text-primary mt-3 cursor-grab transition-colors"
-                                        >
-                                          <GripVertical className="h-3.5 w-3.5" />
-                                        </SortableItemHandle>
-                                        <div className="relative flex-1">
-                                          <textarea
-                                            value={bullet.text || ""}
-                                            onChange={(e) => {
-                                              const newDesc = [
-                                                ...(project.description || []),
-                                              ];
-                                              newDesc[idx] = {
-                                                ...newDesc[idx],
-                                                text: e.target.value,
-                                              };
-                                              updateProject(project.id, {
-                                                description: newDesc,
-                                              });
-                                            }}
-                                            placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
-                                            className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
-                                            rows={2}
-                                          />
-                                        </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          onClick={() => {
-                                            const newDesc =
-                                              project.description.filter(
-                                                (_, i) => i !== idx,
-                                              );
-                                            updateProject(project.id, {
-                                              description: newDesc,
-                                            });
-                                          }}
-                                          className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
-                                        >
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
-                                      </SortableItem>
-                                    ),
-                                  )}
-                                </SortableContent>
-                              </Sortable>
-                              {(project.description || []).length === 0 && (
-                                <p className="text-muted-foreground py-2 text-center text-xs italic">
-                                  Belum ada deskripsi yang ditambahkan.
-                                </p>
-                              )}
                             </div>
                           </div>
                         </div>
@@ -407,8 +341,8 @@ export function ProjectSection({
               </Accordion>
             </SortableContent>
           </Sortable>
-          {content.projects.length === 0 && (
-            <EmptyState message="Belum ada projek" onAdd={addProject} />
+          {content.education.length === 0 && (
+            <EmptyState message="Belum ada edukasi" onAdd={addEducation} />
           )}
         </div>
       </AccordionContent>

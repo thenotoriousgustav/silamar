@@ -15,6 +15,7 @@ import { PencilLine, X } from "lucide-react";
 
 interface CoverLetter {
   id: string;
+  title: string;
   jobTitle: string;
   company: string;
   content: any;
@@ -36,7 +37,7 @@ export function CoverLetterPreviewDrawer({
   if (!coverLetter) return null;
 
   const handleEdit = () => {
-    router.push(`/documents/cover-letter/${coverLetter.id}`);
+    router.push(`/cover-letter-builder/${coverLetter.id}`);
   };
 
   return (
@@ -46,11 +47,10 @@ export function CoverLetterPreviewDrawer({
           <DrawerHeader className="flex flex-row items-center justify-between border-b px-0 py-4">
             <div>
               <DrawerTitle className="text-xl font-bold">
-                {coverLetter.jobTitle} - {coverLetter.company}
+                {coverLetter.title}
               </DrawerTitle>
               <p className="text-muted-foreground text-xs">
-                Review isi surat lamaran kamu sebelum melakukan pengeditan lebih
-                lanjut
+                {coverLetter.jobTitle} - {coverLetter.company}
               </p>
             </div>
             <div className="flex items-center gap-2">
