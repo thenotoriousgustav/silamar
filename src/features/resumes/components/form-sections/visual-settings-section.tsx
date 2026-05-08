@@ -72,20 +72,47 @@ export function VisualSettingsSection({
               Ukuran Font
             </Label>
             <div className="flex gap-2">
-              {["text-xs", "text-sm", "text-base"].map((size) => (
+              {[
+                { id: "text-[10px]", label: "Kecil" },
+                { id: "text-[11px]", label: "Sedang" },
+                { id: "text-[12px]", label: "Besar" },
+              ].map((size) => (
                 <Button
-                  key={size}
+                  key={size.id}
                   variant={
-                    content.style?.fontSize === size ? "default" : "outline"
+                    (content.style?.fontSize || "text-[11px]") === size.id
+                      ? "default"
+                      : "outline"
                   }
                   className="h-11 flex-1 transition-all"
-                  onClick={() => updateStyle({ fontSize: size })}
+                  onClick={() => updateStyle({ fontSize: size.id })}
                 >
-                  {size === "text-xs"
-                    ? "Kecil"
-                    : size === "text-sm"
-                      ? "Sedang"
-                      : "Besar"}
+                  {size.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-3">
+            <Label className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+              Jarak Baris (Line Height)
+            </Label>
+            <div className="flex gap-2">
+              {[
+                { id: "tight", label: "Rapat" },
+                { id: "normal", label: "Normal" },
+                { id: "relaxed", label: "Renggang" },
+              ].map((line) => (
+                <Button
+                  key={line.id}
+                  variant={
+                    (content.style?.lineHeight || "normal") === line.id
+                      ? "default"
+                      : "outline"
+                  }
+                  className="h-11 flex-1 transition-all"
+                  onClick={() => updateStyle({ lineHeight: line.id })}
+                >
+                  {line.label}
                 </Button>
               ))}
             </div>

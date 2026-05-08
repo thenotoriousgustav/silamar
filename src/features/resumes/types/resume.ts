@@ -4,8 +4,15 @@ export interface ResumePersonalInfo {
   email: string;
   phone: string;
   location: string;
-  linkedin?: string;
-  website?: string;
+  linkedin?: {
+    label: string;
+    url: string;
+  };
+  website?: {
+    label: string;
+    url: string;
+  };
+  photoUrl?: string;
   summary?: string;
 }
 
@@ -71,6 +78,7 @@ export interface ResumeCustomSection {
 export interface ResumeStyle {
   fontFamily: string;
   fontSize: string;
+  lineHeight: string;
   language?: "id" | "en";
   templateId?: ResumeTemplateId;
 }

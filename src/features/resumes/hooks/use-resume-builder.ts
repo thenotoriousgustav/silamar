@@ -20,8 +20,15 @@ const DEFAULT_RESUME: ResumeContent = {
     email: "",
     phone: "",
     location: "",
-    linkedin: "",
-    website: "",
+    linkedin: {
+      label: "",
+      url: "",
+    },
+    website: {
+      label: "",
+      url: "",
+    },
+    photoUrl: "",
     summary: "",
   },
   experience: [],
@@ -30,8 +37,11 @@ const DEFAULT_RESUME: ResumeContent = {
   projects: [],
   customSections: [],
   style: {
-    fontFamily: "font-serif",
-    fontSize: "text-sm",
+    fontFamily: "Helvetica",
+    fontSize: "text-[11px]",
+    lineHeight: "relaxed",
+    templateId: "classic",
+    language: "en",
   },
   sectionOrder: ["experience", "education", "skills", "projects", "custom"],
 };

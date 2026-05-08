@@ -9,7 +9,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { format, parse } from "date-fns";
-import { id } from "date-fns/locale";
+import { enUS, id } from "date-fns/locale";
 import {
   Accordion,
   AccordionContent,
@@ -68,7 +68,7 @@ export function EducationSection({
               <GraduationCap className="h-4 w-4" />
             </div>
             <span className="text-foreground font-semibold tracking-tight">
-              Edukasi
+              Education
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export function EducationSection({
                 addEducation();
               }}
               className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground flex h-8 w-8 items-center justify-center rounded-none transition-all"
-              title="Tambah Edukasi"
+              title="Add Education"
             >
               <Plus className="h-4 w-4" />
             </div>
@@ -95,7 +95,7 @@ export function EducationSection({
             onValueChange={updateEducationList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="w-full flex flex-col gap-4">
+            <SortableContent className="flex w-full flex-col gap-4">
               <Accordion type="single" collapsible className="w-full space-y-4">
                 {content.education.map((edu: ResumeEducation) => (
                   <SortableItem key={edu.id} value={edu.id} asChild>
@@ -210,94 +210,128 @@ export function EducationSection({
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Bulan/Tahun Mulai
                             </Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <div className="relative cursor-pointer">
-                                  <Input
-                                    readOnly
-                                    value={edu.startYear || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <MonthPicker
-                                  selectedMonth={
-                                    edu.startYear
-                                      ? parse(
-                                          edu.startYear,
-                                          "MMMM yyyy",
-                                          new Date(),
-                                          {
-                                            locale: id,
-                                          },
-                                        )
-                                      : undefined
-                                  }
-                                  onMonthSelect={(date) => {
-                                    if (date) {
-                                      updateEducation(edu.id, {
-                                        startYear: format(date, "MMMM yyyy", {
-                                          locale: id,
-                                        }),
-                                      });
+                            <div className="relative">
+                              <Input
+                                value={edu.startYear || ""}
+                                onChange={(e) =>
+                                  updateEducation(edu.id, {
+                                    startYear: e.target.value,
+                                  })
+                                }
+                                placeholder="MMM yyyy"
+                                className="bg-background border-border pr-10"
+                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-primary absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2 rounded-none"
+                                  >
+                                    <CalendarIcon className="h-4 w-4" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="end"
+                                >
+                                  <MonthPicker
+                                    selectedMonth={
+                                      edu.startYear
+                                        ? (() => {
+                                            const d = parse(
+                                              edu.startYear,
+                                              "MMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                            if (!isNaN(d.getTime())) return d;
+                                            return parse(
+                                              edu.startYear,
+                                              "MMMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                          })()
+                                        : undefined
                                     }
-                                  }}
-                                />
-                              </PopoverContent>
-                            </Popover>
+                                    onMonthSelect={(date) => {
+                                      if (date) {
+                                        updateEducation(edu.id, {
+                                          startYear: format(date, "MMM yyyy", {
+                                            locale: enUS,
+                                          }),
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
 
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Bulan/Tahun Lulus
                             </Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <div className="relative cursor-pointer">
-                                  <Input
-                                    readOnly
-                                    value={edu.endYear || ""}
-                                    placeholder="Pilih bulan & tahun"
-                                    className="bg-background border-border focus:ring-primary/50 cursor-pointer pr-10 focus:ring-1"
-                                  />
-                                  <CalendarIcon className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                                </div>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <MonthPicker
-                                  selectedMonth={
-                                    edu.endYear
-                                      ? parse(
-                                          edu.endYear,
-                                          "MMMM yyyy",
-                                          new Date(),
-                                          {
-                                            locale: id,
-                                          },
-                                        )
-                                      : undefined
-                                  }
-                                  onMonthSelect={(date) => {
-                                    if (date) {
-                                      updateEducation(edu.id, {
-                                        endYear: format(date, "MMMM yyyy", {
-                                          locale: id,
-                                        }),
-                                      });
+                            <div className="relative">
+                              <Input
+                                value={edu.endYear || ""}
+                                onChange={(e) =>
+                                  updateEducation(edu.id, {
+                                    endYear: e.target.value,
+                                  })
+                                }
+                                placeholder="MMM yyyy"
+                                className="bg-background border-border pr-10"
+                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-primary absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2 rounded-none"
+                                  >
+                                    <CalendarIcon className="h-4 w-4" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="end"
+                                >
+                                  <MonthPicker
+                                    selectedMonth={
+                                      edu.endYear
+                                        ? (() => {
+                                            const d = parse(
+                                              edu.endYear,
+                                              "MMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                            if (!isNaN(d.getTime())) return d;
+                                            return parse(
+                                              edu.endYear,
+                                              "MMMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                          })()
+                                        : undefined
                                     }
-                                  }}
-                                />
-                              </PopoverContent>
-                            </Popover>
+                                    onMonthSelect={(date) => {
+                                      if (date) {
+                                        updateEducation(edu.id, {
+                                          endYear: format(date, "MMM yyyy", {
+                                            locale: enUS,
+                                          }),
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
                         </div>
                       </AccordionContent>

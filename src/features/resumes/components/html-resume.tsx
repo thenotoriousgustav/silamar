@@ -59,6 +59,17 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     Helvetica: "font-sans",
   };
   const fontClass = fontClassMap[fontFamily] || "font-sans";
+  const fontSize = style?.fontSize || "text-[11px]";
+  const lineHeightMap: Record<string, string> = {
+    tight: "leading-tight",
+    normal: "leading-normal",
+    relaxed: "leading-relaxed",
+  };
+  const lineHeightClass =
+    lineHeightMap[style?.lineHeight || "relaxed"] || "leading-relaxed";
+
+  const bodyTextClass = cn(fontSize, lineHeightClass, "text-slate-700");
+  const headingTextClass = cn(fontSize, "font-bold");
 
   const cleanUrl = (url: string | null | undefined): string => {
     if (!url) return "";
@@ -84,7 +95,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
             return <li key={i} className="h-2 list-none" />;
           }
           return (
-            <li key={i} className="text-[11px] leading-relaxed text-slate-700">
+            <li key={i} className={bodyTextClass}>
               {item}
             </li>
           );
@@ -121,7 +132,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
   };
 
   const clickableClass =
-    "group/clickable relative cursor-pointer rounded-sm hover:ring-2 hover:ring-primary/30 hover:bg-primary/[0.02] transition-all";
+    "group/clickable relative cursor-pointer rounded-none transition-all hover:bg-primary/[0.03] hover:outline hover:outline-2 hover:outline-dashed hover:outline-primary/40 hover:outline-offset-4";
 
   // Pagination Logic
   const pages = useMemo(() => {
@@ -148,44 +159,75 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
         key="header"
         onClick={() => onJumpToSection?.("personal")}
         className={cn(
-          "mb-6 flex flex-col",
+          "mb-6 flex",
           clickableClass,
-          templateId === "classic" && "items-center text-center",
+          templateId === "classic" && "flex-col items-center text-center",
           templateId === "modern" &&
-            "flex-row items-end justify-between border-b-2 border-blue-600 pb-4 text-left",
-          templateId === "minimal" && "items-center text-center",
+            "flex-row items-center justify-between border-b-2 border-blue-600 pb-4 text-left",
+          templateId === "minimal" && "flex-col items-center text-center",
         )}
       >
-        <div className={cn(templateId === "modern" ? "flex-1" : "w-full")}>
-          <h1
-            className={cn(
-              "font-bold tracking-wider uppercase",
-              templateId === "classic" && "mb-1 text-2xl text-slate-900",
-              templateId === "modern" && "mb-0 text-3xl text-blue-600",
-              templateId === "minimal" &&
-                "mb-1 text-2xl tracking-normal text-slate-900 normal-case",
+        <div
+          className={cn(
+            "flex",
+            templateId === "modern" ? "flex-1" : "flex-col items-center",
+            (templateId === "classic" || templateId === "minimal") &&
+              personalInfo.photoUrl &&
+              "flex-row items-center gap-6 text-left",
+          )}
+        >
+          {personalInfo.photoUrl &&
+            (templateId === "classic" || templateId === "minimal") && (
+              <img
+                src={personalInfo.photoUrl}
+                alt={personalInfo.fullName}
+                className="h-24 w-24 rounded-full border border-slate-200 object-cover shadow-sm"
+              />
             )}
-          >
-            {personalInfo.fullName || "NAMA LENGKAP"}
-          </h1>
-          {personalInfo.title && (
-            <p
+          <div className={cn((templateId === "classic" || templateId === "minimal") && personalInfo.photoUrl ? "flex-1" : "")}>
+            <h1
               className={cn(
-                "text-sm font-medium text-slate-600",
-                templateId === "modern" && "text-base text-blue-600",
+                "font-bold tracking-wider uppercase",
+                templateId === "classic" && "mb-1 text-2xl text-slate-900",
+                templateId === "modern" && "mb-0 text-3xl text-blue-600",
+                templateId === "minimal" &&
+                  "mb-1 text-2xl tracking-normal text-slate-900 normal-case",
               )}
             >
-              {personalInfo.title}
-            </p>
-          )}
+              {personalInfo.fullName || "NAMA LENGKAP"}
+            </h1>
+            {personalInfo.title && (
+              <p
+                className={cn(
+                  "text-sm font-medium text-slate-600",
+                  templateId === "modern" && "text-base text-blue-600",
+                )}
+              >
+                {personalInfo.title}
+              </p>
+            )}
+          </div>
         </div>
 
         <div
           className={cn(
-            "mt-2 text-[10px] text-slate-500",
-            templateId === "modern" && "mt-0 text-right",
+            "flex flex-col",
+            templateId === "modern" ? "items-end text-right" : "mt-2 items-center text-center",
           )}
         >
+          {personalInfo.photoUrl && templateId === "modern" && (
+            <img
+              src={personalInfo.photoUrl}
+              alt={personalInfo.fullName}
+              className="mb-2 h-20 w-20 rounded-full border-2 border-blue-600 object-cover shadow-md"
+            />
+          )}
+          <div
+            className={cn(
+              "text-[10px] text-slate-500",
+              templateId === "modern" && "mt-0 text-right",
+            )}
+          >
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
             <span>{personalInfo.email}</span>
             {personalInfo.phone && (
@@ -201,22 +243,35 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               </>
             )}
           </div>
-          {(personalInfo.website || personalInfo.linkedin) && (
+          {(personalInfo.website?.url || personalInfo.linkedin?.url) && (
             <div className="mt-0.5 space-x-2">
-              {personalInfo.website && (
-                <a href={personalInfo.website} className="hover:underline">
-                  {cleanUrl(personalInfo.website)}
+              {personalInfo.website?.url && (
+                <a
+                  href={personalInfo.website.url}
+                  className="hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {personalInfo.website.label ||
+                    cleanUrl(personalInfo.website.url)}
                 </a>
               )}
-              {personalInfo.linkedin && (
-                <a href={personalInfo.linkedin} className="hover:underline">
-                  {cleanUrl(personalInfo.linkedin)}
+              {personalInfo.linkedin?.url && (
+                <a
+                  href={personalInfo.linkedin.url}
+                  className="hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {personalInfo.linkedin.label ||
+                    cleanUrl(personalInfo.linkedin.url)}
                 </a>
               )}
             </div>
           )}
         </div>
-      </header>
+      </div>
+    </header>
     );
     addToPage(headerEl, estimateHeight("header", null));
 
@@ -239,7 +294,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
           >
             {translations.professionalSummary}
           </h2>
-          <p className="text-justify text-[11px] leading-relaxed text-slate-700">
+          <p className={cn("text-justify", bodyTextClass)}>
             {personalInfo.summary}
           </p>
         </section>
@@ -274,6 +329,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
           estimateHeight("sectionTitle", null),
         );
 
+
         experience.forEach((exp, i) => {
           const expEl = (
             <div
@@ -284,7 +340,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               <div className="mb-0.5 flex items-baseline justify-between">
                 <h3
                   className={cn(
-                    "text-[11px] font-bold",
+                    headingTextClass,
                     templateId === "modern" && "text-blue-600",
                   )}
                 >
@@ -297,9 +353,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 </span>
               </div>
               <div className="mb-1 flex items-baseline justify-between">
-                <span className="text-[11px] text-slate-700">
-                  {exp.company}
-                </span>
+                <span className={bodyTextClass}>{exp.company}</span>
                 {exp.location && (
                   <span className="text-[10px] text-slate-500">
                     {exp.location}
@@ -339,7 +393,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               onClick={() => onJumpToSection?.(`education-${edu.id}`)}
             >
               <div className="mb-0.5 flex items-baseline justify-between">
-                <h3 className="text-[11px] font-bold">
+                <h3 className={headingTextClass}>
                   {edu.degree} {edu.major}
                 </h3>
                 <span className="text-[10px] font-medium text-slate-500">
@@ -348,9 +402,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                     (edu.isCurrentlyStudying ? translations.present : "")}
                 </span>
               </div>
-              <div className="text-[11px] text-slate-700">
-                {edu.institution}
-              </div>
+              <div className={bodyTextClass}>{edu.institution}</div>
               {edu.gpa && (
                 <div className="text-[10px] text-slate-500">
                   {translations.gpa}: {edu.gpa}
@@ -385,7 +437,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
           const skillEl = (
             <div
               key={`skill-${i}`}
-              className={cn("mb-1 text-[11px] leading-relaxed", clickableClass)}
+              className={cn("mb-1", bodyTextClass, clickableClass)}
               onClick={() => onJumpToSection?.("skills")}
             >
               <span className="font-bold">{skill.category}: </span>
@@ -424,7 +476,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               onClick={() => onJumpToSection?.(`projects-${project.id}`)}
             >
               <div className="mb-0.5 flex items-baseline justify-between">
-                <h3 className="text-[11px] font-bold">{project.name}</h3>
+                <h3 className={headingTextClass}>{project.name}</h3>
                 {(project.startDate || project.endDate) && (
                   <span className="text-[10px] font-medium text-slate-500">
                     {project.startDate}{" "}
@@ -477,18 +529,14 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 }
               >
                 <div className="mb-0.5 flex items-baseline justify-between">
-                  <h3 className="text-[11px] font-bold">{item.title}</h3>
+                  <h3 className={headingTextClass}>{item.title}</h3>
                   {item.date && (
                     <span className="text-[10px] font-medium text-slate-500">
                       {item.date}
                     </span>
                   )}
                 </div>
-                {item.subtitle && (
-                  <div className="text-[11px] text-slate-700">
-                    {item.subtitle}
-                  </div>
-                )}
+                <div className={bodyTextClass}>{item.subtitle}</div>
                 {item.link && (
                   <div className="font-mono text-[9px] tracking-tight text-slate-500">
                     {cleanUrl(item.link)}

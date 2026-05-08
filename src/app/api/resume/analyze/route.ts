@@ -2,9 +2,63 @@ import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { ResumeContentSchema } from "@/features/resumes/schema";
 import { extractPdfText } from "@/features/resumes/utils/pdf-extractor";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+// Schema sederhana untuk ekstraksi AI agar lebih cepat (tanpa ID di level poin deskripsi)
+const ExtractionSchema = z.object({
+  personalInfo: z.object({
+    fullName: z.string(),
+    email: z.string(),
+    phone: z.string(),
+    location: z.string(),
+    linkedin: z.string(),
+    website: z.string(),
+    summary: z.string(),
+  }),
+  experience: z.array(
+    z.object({
+      company: z.string(),
+      position: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+      isCurrentJob: z.boolean(),
+      description: z.array(z.string()),
+      location: z.string(),
+    }),
+  ),
+  education: z.array(
+    z.object({
+      institution: z.string(),
+      degree: z.string(),
+      major: z.string(),
+      startYear: z.string(),
+      endYear: z.string(),
+      isCurrentlyStudying: z.boolean(),
+      gpa: z.string(),
+      description: z.array(z.string()),
+    }),
+  ),
+  skills: z.array(
+    z.object({
+      category: z.string(),
+      items: z.array(z.string()),
+    }),
+  ),
+  projects: z.array(
+    z.object({
+      name: z.string(),
+      description: z.array(z.string()),
+      technologies: z.array(z.string()),
+      link: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+    }),
+  ),
+});
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +69,6 @@ export async function POST(request: Request) {
       return Response.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Validasi tipe file
     if (file.type !== "application/pdf") {
       return Response.json(
         { error: "File harus berformat PDF" },
@@ -23,7 +76,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validasi ukuran (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       return Response.json(
         { error: "Ukuran file maksimal 5MB" },
@@ -31,11 +83,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert ke Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Extract teks menggunakan wrapper
     let extractedText = "";
     try {
       extractedText = await extractPdfText(buffer);
@@ -60,36 +110,73 @@ export async function POST(request: Request) {
       );
     }
 
-    // Kirim ke AI untuk strukturisasi menggunakan standar API terbaru
-    const { output: resumeData } = await generateText({
-      model: openai("gpt-4o"),
+    // Kirim ke AI menggunakan model gpt-4o-mini yang jauh lebih cepat
+    // Menggunakan ExtractionSchema yang lebih ringan (hanya string array untuk deskripsi)
+    const { output: rawData } = await generateText({
+      model: openai("gpt-4.1-nano"),
       output: Output.object({
-        schema: ResumeContentSchema,
+        schema: ExtractionSchema,
       }),
       messages: [
         {
           role: "user",
-          content: `You are an expert resume parser. Extract all information from the following resume text and structure it according to the provided schema.
+          content: `Extract resume information from the text below.
           
+Rules:
+1. Format dates as 'Month Year' or 'Year'. Use 'Present' for ongoing roles.
+2. Split experience, education, and project descriptions into clean bullet points.
+3. If information is missing, use empty strings or arrays.
+4. Categorize skills logically (e.g., 'Technical Skills', 'Soft Skills').
+
 Resume Text:
 """
 ${extractedText}
-"""
-
-Rules:
-1. Format dates as 'Month Year' (e.g., 'Jan 2023') or just 'Year' if month is missing.
-2. If still currently working/studying, use 'Present' for end date.
-3. Generate valid UUIDs for all 'id' fields.
-4. If information is missing, use empty string or empty array.
-5. Skills should be a flat array of strings.
-6. Keep summary concise but complete.
-7. CRITICAL: Experience descriptions and achievements MUST be split into a clean array of strings (bullet points). Look for bullet characters (•, -, *), newlines, or logical sentence breaks to separate each achievement. Do NOT merge them into a single block of text.
-8. Experience and Education descriptions MUST be returned as a clean array of strings (bullet points).`,
+"""`,
         },
       ],
     });
 
-    return Response.json(resumeData);
+    // Transform data: Tambahkan UUID di server untuk efisiensi token AI
+    const resumeData = {
+      personalInfo: {
+        ...rawData.personalInfo,
+        linkedin: { label: "", url: rawData.personalInfo.linkedin },
+        website: { label: "", url: rawData.personalInfo.website },
+      },
+      experience: rawData.experience.map((exp) => ({
+        ...exp,
+        id: uuidv4(),
+        description: exp.description.map((text) => ({
+          id: uuidv4(),
+          text,
+        })),
+      })),
+      education: rawData.education.map((edu) => ({
+        ...edu,
+        id: uuidv4(),
+        description: edu.description.map((text) => ({
+          id: uuidv4(),
+          text,
+        })),
+      })),
+      skills: rawData.skills.map((skill) => ({
+        ...skill,
+        id: uuidv4(),
+      })),
+      projects: rawData.projects.map((proj) => ({
+        ...proj,
+        id: uuidv4(),
+        description: proj.description.map((text) => ({
+          id: uuidv4(),
+          text,
+        })),
+      })),
+    };
+
+    // Validasi akhir dengan ResumeContentSchema asli untuk memastikan kompatibilitas
+    const validatedData = ResumeContentSchema.parse(resumeData);
+
+    return Response.json(validatedData);
   } catch (error) {
     console.error("Analysis error:", error);
     return Response.json(

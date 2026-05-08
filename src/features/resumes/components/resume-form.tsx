@@ -136,12 +136,35 @@ export function ResumeForm({
       // Wait for accordion to expand then scroll
       setTimeout(() => {
         const element = document.getElementById(jumpTarget);
+
+        // Remove any existing highlights first
+        const highlightedElements =
+          document.querySelectorAll(".jump-highlight");
+        highlightedElements.forEach((el) => {
+          el.classList.remove(
+            "ring-2",
+            "ring-primary",
+            "ring-offset-2",
+            "jump-highlight",
+          );
+        });
+
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "center" });
-          // Optional: highlight effect
-          element.classList.add("ring-2", "ring-primary", "ring-offset-2");
+          // Add highlight effect
+          element.classList.add(
+            "ring-2",
+            "ring-primary",
+            "ring-offset-2",
+            "jump-highlight",
+          );
           setTimeout(() => {
-            element.classList.remove("ring-2", "ring-primary", "ring-offset-2");
+            element.classList.remove(
+              "ring-2",
+              "ring-primary",
+              "ring-offset-2",
+              "jump-highlight",
+            );
           }, 2000);
         } else {
           // If specific item ID not found, scroll to section header

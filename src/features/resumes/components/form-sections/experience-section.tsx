@@ -15,7 +15,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { format, parse } from "date-fns";
-import { id } from "date-fns/locale";
+import { enUS, id } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import {
   Accordion,
@@ -26,7 +26,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
@@ -94,10 +93,10 @@ export function ExperienceSection({
             </div>
             <div className="flex flex-col items-start">
               <span className="text-foreground font-semibold tracking-tight">
-                Pengalaman Kerja
+                Work Experience
               </span>
               <p className="text-muted-foreground text-[10px]">
-                {content.experience.length} Pengalaman • Klik untuk expand
+                {content.experience.length} Items • Click to expand
               </p>
             </div>
           </div>
@@ -125,7 +124,7 @@ export function ExperienceSection({
             onValueChange={updateExperienceList}
             getItemValue={(e) => e.id}
           >
-            <SortableContent className="w-full flex flex-col gap-4">
+            <SortableContent className="flex w-full flex-col gap-4">
               <Accordion type="single" collapsible className="w-full space-y-4">
                 {content.experience.map((exp: ResumeExperience) => (
                   <SortableItem key={exp.id} value={exp.id} asChild>
@@ -154,18 +153,15 @@ export function ExperienceSection({
                                 <span className="text-muted-foreground text-[10px]">
                                   {exp.position || "Posisi"}
                                 </span>
-                                <span className="text-muted-foreground/30 text-[10px]">
-                                  •
-                                </span>
-                                <span className="text-muted-foreground text-[10px]">
-                                  {exp.startDate || "Mulai"} -{" "}
-                                  {exp.isCurrentJob
-                                    ? "Present"
-                                    : exp.endDate || "Selesai"}
-                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
+                              <div className="text-muted-foreground text-[10px] font-medium uppercase">
+                                {exp.startDate || "Mulai"} —{" "}
+                                {exp.isCurrentJob
+                                  ? "Present"
+                                  : exp.endDate || "Selesai"}
+                              </div>
                               <div
                                 role="button"
                                 tabIndex={0}
@@ -217,106 +213,129 @@ export function ExperienceSection({
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Tanggal Mulai
                             </Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "bg-background border-border w-full justify-start text-left font-normal",
-                                    !exp.startDate && "text-muted-foreground",
-                                  )}
+                            <div className="relative">
+                              <Input
+                                value={exp.startDate || ""}
+                                onChange={(e) =>
+                                  updateExperience(exp.id, {
+                                    startDate: e.target.value,
+                                  })
+                                }
+                                placeholder="MMM yyyy"
+                                className="bg-background border-border pr-10"
+                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-primary absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2 rounded-none"
+                                  >
+                                    <CalendarIcon className="h-4 w-4" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="end"
                                 >
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {exp.startDate ? (
-                                    exp.startDate
-                                  ) : (
-                                    <span>Pilih tanggal</span>
-                                  )}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <MonthPicker
-                                  selectedMonth={
-                                    exp.startDate
-                                      ? parse(
-                                          exp.startDate,
-                                          "MMMM yyyy",
-                                          new Date(),
-                                          {
-                                            locale: id,
-                                          },
-                                        )
-                                      : undefined
-                                  }
-                                  onMonthSelect={(date) => {
-                                    if (date) {
-                                      updateExperience(exp.id, {
-                                        startDate: format(date, "MMMM yyyy", {
-                                          locale: id,
-                                        }),
-                                      });
+                                  <MonthPicker
+                                    selectedMonth={
+                                      exp.startDate
+                                        ? (() => {
+                                            const d = parse(
+                                              exp.startDate,
+                                              "MMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                            if (!isNaN(d.getTime())) return d;
+                                            return parse(
+                                              exp.startDate,
+                                              "MMMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                          })()
+                                        : undefined
                                     }
-                                  }}
-                                />
-                              </PopoverContent>
-                            </Popover>
+                                    onMonthSelect={(date) => {
+                                      if (date) {
+                                        updateExperience(exp.id, {
+                                          startDate: format(date, "MMM yyyy", {
+                                            locale: enUS,
+                                          }),
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Tanggal Selesai
                             </Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  disabled={exp.isCurrentJob}
-                                  className={cn(
-                                    "bg-background border-border w-full justify-start text-left font-normal",
-                                    !exp.endDate && "text-muted-foreground",
-                                  )}
+                            <div className="relative">
+                              <Input
+                                value={exp.isCurrentJob ? "Present" : exp.endDate || ""}
+                                disabled={exp.isCurrentJob}
+                                onChange={(e) =>
+                                  updateExperience(exp.id, {
+                                    endDate: e.target.value,
+                                  })
+                                }
+                                placeholder="MMM yyyy"
+                                className="bg-background border-border pr-10"
+                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    disabled={exp.isCurrentJob}
+                                    className="text-muted-foreground hover:text-primary absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2 rounded-none"
+                                  >
+                                    <CalendarIcon className="h-4 w-4" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="end"
                                 >
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {exp.isCurrentJob ? (
-                                    "Present"
-                                  ) : exp.endDate ? (
-                                    exp.endDate
-                                  ) : (
-                                    <span>Pilih tanggal</span>
-                                  )}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <MonthPicker
-                                  selectedMonth={
-                                    exp.endDate
-                                      ? parse(
-                                          exp.endDate,
-                                          "MMMM yyyy",
-                                          new Date(),
-                                          {
-                                            locale: id,
-                                          },
-                                        )
-                                      : undefined
-                                  }
-                                  onMonthSelect={(date) => {
-                                    if (date) {
-                                      updateExperience(exp.id, {
-                                        endDate: format(date, "MMMM yyyy", {
-                                          locale: id,
-                                        }),
-                                      });
+                                  <MonthPicker
+                                    selectedMonth={
+                                      exp.endDate
+                                        ? (() => {
+                                            const d = parse(
+                                              exp.endDate,
+                                              "MMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                            if (!isNaN(d.getTime())) return d;
+                                            return parse(
+                                              exp.endDate,
+                                              "MMMM yyyy",
+                                              new Date(),
+                                              { locale: enUS },
+                                            );
+                                          })()
+                                        : undefined
                                     }
-                                  }}
-                                />
-                              </PopoverContent>
-                            </Popover>
+                                    onMonthSelect={(date) => {
+                                      if (date) {
+                                        updateExperience(exp.id, {
+                                          endDate: format(date, "MMM yyyy", {
+                                            locale: enUS,
+                                          }),
+                                        });
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
                           <div className="flex items-center space-x-2 py-1 md:col-span-2">
                             <Checkbox
@@ -529,12 +548,6 @@ export function ExperienceSection({
                                 ))}
                               </SortableContent>
                             </Sortable>
-                            {(exp.description || []).length > 0 && (
-                              <p className="text-muted-foreground text-[10px] italic">
-                                * Kamu bisa memindahkan urutan atau menghapus
-                                poin pencapaian dengan tombol di samping.
-                              </p>
-                            )}
                           </div>
                         </div>
                       </AccordionContent>

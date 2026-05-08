@@ -3,16 +3,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  FileText,
   Plus,
   ArrowRight,
   Loader2,
   Trash2,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
 import { calculateCompleteness } from "@/features/resumes/utils/completeness";
 import {
@@ -22,15 +20,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import type { ResumeContent, ResumeTemplateId } from "@/features/resumes/types/resume";
+
+import type {
+  ResumeContent,
+  ResumeTemplateId,
+} from "@/features/resumes/types/resume";
 import {
   createResumeAction,
   createEmptyResumeAction,
@@ -38,6 +32,7 @@ import {
   getResumesAction,
 } from "@/features/resumes/actions";
 import { ResumeImportDialog } from "./resume-import-dialog";
+import { LinkedInImportDialog } from "./linkedin-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
 import { ResumePreviewDrawer } from "./resume-preview-drawer";
 import { DocumentCard } from "@/shared/document-card";
@@ -74,14 +69,14 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const router = useRouter();
   const [isChoiceOpen, setIsChoiceOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isLinkedInImportOpen, setIsLinkedInImportOpen] = useState(false);
   const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
   const [selectedResumeForPreview, setSelectedResumeForPreview] =
     useState<Resume | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [pendingCreationType, setPendingCreationType] = useState<
-    "empty" | "import" | null
-  >(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<ResumeTemplateId | null>(null);
   const [importedContent, setImportedContent] = useState<ResumeContent | null>(
     null,
   );
@@ -138,30 +133,40 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const handleImportComplete = (content: ResumeContent) => {
     setImportedContent(content);
     setIsImportOpen(false);
-    setPendingCreationType("import");
-    setIsTemplateSelectOpen(true);
-  };
+    setIsLinkedInImportOpen(false);
 
-  const handleTemplateSelect = (templateId: ResumeTemplateId) => {
-    setIsTemplateSelectOpen(false);
-    if (pendingCreationType === "empty") {
-      createEmptyMutation.mutate(templateId);
-    } else if (pendingCreationType === "import" && importedContent) {
+    // Create resume with imported content and already selected template
+    if (selectedTemplate) {
       const newId = crypto.randomUUID();
       createMutation.mutate({
         id: newId,
         content: {
-          ...importedContent,
+          ...content,
           style: {
-            ...importedContent.style,
-            fontFamily: "font-serif",
-            fontSize: "text-sm",
-            language: "id",
-            templateId: templateId,
+            ...content.style,
+            fontFamily: content.style?.fontFamily || "Helvetica",
+            fontSize: content.style?.fontSize || "text-[11px]",
+            language: content.style?.language || "id",
+            lineHeight: content.style?.lineHeight || "relaxed",
+            templateId: selectedTemplate,
           },
         },
-        title: "Imported Resume",
+        title: content.personalInfo.fullName
+          ? `${content.personalInfo.fullName} Resume`
+          : "Imported Resume",
       });
+    }
+  };
+
+  const handleTemplateSelect = (templateId: ResumeTemplateId) => {
+    setSelectedTemplate(templateId);
+    setIsTemplateSelectOpen(false);
+    setIsChoiceOpen(true);
+  };
+
+  const handleStartFromScratch = () => {
+    if (selectedTemplate) {
+      createEmptyMutation.mutate(selectedTemplate);
     }
   };
 
@@ -178,7 +183,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         description="Buat dan kelola resume ATS-friendly kamu"
       >
         <Button
-          onClick={() => setIsChoiceOpen(true)}
+          onClick={() => setIsTemplateSelectOpen(true)}
           className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex items-center gap-2 px-4 py-5 text-sm font-semibold transition-all hover:shadow-md"
         >
           <Plus className="h-4 w-4" />
@@ -193,7 +198,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
           description="Buat resume pertama kamu yang ATS-friendly dan siap untuk dikirim ke perusahaan impian."
           action={
             <Button
-              onClick={() => setIsChoiceOpen(true)}
+              onClick={() => setIsTemplateSelectOpen(true)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 px-6 py-3 text-sm font-semibold"
             >
               <Plus className="h-4 w-4" />
@@ -254,10 +259,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
           {/* New resume card */}
           <button
-            onClick={() => {
-              setPendingCreationType("empty");
-              setIsTemplateSelectOpen(true);
-            }}
+            onClick={() => setIsTemplateSelectOpen(true)}
             className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
             <div className="border-border mb-3 flex h-12 w-12 items-center justify-center border border-dashed">
@@ -315,34 +317,33 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
       {/* Choice Dialog */}
       <Dialog open={isChoiceOpen} onOpenChange={setIsChoiceOpen}>
-        <DialogContent className="bg-background border-border sm:max-w-150">
+        <DialogContent className="bg-background border-border sm:max-w-180">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
-              Buat Resume Baru
+              Lengkapi Data Resume
             </DialogTitle>
             <DialogDescription>
-              Pilih cara kamu ingin memulai pembuatan resume.
+              Pilih cara kamu ingin mengisi konten resume kamu.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-3">
             <button
               onClick={() => {
                 setIsChoiceOpen(false);
-                setPendingCreationType("empty");
-                setIsTemplateSelectOpen(true);
+                handleStartFromScratch();
               }}
-              className="bg-muted/50 hover:border-primary/50 group hover:bg-muted border-border flex flex-col items-center gap-4 rounded-none border p-8 text-center transition-all"
+              className="bg-muted/50 hover:border-primary/50 group hover:bg-muted border-border flex flex-col items-center gap-4 rounded-none border p-6 text-center transition-all"
             >
-              <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-none transition-transform group-hover:scale-110">
-                <PencilLine className="h-8 w-8" />
+              <div className="bg-primary/10 text-primary flex h-14 w-14 items-center justify-center rounded-none transition-transform group-hover:scale-110">
+                <PencilLine className="h-7 w-7" />
               </div>
               <div>
-                <h4 className="text-foreground text-lg font-bold">
-                  Mulai dari Nol
+                <h4 className="text-foreground text-base font-bold">
+                  Dari Nol
                 </h4>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Bangun resume kamu langkah demi langkah.
+                <p className="text-muted-foreground mt-1 text-xs">
+                  Isi manual langkah demi langkah.
                 </p>
               </div>
             </button>
@@ -352,17 +353,35 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                 setIsChoiceOpen(false);
                 setIsImportOpen(true);
               }}
-              className="bg-primary/5 border-primary/20 hover:border-primary/50 group hover:bg-primary/10 flex flex-col items-center gap-4 rounded-none border p-8 text-center transition-all"
+              className="bg-primary/5 border-primary/20 hover:border-primary/50 group hover:bg-primary/10 flex flex-col items-center gap-4 rounded-none border p-6 text-center transition-all"
             >
-              <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-none text-white shadow-lg transition-transform group-hover:scale-110">
-                <Sparkles className="h-8 w-8" />
+              <div className="bg-primary flex h-14 w-14 items-center justify-center rounded-none text-white shadow-lg transition-transform group-hover:scale-110">
+                <Sparkles className="h-7 w-7" />
               </div>
               <div>
-                <h4 className="text-foreground text-lg font-bold">
-                  Impor CV Lama (AI)
+                <h4 className="text-foreground text-base font-bold">
+                  Impor PDF (AI)
                 </h4>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Gunakan AI untuk mengisi data dari PDF kamu.
+                <p className="text-muted-foreground mt-1 text-xs">
+                  Ekstrak data dari CV lama kamu.
+                </p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => {
+                setIsChoiceOpen(false);
+                setIsLinkedInImportOpen(true);
+              }}
+              className="group flex flex-col items-center gap-4 rounded-none border border-blue-200 bg-blue-50 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-100"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-none bg-blue-600 text-white shadow-lg transition-transform group-hover:scale-110">
+                linkedin
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-blue-900">LinkedIn</h4>
+                <p className="mt-1 text-xs text-blue-700/70">
+                  Ekstrak data dari profil LinkedIn.
                 </p>
               </div>
             </button>

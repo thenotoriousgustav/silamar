@@ -88,8 +88,9 @@ function MonthPicker({
 }
 
 function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, maxDate, disabledDates, onYearBackward, onYearForward }: MonthCalProps) {
-    const [year, setYear] = React.useState<number>(selectedMonth?.getFullYear() ?? new Date().getFullYear());
-    const [month, setMonth] = React.useState<number>(selectedMonth?.getMonth() ?? new Date().getMonth());
+    const initialDate = selectedMonth && !isNaN(selectedMonth.getTime()) ? selectedMonth : new Date();
+    const [year, setYear] = React.useState<number>(initialDate.getFullYear());
+    const [month, setMonth] = React.useState<number>(initialDate.getMonth());
     const [menuYear, setMenuYear] = React.useState<number>(year);
 
     if (minDate && maxDate && minDate > maxDate) minDate = maxDate;

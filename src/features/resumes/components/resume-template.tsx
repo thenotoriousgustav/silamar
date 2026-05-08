@@ -7,8 +7,13 @@ import {
   View,
   StyleSheet,
   Font,
+  Link,
+  Image,
 } from "@react-pdf/renderer";
-import type { ResumeContent, DescriptionItem } from "@/features/resumes/types/resume";
+import type {
+  ResumeContent,
+  DescriptionItem,
+} from "@/features/resumes/types/resume";
 
 // Register custom fonts
 Font.register({
@@ -62,6 +67,8 @@ const colors = {
 const getStyles = (
   fontFamily: string = "Helvetica",
   templateId: string = "classic",
+  fontSizeStr: string = "text-[11px]",
+  lineHeightKey: string = "relaxed",
 ) => {
   // Map common names or use fallback
   const validFonts = [
@@ -75,17 +82,27 @@ const getStyles = (
   ];
   const pdfFont = validFonts.includes(fontFamily) ? fontFamily : "Helvetica";
 
+  // Parse font size from string like "text-[11px]"
+  const baseFontSize = parseInt(fontSizeStr.match(/\d+/)?.[0] || "11");
+
+  // Map line height
+  const lineHeightMap: Record<string, number> = {
+    tight: 1.15,
+    normal: 1.35,
+    relaxed: 1.55,
+  };
+  const baseLineHeight = lineHeightMap[lineHeightKey] || 1.55;
+
   // Use the same font for bold/italic if separate files aren't provided
   const boldFont = pdfFont;
-  const italicFont = pdfFont;
 
   let styles: any = {
     page: {
       padding: 50,
-      fontSize: 10,
+      fontSize: baseFontSize,
       fontFamily: pdfFont,
       color: colors.primary,
-      lineHeight: 1.4,
+      lineHeight: baseLineHeight,
     },
     header: {
       marginBottom: 6,
@@ -98,19 +115,19 @@ const getStyles = (
       textAlign: "right",
     },
     name: {
-      fontSize: 18,
+      fontSize: baseFontSize + 8,
       fontFamily: boldFont,
       marginBottom: 10,
       textTransform: "uppercase",
       letterSpacing: 1,
     },
     jobTitle: {
-      fontSize: 11,
+      fontSize: baseFontSize,
       color: colors.secondary,
       marginBottom: 6,
     },
     contactInfo: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       color: colors.secondary,
       marginBottom: 2,
     },
@@ -121,7 +138,7 @@ const getStyles = (
       marginBottom: 12,
     },
     sectionTitle: {
-      fontSize: 11,
+      fontSize: baseFontSize,
       fontFamily: boldFont,
       marginBottom: 6,
       paddingBottom: 2,
@@ -131,9 +148,9 @@ const getStyles = (
       letterSpacing: 0.5,
     },
     summary: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       color: colors.secondary,
-      lineHeight: 1.5,
+      lineHeight: baseLineHeight,
       textAlign: "justify",
     },
     experienceItem: {
@@ -148,11 +165,11 @@ const getStyles = (
       alignItems: "flex-start",
     },
     experienceTitle: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       fontFamily: boldFont,
     },
     experienceDate: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       color: colors.muted,
     },
     experienceCompanyRow: {
@@ -161,12 +178,12 @@ const getStyles = (
       alignItems: "flex-start",
     },
     experienceCompany: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       fontFamily: pdfFont,
       color: colors.secondary,
     },
     experienceLocation: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       color: colors.muted,
     },
     bulletList: {
@@ -179,53 +196,53 @@ const getStyles = (
     },
     bullet: {
       width: 12,
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
     },
     bulletText: {
       flex: 1,
-      fontSize: 9,
-      lineHeight: 1.4,
+      fontSize: baseFontSize - 2,
+      lineHeight: baseLineHeight,
     },
     educationItem: {
       marginBottom: 8,
     },
     educationDegree: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       fontFamily: boldFont,
     },
     educationSchool: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       fontFamily: pdfFont,
       color: colors.secondary,
     },
     educationDetails: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       color: colors.muted,
     },
     skillsText: {
-      fontSize: 9,
-      lineHeight: 1.5,
+      fontSize: baseFontSize - 2,
+      lineHeight: baseLineHeight,
     },
     skillCategory: {
       marginBottom: 4,
     },
     skillCategoryName: {
       fontFamily: boldFont,
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
     },
     projectItem: {
       marginBottom: 8,
     },
     projectName: {
-      fontSize: 10,
+      fontSize: baseFontSize - 1,
       fontFamily: boldFont,
     },
     projectUrl: {
-      fontSize: 8,
+      fontSize: baseFontSize - 3,
       color: colors.muted,
     },
     projectDescription: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       color: colors.secondary,
       marginTop: 2,
     },
@@ -233,16 +250,39 @@ const getStyles = (
       marginBottom: 4,
     },
     certName: {
-      fontSize: 9,
+      fontSize: baseFontSize - 2,
       fontFamily: boldFont,
     },
     certDetails: {
-      fontSize: 8,
+      fontSize: baseFontSize - 3,
       color: colors.muted,
     },
     inlineList: {
-      fontSize: 9,
-      lineHeight: 1.5,
+      fontSize: baseFontSize - 2,
+      lineHeight: baseLineHeight,
+    },
+    photo: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      objectFit: "cover",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    modernPhoto: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      objectFit: "cover",
+      borderWidth: 2,
+      borderColor: colors.accent,
+      marginBottom: 5,
+    },
+    headerWithPhoto: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 15,
+      marginBottom: 10,
     },
   };
 
@@ -256,24 +296,24 @@ const getStyles = (
       marginBottom: 15,
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "flex-end",
+      alignItems: "center", // Changed from flex-end to center for photo alignment
     };
     styles.name = {
       ...styles.name,
-      fontSize: 24,
+      fontSize: baseFontSize + 14,
       color: colors.accent,
       marginBottom: 4,
     };
     styles.jobTitle = {
       ...styles.jobTitle,
       color: colors.accent,
-      fontSize: 12,
+      fontSize: baseFontSize + 1,
       fontFamily: boldFont,
     };
     styles.contactInfo = {
       ...styles.contactInfo,
       textAlign: "right",
-      fontSize: 8,
+      fontSize: baseFontSize - 3,
     };
     styles.sectionTitle = {
       ...styles.sectionTitle,
@@ -299,7 +339,7 @@ const getStyles = (
     };
     styles.name = {
       ...styles.name,
-      fontSize: 20,
+      fontSize: baseFontSize + 10,
       textTransform: "none",
       letterSpacing: 0,
       marginBottom: 4,
@@ -317,13 +357,13 @@ const getStyles = (
       borderLeftColor: colors.primary,
       paddingLeft: 10,
       textTransform: "none",
-      fontSize: 13,
+      fontSize: baseFontSize + 2,
       letterSpacing: 0,
       marginBottom: 10,
     };
     styles.experienceTitle = {
       ...styles.experienceTitle,
-      fontSize: 11,
+      fontSize: baseFontSize,
     };
   }
 
@@ -394,7 +434,12 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
   const lang = style?.language || "id";
   const t = translations[lang];
   const templateId = style?.templateId || "classic";
-  const styles = getStyles(style?.fontFamily, templateId);
+  const styles = getStyles(
+    style?.fontFamily,
+    templateId,
+    style?.fontSize,
+    style?.lineHeight,
+  );
 
   return (
     <Document>
@@ -411,39 +456,122 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
               )}
             </View>
             <View style={styles.headerContentRight}>
-              <Text style={styles.contactInfo}>{personalInfo.email}</Text>
-              <Text style={styles.contactInfo}>{personalInfo.phone}</Text>
-              {(personalInfo.location || personalInfo.linkedin) && (
-                <Text style={styles.contactInfo}>
-                  {[personalInfo.location, cleanUrl(personalInfo.linkedin)]
-                    .filter(Boolean)
-                    .join(" | ")}
-                </Text>
+              {personalInfo.photoUrl && (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "flex-end" }}
+                >
+                  <Image
+                    src={personalInfo.photoUrl}
+                    style={styles.modernPhoto}
+                  />
+                </View>
+              )}
+              <Link
+                src={`mailto:${personalInfo.email}`}
+                style={styles.contactInfo}
+              >
+                {personalInfo.email}
+              </Link>
+              {personalInfo.phone && (
+                <Link
+                  src={`tel:${personalInfo.phone}`}
+                  style={styles.contactInfo}
+                >
+                  {personalInfo.phone}
+                </Link>
+              )}
+              {(personalInfo.location || personalInfo.linkedin?.url) && (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "flex-end" }}
+                >
+                  {personalInfo.location && (
+                    <Text style={styles.contactInfo}>
+                      {personalInfo.location}
+                    </Text>
+                  )}
+                  {personalInfo.location && personalInfo.linkedin?.url && (
+                    <Text style={styles.contactInfo}> | </Text>
+                  )}
+                  {personalInfo.linkedin?.url && (
+                    <Link
+                      src={personalInfo.linkedin.url}
+                      style={styles.contactInfo}
+                    >
+                      {personalInfo.linkedin.label ||
+                        cleanUrl(personalInfo.linkedin.url)}
+                    </Link>
+                  )}
+                </View>
               )}
             </View>
           </View>
         ) : (
           <View style={styles.header}>
-            <Text style={styles.name}>
-              {personalInfo.fullName || "NAMA LENGKAP"}
-            </Text>
-            {personalInfo.title && (
-              <Text style={styles.jobTitle}>{personalInfo.title}</Text>
-            )}
-            <Text style={styles.contactInfo}>
-              {[
-                personalInfo.email,
-                personalInfo.phone,
-                personalInfo.location,
-                cleanUrl(personalInfo.website),
-              ]
-                .filter(Boolean)
-                .join(" | ")}
-            </Text>
-            {personalInfo.linkedin && (
-              <Text style={styles.contactInfo}>
-                {cleanUrl(personalInfo.linkedin)}
-              </Text>
+            <View
+              style={
+                personalInfo.photoUrl
+                  ? {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 20,
+                      marginBottom: 10,
+                    }
+                  : {}
+              }
+            >
+              {personalInfo.photoUrl && (
+                <Image src={personalInfo.photoUrl} style={styles.photo} />
+              )}
+              <View
+                style={
+                  personalInfo.photoUrl
+                    ? { alignItems: "flex-start", textAlign: "left" }
+                    : {}
+                }
+              >
+                <Text style={styles.name}>
+                  {personalInfo.fullName || "NAMA LENGKAP"}
+                </Text>
+                {personalInfo.title && (
+                  <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.contactInfo}>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <Link
+                  src={`mailto:${personalInfo.email}`}
+                  style={{ marginRight: 6 }}
+                >
+                  {personalInfo.email}
+                </Link>
+                {personalInfo.phone && (
+                  <Link
+                    src={`tel:${personalInfo.phone}`}
+                    style={{ marginRight: 6 }}
+                  >
+                    {personalInfo.phone}
+                  </Link>
+                )}
+                {personalInfo.location && (
+                  <Text style={{ marginRight: 6 }}>
+                    {personalInfo.location}
+                  </Text>
+                )}
+                {personalInfo.website?.url && (
+                  <Link src={personalInfo.website.url}>
+                    {personalInfo.website.label ||
+                      cleanUrl(personalInfo.website.url)}
+                  </Link>
+                )}
+              </View>
+            </View>
+            {personalInfo.linkedin?.url && (
+              <Link src={personalInfo.linkedin.url} style={styles.contactInfo}>
+                {personalInfo.linkedin.label ||
+                  cleanUrl(personalInfo.linkedin.url)}
+              </Link>
             )}
           </View>
         )}
@@ -555,7 +683,9 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                   <Text style={styles.experienceCompany}>{item.subtitle}</Text>
                 )}
                 {item.link && (
-                  <Text style={styles.projectUrl}>{cleanUrl(item.link)}</Text>
+                  <Link src={item.link} style={styles.projectUrl}>
+                    {cleanUrl(item.link)}
+                  </Link>
                 )}
                 <BulletList items={item.description || []} styles={styles} />
               </View>
@@ -581,9 +711,9 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
                   )}
                 </View>
                 {project.link && (
-                  <Text style={styles.projectUrl}>
+                  <Link src={project.link} style={styles.projectUrl}>
                     {cleanUrl(project.link)}
-                  </Text>
+                  </Link>
                 )}
                 <BulletList items={project.description} styles={styles} />
               </View>
