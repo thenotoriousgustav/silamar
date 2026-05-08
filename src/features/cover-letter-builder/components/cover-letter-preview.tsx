@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CoverLetterBuilderData } from "../schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 import { Loader2, Download, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import { CoverLetterBuilderData } from "./schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
 export interface CoverLetterTemplate {
   id: string;

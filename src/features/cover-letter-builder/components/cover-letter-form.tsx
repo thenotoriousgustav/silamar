@@ -17,7 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Accordion } from "@/components/ui/accordion";
-import { CoverLetterBuilderData } from "./schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 import { COVER_LETTER_TEMPLATES } from "./templates";
 
 // Import Modular Sections

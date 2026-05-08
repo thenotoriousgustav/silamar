@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { CoverLetterBuilderData } from "../schema";
+import type { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
 interface ContentSectionProps {
   content: CoverLetterBuilderData;

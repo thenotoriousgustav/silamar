@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import {
   updateCoverLetterAction,
   createCoverLetterAction,
-} from "@/features/cover-letters/actions";
-import { CoverLetterBuilderData } from "../schema";
+} from "@/features/cover-letter-builder/actions";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
 const DEFAULT_CONTENT: CoverLetterBuilderData = {
   fullName: "",

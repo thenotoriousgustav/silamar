@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { CoverLetterBuilderData } from "./schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
 // Register custom fonts (matching Resume)
 Font.register({

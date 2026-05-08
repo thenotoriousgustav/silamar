@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useCoverLetterBuilder } from "@/features/cover-letters/hooks/use-cover-letter-builder";
+import { useCoverLetterBuilder } from "@/features/cover-letter-builder/hooks/use-cover-letter-builder";
 import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useHeaderDispatch } from "@/components/providers/header-provider";
 import { CoverLetterForm } from "./cover-letter-form";
 import { CoverLetterPreview } from "./cover-letter-preview";
-import { CoverLetterBuilderData } from "../schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSidebar } from "@/components/ui/sidebar";
 

@@ -22,20 +22,4 @@ export const getCoverLettersDTO = cache(async () => {
     .orderBy(desc(coverLetters.updatedAt));
 });
 
-export const getCoverLetterDTO = cache(async (id: string) => {
-  const session = await getSession();
-  if (!session?.user) return null;
 
-  const result = await db
-    .select()
-    .from(coverLetters)
-    .where(
-      and(
-        eq(coverLetters.id, id),
-        eq(coverLetters.userId, session.user.id)
-      )
-    )
-    .limit(1);
-
-  return result[0] || null;
-});

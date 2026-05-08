@@ -12,8 +12,8 @@ export function CreditBadge({ credits = 0, className }: CreditBadgeProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 rounded-none border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-bold text-primary transition-all hover:bg-primary/10 cursor-default",
-        className
+        "border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 flex cursor-default items-center gap-1.5 rounded-none border px-2.5 py-1 text-xs font-bold transition-all",
+        className,
       )}
     >
       <Zap className="h-3 w-3 fill-current" />

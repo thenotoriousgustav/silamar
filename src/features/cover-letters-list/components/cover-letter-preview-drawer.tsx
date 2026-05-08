@@ -10,7 +10,7 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { CoverLetterPreview } from "./cover-letter-preview";
+import { CoverLetterPreview } from "@/features/cover-letter-builder/components/cover-letter-preview";
 import { PencilLine, X } from "lucide-react";
 
 interface CoverLetter {

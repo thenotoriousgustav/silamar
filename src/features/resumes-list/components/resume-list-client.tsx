@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
-  ArrowRight,
   Loader2,
-  Trash2,
   AlertTriangle,
   FileText,
   Briefcase,
@@ -26,7 +24,10 @@ import type {
   ResumeContent,
   ResumeTemplateId,
 } from "@/features/resumes-list/types/resume";
-import { deleteResumeAction, getResumesAction } from "@/features/resumes-list/actions";
+import {
+  deleteResumeAction,
+  getResumesAction,
+} from "@/features/resumes-list/actions";
 import {
   createResumeAction,
   createEmptyResumeAction,
@@ -69,7 +70,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const router = useRouter();
   const [isChoiceOpen, setIsChoiceOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [isLinkedInImportOpen, setIsLinkedInImportOpen] = useState(false);
+
   const [isTemplateSelectOpen, setIsTemplateSelectOpen] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState<string | null>(null);
   const [selectedResumeForPreview, setSelectedResumeForPreview] =
@@ -77,14 +78,12 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<ResumeTemplateId | null>(null);
-  const [importedContent, setImportedContent] = useState<ResumeContent | null>(
-    null,
-  );
+
   const queryClient = useQueryClient();
 
   const { data: resumesList = initialResumes } = useQuery<Resume[]>({
     queryKey: ["resumes"],
-    queryFn: () => getResumesAction() as any,
+    queryFn: () => getResumesAction(),
     initialData: initialResumes,
     staleTime: 0,
   });
@@ -131,9 +130,8 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   });
 
   const handleImportComplete = (content: ResumeContent) => {
-    setImportedContent(content);
+
     setIsImportOpen(false);
-    setIsLinkedInImportOpen(false);
 
     // Create resume with imported content and already selected template
     if (selectedTemplate) {
@@ -393,24 +391,6 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                 </h4>
                 <p className="text-muted-foreground mt-1 text-xs">
                   Ekstrak data dari CV lama kamu.
-                </p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => {
-                setIsChoiceOpen(false);
-                setIsLinkedInImportOpen(true);
-              }}
-              className="group flex flex-col items-center gap-4 rounded-none border border-blue-200 bg-blue-50 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-100"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-none bg-blue-600 text-white shadow-lg transition-transform group-hover:scale-110">
-                linkedin
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-blue-900">LinkedIn</h4>
-                <p className="mt-1 text-xs text-blue-700/70">
-                  Ekstrak data dari profil LinkedIn.
                 </p>
               </div>
             </button>

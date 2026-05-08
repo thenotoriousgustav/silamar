@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { deleteCoverLetterAction } from "@/features/cover-letters/actions";
+import { deleteCoverLetterAction } from "@/features/cover-letters-list/actions";
 
 interface CoverLetter {
   id: string;

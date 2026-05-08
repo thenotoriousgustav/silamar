@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { CoverLetterBuilderData } from "../schema";
+import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
 
 interface HtmlCoverLetterProps {
   data: Partial<CoverLetterBuilderData>;
