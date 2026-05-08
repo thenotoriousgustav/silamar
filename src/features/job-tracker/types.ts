@@ -43,4 +43,3 @@ export interface CreateJobApplicationInput {
   jobUrl?: string;
   description?: string;
 }
-

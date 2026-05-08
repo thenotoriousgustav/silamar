@@ -20,21 +20,21 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "Tidak ada file yang diunggah" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         { error: "Hanya file PDF yang diizinkan" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { error: "Ukuran file maksimal 5MB" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,18 +43,18 @@ export async function POST(req: NextRequest) {
       session.user.id,
       resumeId,
       buffer,
-      file.type
+      file.type,
     );
 
     return NextResponse.json(
       { success: true, key, url, resumeId },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("[API] upload error:", error);
     return NextResponse.json(
       { error: "Gagal mengunggah file" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

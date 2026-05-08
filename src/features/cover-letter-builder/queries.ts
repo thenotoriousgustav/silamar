@@ -19,10 +19,7 @@ export const getCoverLetterDTO = cache(async (id: string) => {
     .select()
     .from(coverLetters)
     .where(
-      and(
-        eq(coverLetters.id, id),
-        eq(coverLetters.userId, session.user.id)
-      )
+      and(eq(coverLetters.id, id), eq(coverLetters.userId, session.user.id)),
     )
     .limit(1);
 

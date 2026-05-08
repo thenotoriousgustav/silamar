@@ -2,11 +2,13 @@ import { z } from "zod";
 
 export const skillGapSchema = z.object({
   matchedSkills: z.array(z.string()),
-  missingSkills: z.array(z.object({
-    skill: z.string(),
-    priority: z.enum(["high", "medium", "low"]),
-    howToLearn: z.string(),
-  })),
+  missingSkills: z.array(
+    z.object({
+      skill: z.string(),
+      priority: z.enum(["high", "medium", "low"]),
+      howToLearn: z.string(),
+    }),
+  ),
   overallGapScore: z.number().min(0).max(100),
   learningPath: z.array(z.string()),
   estimatedTimeToReady: z.string(),
@@ -18,7 +20,7 @@ export type SkillGapResult = z.infer<typeof skillGapSchema>;
 export function buildSkillGapPrompt(
   userSkills: string[],
   jobTitle: string,
-  jobDescription: string
+  jobDescription: string,
 ): string {
   return `
 Kamu adalah career advisor expert yang membantu fresh graduate Indonesia mengidentifikasi kesenjangan skill untuk karier impian mereka.

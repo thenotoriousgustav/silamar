@@ -15,13 +15,18 @@ export function LoadingSpinner({
   label,
 }: LoadingSpinnerProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3", className)}>
-      <Loader2 
-        className="animate-spin text-primary" 
-        style={{ width: size, height: size }} 
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center gap-3",
+        className,
+      )}
+    >
+      <Loader2
+        className="text-primary animate-spin"
+        style={{ width: size, height: size }}
       />
       {label && (
-        <p className="text-sm font-medium text-muted-foreground animate-pulse">
+        <p className="text-muted-foreground animate-pulse text-sm font-medium">
           {label}
         </p>
       )}
@@ -31,7 +36,7 @@ export function LoadingSpinner({
 
 export function LoadingOverlay({ label }: { label?: string }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="bg-background/80 animate-in fade-in fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm duration-300">
       <LoadingSpinner size={40} label={label} />
     </div>
   );

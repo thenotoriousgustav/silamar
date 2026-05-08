@@ -64,7 +64,10 @@ export const getResumesDTO = async () => {
           // If it has a trackerId, use the tracker name
           if (curr.trackerId) {
             if (!acc.find((t) => t.id === curr.trackerId)) {
-              acc.push({ id: curr.trackerId, name: curr.trackerName || "Unknown" });
+              acc.push({
+                id: curr.trackerId,
+                name: curr.trackerName || "Unknown",
+              });
             }
           } else {
             // If no trackerId, it belongs to the default "Job Tracker"
@@ -83,5 +86,3 @@ export const getResumesDTO = async () => {
     };
   });
 };
-
-

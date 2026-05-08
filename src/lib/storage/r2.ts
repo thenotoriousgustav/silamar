@@ -26,7 +26,7 @@ export async function uploadResumePdf(
   userId: string,
   resumeId: string,
   fileBuffer: Buffer,
-  contentType: string = "application/pdf"
+  contentType: string = "application/pdf",
 ): Promise<{ key: string; url: string }> {
   const timestamp = Date.now();
   const key = `resumes/${userId}/${resumeId}/${timestamp}.pdf`;
@@ -37,7 +37,7 @@ export async function uploadResumePdf(
       Key: key,
       Body: fileBuffer,
       ContentType: contentType,
-    })
+    }),
   );
 
   return {
@@ -51,7 +51,7 @@ export async function uploadResumePdf(
  */
 export async function getPresignedResumeUrl(
   key: string,
-  expiresInSeconds: number = 3600
+  expiresInSeconds: number = 3600,
 ): Promise<string> {
   const command = new GetObjectCommand({
     Bucket: BUCKET_NAME,
@@ -69,6 +69,6 @@ export async function deleteResumePdf(key: string): Promise<void> {
     new DeleteObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
-    })
+    }),
   );
 }

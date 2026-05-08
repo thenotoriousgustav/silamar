@@ -6,15 +6,12 @@ import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { CoverLetterBuilderData } from "./schema";
 
 async function getSession() {
   return await auth.api.getSession({
     headers: await headers(),
   });
 }
-
-
 
 export async function deleteCoverLetterAction(id: string) {
   const session = await getSession();

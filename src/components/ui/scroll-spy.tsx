@@ -386,7 +386,7 @@ function ScrollSpyLink(props: ScrollSpyLinkProps) {
       {...linkProps}
       href={asChild ? undefined : `#${linkValue}`}
       className={cn(
-        "rounded px-3 py-1.5 font-medium text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-accent-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground",
+        "text-muted-foreground hover:bg-accent hover:text-accent-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground rounded px-3 py-1.5 text-sm font-medium transition-colors",
         className,
       )}
       onClick={onLinkClick}

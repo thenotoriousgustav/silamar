@@ -71,9 +71,7 @@ export async function updateTrackerAction(
       ...data,
       updatedAt: new Date(),
     })
-    .where(
-      and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)),
-    )
+    .where(and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)))
     .returning();
 
   revalidatePath("/dashboard", "layout");
@@ -86,9 +84,7 @@ export async function deleteTrackerAction(id: string) {
 
   const deleted = await db
     .delete(jobTrackers)
-    .where(
-      and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)),
-    )
+    .where(and(eq(jobTrackers.id, id), eq(jobTrackers.userId, session.user.id)))
     .returning();
 
   revalidatePath("/dashboard", "layout");

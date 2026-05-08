@@ -49,7 +49,7 @@ interface CreateSnapTransactionParams {
 }
 
 export async function createSnapTransaction(
-  params: CreateSnapTransactionParams
+  params: CreateSnapTransactionParams,
 ): Promise<{ token: string; redirect_url: string }> {
   const parameter = {
     transaction_details: {
@@ -87,7 +87,7 @@ export function verifyMidtransSignature(
   orderId: string,
   statusCode: string,
   grossAmount: string,
-  receivedSignature: string
+  receivedSignature: string,
 ): boolean {
   const serverKey = process.env.MIDTRANS_SERVER_KEY!;
   const input = `${orderId}${statusCode}${grossAmount}${serverKey}`;
@@ -110,7 +110,7 @@ export type MidtransTransactionStatus =
 
 export function isPaymentSuccessful(
   transactionStatus: MidtransTransactionStatus,
-  fraudStatus?: string
+  fraudStatus?: string,
 ): boolean {
   if (transactionStatus === "capture") {
     return fraudStatus === "accept";

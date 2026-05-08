@@ -6,7 +6,10 @@ import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { ResumeContent, ResumeTemplateId } from "@/features/resumes-list/types/resume";
+import type {
+  ResumeContent,
+  ResumeTemplateId,
+} from "@/features/resumes-list/types/resume";
 
 async function getSession() {
   return await auth.api.getSession({

@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Plus,
-  Sparkles,
-  PencilLine,
-  Loader2,
-} from "lucide-react";
+import { Plus, Sparkles, PencilLine, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -17,7 +12,10 @@ import {
 } from "@/features/resumes-list/actions";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
-import type { ResumeContent, ResumeTemplateId } from "@/features/resumes-list/types/resume";
+import type {
+  ResumeContent,
+  ResumeTemplateId,
+} from "@/features/resumes-list/types/resume";
 
 export function ResumeCreateClient() {
   const router = useRouter();
@@ -90,10 +88,12 @@ export function ResumeCreateClient() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-foreground">Buat Resume Baru</h1>
-        <p className="text-muted-foreground mt-2">Pilih cara kamu ingin memulai pembuatan resume ATS-friendly.</p>
+    <div className="mx-auto max-w-4xl px-6 py-12">
+      <div className="mb-12 text-center">
+        <h1 className="text-foreground text-3xl font-bold">Buat Resume Baru</h1>
+        <p className="text-muted-foreground mt-2">
+          Pilih cara kamu ingin memulai pembuatan resume ATS-friendly.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -108,7 +108,9 @@ export function ResumeCreateClient() {
             <PencilLine className="h-10 w-10" />
           </div>
           <div>
-            <h4 className="text-foreground text-xl font-bold">Mulai dari Nol</h4>
+            <h4 className="text-foreground text-xl font-bold">
+              Mulai dari Nol
+            </h4>
             <p className="text-muted-foreground mt-2">
               Bangun resume kamu langkah demi langkah dengan panduan kami.
             </p>
@@ -125,9 +127,12 @@ export function ResumeCreateClient() {
             <Sparkles className="h-10 w-10" />
           </div>
           <div>
-            <h4 className="text-foreground text-xl font-bold">Impor CV Lama (AI)</h4>
+            <h4 className="text-foreground text-xl font-bold">
+              Impor CV Lama (AI)
+            </h4>
             <p className="text-muted-foreground mt-2">
-              Gunakan AI untuk mengekstrak data dari PDF lama kamu secara otomatis.
+              Gunakan AI untuk mengekstrak data dari PDF lama kamu secara
+              otomatis.
             </p>
           </div>
         </button>

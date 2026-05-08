@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useResumeBuilder } from "@/features/resume-builder/hooks/use-resume-builder";
 import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -9,10 +9,7 @@ import { clsx } from "clsx";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import {
-  useHeader,
-  useHeaderDispatch,
-} from "@/components/providers/header-provider";
+import { useHeaderDispatch } from "@/components/providers/header-provider";
 import { ResumeForm } from "./resume-form";
 import { ResumePreview } from "./resume-preview";
 import type { ResumeContent } from "@/features/resumes-list/types/resume";
@@ -104,9 +101,13 @@ export function ResumeBuilderClient({
     titleRef.current = resumeTitle;
   }, [resumeTitle]);
 
-  // Collapse sidebar on mount
+  // Collapse sidebar on mount (only once)
+  const hasAutoCollapsed = useRef(false);
   useEffect(() => {
-    setOpen(false);
+    if (!hasAutoCollapsed.current) {
+      setOpen(false);
+      hasAutoCollapsed.current = true;
+    }
   }, [setOpen]);
 
   const saveRef = useRef(save);

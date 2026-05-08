@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+} from "react";
 
 interface HeaderState {
   title: string | ReactNode;
@@ -13,7 +19,9 @@ interface HeaderDispatch {
 }
 
 const HeaderStateContext = createContext<HeaderState | undefined>(undefined);
-const HeaderDispatchContext = createContext<HeaderDispatch | undefined>(undefined);
+const HeaderDispatchContext = createContext<HeaderDispatch | undefined>(
+  undefined,
+);
 
 export function HeaderProvider({ children }: { children: ReactNode }) {
   const [title, setTitle] = useState<string | ReactNode>("");
@@ -34,11 +42,11 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
 export function useHeader() {
   const state = useContext(HeaderStateContext);
   const dispatch = useContext(HeaderDispatchContext);
-  
+
   if (state === undefined || dispatch === undefined) {
     throw new Error("useHeader must be used within a HeaderProvider");
   }
-  
+
   return { ...state, ...dispatch };
 }
 

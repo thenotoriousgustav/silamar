@@ -12,7 +12,8 @@ export const COVER_LETTER_TEMPLATES: CoverLetterTemplate[] = [
   {
     id: "formal-standard",
     name: "Formal (Standar)",
-    description: "Cocok untuk melamar di perusahaan korporat, perbankan, atau instansi resmi.",
+    description:
+      "Cocok untuk melamar di perusahaan korporat, perbankan, atau instansi resmi.",
     category: "formal",
     data: {
       subject: "Lamaran Pekerjaan - [Nama Posisi] - [Nama Anda]",
@@ -36,10 +37,12 @@ Hormat saya,
   {
     id: "modern-startup",
     name: "Modern & Antusias",
-    description: "Cocok untuk startup teknologi, agensi kreatif, atau lingkungan kerja dinamis.",
+    description:
+      "Cocok untuk startup teknologi, agensi kreatif, atau lingkungan kerja dinamis.",
     category: "modern",
     data: {
-      subject: "[Nama Posisi] - [Nama Anda]: Siap Berkontribusi untuk [Nama Perusahaan]",
+      subject:
+        "[Nama Posisi] - [Nama Anda]: Siap Berkontribusi untuk [Nama Perusahaan]",
       content: `Halo Tim Rekrutmen [Nama Perusahaan] / [Nama Manajer Perekrutan],
 
 Saya telah lama mengikuti perkembangan [Nama Perusahaan], terutama dalam hal [Sebutkan Proyek atau Visi Perusahaan yang Anda Kagumi]. Oleh karena itu, saya sangat bersemangat saat mengetahui adanya lowongan untuk posisi [Nama Posisi].
@@ -61,7 +64,8 @@ Salam hangat,
   {
     id: "skill-focused",
     name: "Berbasis Skill (Transisi Karir)",
-    description: "Menonjolkan keahlian spesifik, cocok untuk fresh graduate atau pindah jalur karir.",
+    description:
+      "Menonjolkan keahlian spesifik, cocok untuk fresh graduate atau pindah jalur karir.",
     category: "skill-focused",
     data: {
       subject: "Lamaran Pekerjaan - [Nama Posisi] - [Nama Anda]",

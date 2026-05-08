@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Input tidak valid", details: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
       .where(eq(users.id, session.user.id));
 
     if (!user) {
-      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      );
     }
 
     let amount: number;
@@ -50,7 +53,7 @@ export async function POST(req: NextRequest) {
       if (!pkg) {
         return NextResponse.json(
           { error: "Paket tidak ditemukan" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       amount = pkg.price;
@@ -60,7 +63,7 @@ export async function POST(req: NextRequest) {
       if (parsed.data.packageId !== PRO_SUBSCRIPTION.id) {
         return NextResponse.json(
           { error: "Paket subscription tidak ditemukan" },
-          { status: 404 }
+          { status: 404 },
         );
       }
       amount = PRO_SUBSCRIPTION.price;
@@ -107,13 +110,13 @@ export async function POST(req: NextRequest) {
         snapToken: snapResult.token,
         orderId,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("[API] payment/create error:", error);
     return NextResponse.json(
       { error: "Gagal membuat transaksi" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

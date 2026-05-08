@@ -13,19 +13,15 @@ export default async function ResumeBuilderPage({
 }) {
   const { id } = await params;
 
-  let initialData = undefined;
+  const resume = await getResumeDTO(id);
 
-  if (id !== "new") {
-    const resume = await getResumeDTO(id);
+  if (!resume) notFound();
 
-    if (!resume) notFound();
-
-    initialData = {
-      title: resume.title,
-      content: resume.content as ResumeContent,
-      updatedAt: resume.updatedAt,
-    };
-  }
+  const initialData = {
+    title: resume.title,
+    content: resume.content as ResumeContent,
+    updatedAt: resume.updatedAt,
+  };
 
   return <ResumeBuilderClient id={id} initialData={initialData} />;
 }

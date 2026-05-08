@@ -10,7 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteTrackerAction, updateTrackerAction } from "@/features/job-tracker/actions";
+import {
+  deleteTrackerAction,
+  updateTrackerAction,
+} from "@/features/job-tracker/actions";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -100,9 +103,7 @@ export function TrackerActions({ tracker }: TrackerActionsProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ganti Nama Tracker</DialogTitle>
-            <DialogDescription>
-              Ubah nama untuk tracker ini.
-            </DialogDescription>
+            <DialogDescription>Ubah nama untuk tracker ini.</DialogDescription>
           </DialogHeader>
           <FieldGroup className="py-4">
             <Field>
@@ -135,8 +136,8 @@ export function TrackerActions({ tracker }: TrackerActionsProps) {
             <AlertDialogTitle>Hapus Tracker?</AlertDialogTitle>
             <AlertDialogDescription>
               Tindakan ini tidak dapat dibatalkan. Semua data lamaran di dalam
-              tracker <span className="font-bold">{tracker.name}</span> juga akan
-              ikut terhapus.
+              tracker <span className="font-bold">{tracker.name}</span> juga
+              akan ikut terhapus.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

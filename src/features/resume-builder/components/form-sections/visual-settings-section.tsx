@@ -133,7 +133,7 @@ export function VisualSettingsSection({
                     (content.style?.templateId || "classic") === template.id
                       ? "default"
                       : "outline"
-                   }
+                  }
                   className="h-11 flex-1 transition-all"
                   onClick={() =>
                     updateStyle({ templateId: template.id as any })

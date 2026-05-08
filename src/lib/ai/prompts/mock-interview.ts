@@ -1,13 +1,15 @@
 import { z } from "zod";
 
 export const mockInterviewResultSchema = z.object({
-  questions: z.array(z.object({
-    id: z.string(),
-    category: z.enum(["behavioral", "technical", "situational", "hr"]),
-    question: z.string(),
-    tips: z.string(),
-    sampleAnswer: z.string(),
-  })),
+  questions: z.array(
+    z.object({
+      id: z.string(),
+      category: z.enum(["behavioral", "technical", "situational", "hr"]),
+      question: z.string(),
+      tips: z.string(),
+      sampleAnswer: z.string(),
+    }),
+  ),
   interviewTips: z.array(z.string()),
   commonMistakes: z.array(z.string()),
 });
@@ -22,13 +24,15 @@ export const mockInterviewFeedbackSchema = z.object({
   overallFeedback: z.string(),
 });
 
-export type MockInterviewFeedbackResult = z.infer<typeof mockInterviewFeedbackSchema>;
+export type MockInterviewFeedbackResult = z.infer<
+  typeof mockInterviewFeedbackSchema
+>;
 
 export function buildMockInterviewQuestionsPrompt(
   jobTitle: string,
   company: string,
   resumeContent: string,
-  jobDescription?: string
+  jobDescription?: string,
 ): string {
   return `
 Kamu adalah interviewer berpengalaman dari perusahaan top Indonesia yang membantu fresh graduate mempersiapkan diri untuk wawancara kerja.
@@ -83,7 +87,7 @@ Hanya kembalikan JSON yang valid, tanpa teks lain.
 export function buildMockInterviewFeedbackPrompt(
   question: string,
   userAnswer: string,
-  jobTitle: string
+  jobTitle: string,
 ): string {
   return `
 Kamu adalah interviewer berpengalaman yang memberikan feedback konstruktif kepada fresh graduate Indonesia.

@@ -64,8 +64,8 @@ export function PersonalInfoSection({
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">
         <div className="mb-8 flex flex-col items-center justify-center gap-4">
-          <div className="relative group">
-            <Avatar className="h-28 w-28 border-2 border-dashed border-muted-foreground/30 ring-offset-background transition-all group-hover:border-primary/50 ring-2 ring-transparent">
+          <div className="group relative">
+            <Avatar className="border-muted-foreground/30 ring-offset-background group-hover:border-primary/50 h-28 w-28 border-2 border-dashed ring-2 ring-transparent transition-all">
               <AvatarImage
                 src={content.personalInfo.photoUrl}
                 className="object-cover"
@@ -87,7 +87,7 @@ export function PersonalInfoSection({
               <Button
                 size="icon"
                 variant="secondary"
-                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full border border-border shadow-lg"
+                className="border-border absolute -right-1 -bottom-1 h-8 w-8 rounded-full border shadow-lg"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Camera className="h-4 w-4" />
@@ -96,7 +96,9 @@ export function PersonalInfoSection({
           </div>
           <div className="text-center">
             <p className="text-xs font-medium text-slate-500">Foto Profil</p>
-            <p className="text-[10px] text-slate-400">Maksimal 2MB (JPG, PNG)</p>
+            <p className="text-[10px] text-slate-400">
+              Maksimal 2MB (JPG, PNG)
+            </p>
           </div>
           <input
             type="file"
@@ -201,7 +203,8 @@ export function PersonalInfoSection({
                   updatePersonalInfo({
                     linkedin: {
                       ...content.personalInfo.linkedin,
-                      label: currentLabel === undefined ? "" : undefined as any,
+                      label:
+                        currentLabel === undefined ? "" : (undefined as any),
                       url: content.personalInfo.linkedin?.url || "",
                     },
                   });
@@ -267,7 +270,8 @@ export function PersonalInfoSection({
                   updatePersonalInfo({
                     website: {
                       ...content.personalInfo.website,
-                      label: currentLabel === undefined ? "" : undefined as any,
+                      label:
+                        currentLabel === undefined ? "" : (undefined as any),
                       url: content.personalInfo.website?.url || "",
                     },
                   });

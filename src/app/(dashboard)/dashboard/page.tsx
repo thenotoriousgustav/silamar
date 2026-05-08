@@ -69,7 +69,12 @@ const quickActions = [
     label: "Analisis Resume",
     color: "purple",
   },
-  { href: "/documents/cover-letter", icon: Mail, label: "Cover Letter", color: "blue" },
+  {
+    href: "/documents/cover-letter",
+    icon: Mail,
+    label: "Cover Letter",
+    color: "blue",
+  },
   {
     href: "/job-tracker",
     icon: Briefcase,
@@ -115,10 +120,10 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-foreground text-2xl font-bold">
           Halo, {session.user.name?.split(" ")[0]}! 👋
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-sm">
           Semangat cari kerja hari ini!
         </p>
       </div>
@@ -126,43 +131,43 @@ export default async function DashboardPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="glass p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <div className="bg-primary/20 p-2">
-              <FileText className="h-4 w-4 text-primary" />
+              <FileText className="text-primary h-4 w-4" />
             </div>
             <Link
               href="/documents/resumes"
-              className="text-xs text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground text-xs"
             >
               Lihat →
             </Link>
           </div>
-          <div className="text-2xl font-bold text-foreground">
+          <div className="text-foreground text-2xl font-bold">
             {data.resumeCount}
           </div>
-          <div className="text-xs text-muted-foreground">Resume dibuat</div>
+          <div className="text-muted-foreground text-xs">Resume dibuat</div>
         </div>
 
         <div className="glass p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <div className="bg-emerald-500/20 p-2">
               <Briefcase className="h-4 w-4 text-emerald-400" />
             </div>
             <Link
               href="/job-tracker"
-              className="text-xs text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground text-xs"
             >
               Lihat →
             </Link>
           </div>
-          <div className="text-2xl font-bold text-foreground">
+          <div className="text-foreground text-2xl font-bold">
             {data.jobCount}
           </div>
-          <div className="text-xs text-muted-foreground">Lamaran tertrack</div>
+          <div className="text-muted-foreground text-xs">Lamaran tertrack</div>
         </div>
 
         <div className="glass p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <div
               className={`p-2 ${plan === "pro" ? "bg-primary/20" : "bg-amber-500/20"}`}
             >
@@ -172,29 +177,29 @@ export default async function DashboardPage() {
             </div>
             <Link
               href="/settings?tab=billing"
-              className="text-xs text-surface-300 hover:text-white"
+              className="text-surface-300 text-xs hover:text-white"
             >
               Beli →
             </Link>
           </div>
-          <div className="text-2xl font-bold text-foreground">
+          <div className="text-foreground text-2xl font-bold">
             {plan === "pro" ? "∞" : credits}
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-xs">
             {plan === "pro" ? "Pro subscription" : "Kredit tersisa"}
           </div>
         </div>
 
         <div className="glass p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <div className="bg-purple-500/20 p-2">
               <TrendingUp className="h-4 w-4 text-purple-400" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-foreground">
+          <div className="text-foreground text-2xl font-bold">
             {data.recentActivity.length}
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-xs">
             Fitur AI digunakan
           </div>
         </div>
@@ -202,7 +207,7 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="mb-4 text-base font-semibold text-foreground">
+        <h2 className="text-foreground mb-4 text-base font-semibold">
           Aksi Cepat
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -210,12 +215,12 @@ export default async function DashboardPage() {
             <Link
               key={action.href}
               href={action.href}
-              className="glass flex flex-col items-center gap-2 p-4 text-center transition-all hover:border-primary/20 hover:scale-105 group"
+              className="glass hover:border-primary/20 group flex flex-col items-center gap-2 p-4 text-center transition-all hover:scale-105"
             >
-              <div className="bg-muted p-2.5 transition-colors group-hover:bg-muted/80">
-                <action.icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+              <div className="bg-muted group-hover:bg-muted/80 p-2.5 transition-colors">
+                <action.icon className="text-muted-foreground group-hover:text-foreground h-5 w-5" />
               </div>
-              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground">
+              <span className="text-muted-foreground group-hover:text-foreground text-xs font-medium">
                 {action.label}
               </span>
             </Link>
@@ -227,12 +232,12 @@ export default async function DashboardPage() {
         {/* Recent Job Applications */}
         <div className="glass p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="text-foreground text-sm font-semibold">
               Lamaran Terbaru
             </h2>
             <Link
               href="/job-tracker"
-              className="flex items-center gap-1 text-xs text-primary hover:text-primary/80"
+              className="text-primary hover:text-primary/80 flex items-center gap-1 text-xs"
             >
               Lihat semua <ArrowRight className="h-3 w-3" />
             </Link>
@@ -240,11 +245,11 @@ export default async function DashboardPage() {
 
           {data.recentJobs.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center">
-              <Briefcase className="mb-3 h-8 w-8 text-surface-400" />
-              <p className="text-sm text-surface-300">Belum ada lamaran.</p>
+              <Briefcase className="text-surface-400 mb-3 h-8 w-8" />
+              <p className="text-surface-300 text-sm">Belum ada lamaran.</p>
               <Link
                 href="/job-tracker"
-                className="mt-3 flex items-center gap-1 bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 mt-3 flex items-center gap-1 px-4 py-2 text-xs font-semibold"
               >
                 <Plus className="h-3 w-3" />
                 Tambah Lamaran
@@ -255,13 +260,13 @@ export default async function DashboardPage() {
               {data.recentJobs.map((job) => (
                 <li
                   key={job.id}
-                  className="flex items-center justify-between gap-3 bg-surface-800 p-3"
+                  className="bg-surface-800 flex items-center justify-between gap-3 p-3"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-foreground">
+                    <div className="text-foreground truncate text-sm font-medium">
                       {job.position}
                     </div>
-                    <div className="truncate text-xs text-muted-foreground">
+                    <div className="text-muted-foreground truncate text-xs">
                       {job.company} · {formatRelativeTime(job.createdAt)}
                     </div>
                   </div>
@@ -279,20 +284,20 @@ export default async function DashboardPage() {
         {/* AI Activity Log */}
         <div className="glass p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="text-foreground text-sm font-semibold">
               Aktivitas AI Terbaru
             </h2>
           </div>
 
           {data.recentActivity.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center">
-              <Brain className="mb-3 h-8 w-8 text-surface-400" />
-              <p className="text-sm text-surface-300">
+              <Brain className="text-surface-400 mb-3 h-8 w-8" />
+              <p className="text-surface-300 text-sm">
                 Belum menggunakan fitur AI.
               </p>
               <Link
                 href="/resume-analysis"
-                className="mt-3 bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 mt-3 px-4 py-2 text-xs font-semibold"
               >
                 Coba Analisis Resume
               </Link>
@@ -302,20 +307,20 @@ export default async function DashboardPage() {
               {data.recentActivity.map((log) => (
                 <li
                   key={log.id}
-                  className="flex items-center gap-3 bg-surface-800 p-3"
+                  className="bg-surface-800 flex items-center gap-3 p-3"
                 >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/20">
-                    <Brain className="h-3.5 w-3.5 text-primary" />
+                  <div className="bg-primary/20 flex h-7 w-7 shrink-0 items-center justify-center">
+                    <Brain className="text-primary h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-xs font-medium text-foreground capitalize">
+                    <div className="text-foreground truncate text-xs font-medium capitalize">
                       {log.featureType.replace(/_/g, " ")}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       {formatRelativeTime(log.createdAt)}
                     </div>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">
+                  <span className="text-muted-foreground shrink-0 text-xs">
                     -{log.creditsUsed} kr
                   </span>
                 </li>

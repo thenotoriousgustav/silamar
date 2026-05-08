@@ -2,17 +2,8 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  FileText,
-  Plus,
-  ArrowRight,
-  Loader2,
-  Trash2,
-  AlertTriangle,
-  Mail,
-} from "lucide-react";
+import { Plus, Loader2, AlertTriangle, Mail } from "lucide-react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
 import { DocumentCard } from "@/shared/document-card";
 import { PageHeader } from "@/shared/page-header";

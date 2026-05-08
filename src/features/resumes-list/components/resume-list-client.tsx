@@ -130,7 +130,6 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   });
 
   const handleImportComplete = (content: ResumeContent) => {
-
     setIsImportOpen(false);
 
     // Create resume with imported content and already selected template

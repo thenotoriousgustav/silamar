@@ -21,7 +21,10 @@ export const ResumePersonalInfoSchema = z.object({
     })
     .optional()
     .describe("Portfolio or personal website information"),
-  photoUrl: z.string().optional().describe("Profile photo URL or base64 string"),
+  photoUrl: z
+    .string()
+    .optional()
+    .describe("Profile photo URL or base64 string"),
   summary: z.string().describe("A professional summary or about me section"),
 });
 

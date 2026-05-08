@@ -184,7 +184,14 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 className="h-24 w-24 rounded-full border border-slate-200 object-cover shadow-sm"
               />
             )}
-          <div className={cn((templateId === "classic" || templateId === "minimal") && personalInfo.photoUrl ? "flex-1" : "")}>
+          <div
+            className={cn(
+              (templateId === "classic" || templateId === "minimal") &&
+                personalInfo.photoUrl
+                ? "flex-1"
+                : "",
+            )}
+          >
             <h1
               className={cn(
                 "font-bold tracking-wider uppercase",
@@ -212,7 +219,9 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
         <div
           className={cn(
             "flex flex-col",
-            templateId === "modern" ? "items-end text-right" : "mt-2 items-center text-center",
+            templateId === "modern"
+              ? "items-end text-right"
+              : "mt-2 items-center text-center",
           )}
         >
           {personalInfo.photoUrl && templateId === "modern" && (
@@ -228,50 +237,50 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
               templateId === "modern" && "mt-0 text-right",
             )}
           >
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
-            <span>{personalInfo.email}</span>
-            {personalInfo.phone && (
-              <>
-                <span className="text-slate-300">•</span>
-                <span>{personalInfo.phone}</span>
-              </>
-            )}
-            {personalInfo.location && (
-              <>
-                <span className="text-slate-300">•</span>
-                <span>{personalInfo.location}</span>
-              </>
-            )}
-          </div>
-          {(personalInfo.website?.url || personalInfo.linkedin?.url) && (
-            <div className="mt-0.5 space-x-2">
-              {personalInfo.website?.url && (
-                <a
-                  href={personalInfo.website.url}
-                  className="hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {personalInfo.website.label ||
-                    cleanUrl(personalInfo.website.url)}
-                </a>
+            <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
+              <span>{personalInfo.email}</span>
+              {personalInfo.phone && (
+                <>
+                  <span className="text-slate-300">•</span>
+                  <span>{personalInfo.phone}</span>
+                </>
               )}
-              {personalInfo.linkedin?.url && (
-                <a
-                  href={personalInfo.linkedin.url}
-                  className="hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {personalInfo.linkedin.label ||
-                    cleanUrl(personalInfo.linkedin.url)}
-                </a>
+              {personalInfo.location && (
+                <>
+                  <span className="text-slate-300">•</span>
+                  <span>{personalInfo.location}</span>
+                </>
               )}
             </div>
-          )}
+            {(personalInfo.website?.url || personalInfo.linkedin?.url) && (
+              <div className="mt-0.5 space-x-2">
+                {personalInfo.website?.url && (
+                  <a
+                    href={personalInfo.website.url}
+                    className="hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {personalInfo.website.label ||
+                      cleanUrl(personalInfo.website.url)}
+                  </a>
+                )}
+                {personalInfo.linkedin?.url && (
+                  <a
+                    href={personalInfo.linkedin.url}
+                    className="hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {personalInfo.linkedin.label ||
+                      cleanUrl(personalInfo.linkedin.url)}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
     );
     addToPage(headerEl, estimateHeight("header", null));
 
@@ -328,7 +337,6 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
           </h2>,
           estimateHeight("sectionTitle", null),
         );
-
 
         experience.forEach((exp, i) => {
           const expEl = (

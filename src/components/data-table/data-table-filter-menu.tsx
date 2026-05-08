@@ -49,8 +49,9 @@ const THROTTLE_MS = 50;
 const FILTER_SHORTCUT_KEY = "f";
 const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"];
 
-interface DataTableFilterMenuProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
+interface DataTableFilterMenuProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
   table: Table<TData>;
   debounceMs?: number;
   throttleMs?: number;
@@ -388,7 +389,7 @@ function DataTableFilterItem<TData>({
         key={filter.filterId}
         role="listitem"
         id={filterItemId}
-        className="flex h-8 items-center rounded-md bg-background"
+        className="bg-background flex h-8 items-center rounded-md"
         onKeyDown={onItemKeyDown}
       >
         <Popover open={showFieldSelector} onOpenChange={setShowFieldSelector}>
@@ -396,7 +397,7 @@ function DataTableFilterItem<TData>({
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-none rounded-l-md border border-r-0 font-normal dark:bg-input/30"
+              className="dark:bg-input/30 rounded-none rounded-l-md border border-r-0 font-normal"
             >
               {columnMeta?.icon && (
                 <columnMeta.icon className="text-muted-foreground" />
@@ -490,7 +491,7 @@ function DataTableFilterItem<TData>({
           aria-controls={filterItemId}
           variant="ghost"
           size="sm"
-          className="h-full rounded-none rounded-r-md border border-l-0 px-1.5 font-normal dark:bg-input/30"
+          className="dark:bg-input/30 h-full rounded-none rounded-r-md border border-l-0 px-1.5 font-normal"
           onClick={() => onFilterRemove(filter.filterId)}
         >
           <X className="size-3.5" />
@@ -615,7 +616,7 @@ function onFilterInputRender<TData>({
           filter.operator === "isEmpty" ? "empty" : "not empty"
         }`}
         aria-live="polite"
-        className="h-full w-16 rounded-none border bg-transparent px-1.5 py-0.5 text-muted-foreground dark:bg-input/30"
+        className="text-muted-foreground dark:bg-input/30 h-full w-16 rounded-none border bg-transparent px-1.5 py-0.5"
       />
     );
   }
@@ -705,12 +706,14 @@ function onFilterInputRender<TData>({
               aria-controls={inputListboxId}
               variant="ghost"
               size="sm"
-              className="h-full min-w-16 rounded-none border px-1.5 font-normal dark:bg-input/30"
+              className="dark:bg-input/30 h-full min-w-16 rounded-none border px-1.5 font-normal"
             >
               {selectedOptions.length === 0 ? (
-                filter.variant === "multiSelect"
-                  ? "Select options..."
-                  : "Select option..."
+                filter.variant === "multiSelect" ? (
+                  "Select options..."
+                ) : (
+                  "Select option..."
+                )
               ) : (
                 <>
                   <div className="flex items-center -space-x-2 rtl:space-x-reverse">
@@ -718,7 +721,7 @@ function onFilterInputRender<TData>({
                       selectedOption.icon ? (
                         <div
                           key={selectedOption.value}
-                          className="rounded-full border bg-background p-0.5"
+                          className="bg-background rounded-full border p-0.5"
                         >
                           <selectedOption.icon className="size-3.5" />
                         </div>
@@ -814,7 +817,7 @@ function onFilterInputRender<TData>({
               variant="ghost"
               size="sm"
               className={cn(
-                "h-full rounded-none border px-1.5 font-normal dark:bg-input/30",
+                "dark:bg-input/30 h-full rounded-none border px-1.5 font-normal",
                 !filter.value && "text-muted-foreground",
               )}
             >

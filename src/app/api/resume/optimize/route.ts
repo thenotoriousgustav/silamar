@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         
         Return only the optimized text, no explanations.`;
         break;
-      
+
       case "quantify":
         prompt = `You are a professional resume writer. Add quantifiable metrics or achievements to the following bullet point to make it more impressive. 
         If specific numbers aren't provided, suggest realistic placeholders in brackets like [X%].
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       prompt,
     });
 
-    return Response.json({ result: result.replace(/^"|"$/g, '') });
+    return Response.json({ result: result.replace(/^"|"$/g, "") });
   } catch (error) {
     console.error("Optimization error:", error);
     return Response.json({ error: "Failed to optimize text" }, { status: 500 });

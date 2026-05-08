@@ -65,11 +65,9 @@ export function DocumentCard({
       <h3 className="group-hover:text-primary text-foreground truncate font-semibold transition-colors">
         {title}
       </h3>
-      
+
       {subtitle && (
-        <p className="text-muted-foreground truncate text-sm">
-          {subtitle}
-        </p>
+        <p className="text-muted-foreground truncate text-sm">{subtitle}</p>
       )}
 
       <p className="text-muted-foreground mt-1 text-xs">

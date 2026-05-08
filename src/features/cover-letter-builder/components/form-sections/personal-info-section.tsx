@@ -28,7 +28,7 @@ export function PersonalInfoSection({
         asChild
         className="data-[state=open]:bg-muted/30 px-5 py-5 hover:no-underline"
       >
-        <div className="flex items-center gap-4 cursor-pointer">
+        <div className="flex cursor-pointer items-center gap-4">
           <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-none">
             <User className="h-4 w-4" />
           </div>

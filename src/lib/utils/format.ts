@@ -7,7 +7,7 @@ import { id as localeId } from "date-fns/locale";
  */
 export function formatDate(
   date: Date | string | null | undefined,
-  fmt = "d MMMM yyyy"
+  fmt = "d MMMM yyyy",
 ): string {
   if (!date) return "-";
   const d = typeof date === "string" ? parseISO(date) : date;
@@ -18,7 +18,9 @@ export function formatDate(
  * Format relative time in Indonesian
  * e.g., "3 hari yang lalu"
  */
-export function formatRelativeTime(date: Date | string | null | undefined): string {
+export function formatRelativeTime(
+  date: Date | string | null | undefined,
+): string {
   if (!date) return "-";
   const d = typeof date === "string" ? parseISO(date) : date;
   return formatDistanceToNow(d, { addSuffix: true, locale: localeId });

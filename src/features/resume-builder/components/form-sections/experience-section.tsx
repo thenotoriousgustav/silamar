@@ -278,7 +278,11 @@ export function ExperienceSection({
                             </Label>
                             <div className="relative">
                               <Input
-                                value={exp.isCurrentJob ? "Present" : exp.endDate || ""}
+                                value={
+                                  exp.isCurrentJob
+                                    ? "Present"
+                                    : exp.endDate || ""
+                                }
                                 disabled={exp.isCurrentJob}
                                 onChange={(e) =>
                                   updateExperience(exp.id, {

@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+
 import { getResumesDTO } from "@/features/resumes-list/queries";
 
 /**
@@ -22,8 +22,6 @@ async function getSession() {
 export async function getResumesAction() {
   return await getResumesDTO();
 }
-
-
 
 export async function deleteResumeAction(id: string) {
   const session = await getSession();

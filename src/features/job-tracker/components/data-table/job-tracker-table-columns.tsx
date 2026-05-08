@@ -49,8 +49,8 @@ export function getJobTrackerColumns({
     {
       id: "select",
       header: ({ table }) => (
-        <div 
-          onClick={(e) => e.stopPropagation()} 
+        <div
+          onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="flex items-center justify-center"
         >
@@ -60,15 +60,17 @@ export function getJobTrackerColumns({
               table.getIsSomePageRowsSelected() &&
               !table.getIsAllPageRowsSelected()
             }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
             aria-label="Select all"
             className="translate-y-0.5"
           />
         </div>
       ),
       cell: ({ row }) => (
-        <div 
-          onClick={(e) => e.stopPropagation()} 
+        <div
+          onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="flex items-center justify-center"
         >
@@ -129,7 +131,7 @@ export function getJobTrackerColumns({
       cell: ({ row }) => {
         const type = row.getValue("type") as JobType;
         return (
-          <div className="bg-muted text-muted-foreground w-fit rounded-none px-2 py-0.5 text-[10px] font-medium whitespace-nowrap uppercase tracking-wider">
+          <div className="bg-muted text-muted-foreground w-fit rounded-none px-2 py-0.5 text-[10px] font-medium tracking-wider whitespace-nowrap uppercase">
             {JOB_TYPE_LABELS[type] || type}
           </div>
         );
@@ -186,22 +188,31 @@ export function getJobTrackerColumns({
       ),
       cell: ({ row }) => {
         const dateStr = row.getValue("interviewDate") as string;
-        if (!dateStr) return <div className="text-muted-foreground/30 italic">-</div>;
-        
+        if (!dateStr)
+          return <div className="text-muted-foreground/30 italic">-</div>;
+
         const date = new Date(dateStr);
         const today = isToday(date);
-        const soon = isAfter(date, startOfDay(new Date())) && isAfter(addDays(new Date(), 3), date);
+        const soon =
+          isAfter(date, startOfDay(new Date())) &&
+          isAfter(addDays(new Date(), 3), date);
 
         return (
-          <div className={cn(
-            "flex items-center gap-2 font-medium",
-            today ? "text-amber-500" : soon ? "text-blue-500" : "text-muted-foreground"
-          )}>
+          <div
+            className={cn(
+              "flex items-center gap-2 font-medium",
+              today
+                ? "text-amber-500"
+                : soon
+                  ? "text-blue-500"
+                  : "text-muted-foreground",
+            )}
+          >
             <div className="flex items-center gap-1.5">
               {today && (
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
                 </span>
               )}
               {format(date, "d MMM yyyy", { locale: id })}
@@ -226,7 +237,9 @@ export function getJobTrackerColumns({
         const dateStr = row.getValue("appliedDate") as string;
         return (
           <div className="text-muted-foreground">
-            {dateStr ? format(new Date(dateStr), "d MMM yyyy", { locale: id }) : "-"}
+            {dateStr
+              ? format(new Date(dateStr), "d MMM yyyy", { locale: id })
+              : "-"}
           </div>
         );
       },

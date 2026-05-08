@@ -365,7 +365,10 @@ export default function HomePage() {
           </div>
           <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-3">
             {creditPacks.map((pack) => (
-              <div key={pack.name} className="glass rounded-none p-5 text-center">
+              <div
+                key={pack.name}
+                className="glass rounded-none p-5 text-center"
+              >
                 <div className="font-mono text-2xl font-extrabold text-white">
                   {pack.credits}
                 </div>

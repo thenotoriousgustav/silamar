@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       orderId,
       statusCode,
       grossAmount,
-      signatureKey
+      signatureKey,
     );
 
     if (!isValid) {
@@ -46,13 +46,16 @@ export async function POST(req: NextRequest) {
 
     if (!transaction) {
       console.error("[Webhook] Transaction not found:", orderId);
-      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Transaction not found" },
+        { status: 404 },
+      );
     }
 
     // 3. Determine payment success
     const paymentSuccess = isPaymentSuccessful(
       transactionStatus as MidtransTransactionStatus,
-      fraudStatus
+      fraudStatus,
     );
 
     // 4. Determine new status
@@ -111,7 +114,7 @@ export async function POST(req: NextRequest) {
     const packageName =
       transaction.packageId === PRO_SUBSCRIPTION.id
         ? PRO_SUBSCRIPTION.name
-        : pkg?.name ?? "Paket SiLamar";
+        : (pkg?.name ?? "Paket SiLamar");
 
     await sendPaymentConfirmationEmail({
       to: user.email,
@@ -125,9 +128,15 @@ export async function POST(req: NextRequest) {
       console.error("[Webhook] Failed to send confirmation email:", err);
     });
 
-    return NextResponse.json({ received: true, status: "success" }, { status: 200 });
+    return NextResponse.json(
+      { received: true, status: "success" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("[Webhook] payment/webhook error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

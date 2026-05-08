@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         parsed.data.resumeContent,
         parsed.data.jobDescription,
       );
-      
+
       const { output } = await generateText({
         model: defaultModel,
         output: Output.object({
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
         parsed.data.userAnswer,
         parsed.data.jobTitle,
       );
-      
+
       const { output } = await generateText({
         model: defaultModel,
         output: Output.object({

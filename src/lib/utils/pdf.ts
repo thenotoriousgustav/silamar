@@ -34,16 +34,18 @@ export function resumeContentToText(content: Record<string, unknown>): string {
   // Personal Info
   if (content.personalInfo) {
     const info = content.personalInfo as Record<string, string>;
-    sections.push(`INFORMASI PRIBADI\n${[
-      info.fullName,
-      info.email,
-      info.phone,
-      info.location,
-      info.linkedin,
-      info.website,
-    ]
-      .filter(Boolean)
-      .join(" | ")}`);
+    sections.push(
+      `INFORMASI PRIBADI\n${[
+        info.fullName,
+        info.email,
+        info.phone,
+        info.location,
+        info.linkedin,
+        info.website,
+      ]
+        .filter(Boolean)
+        .join(" | ")}`,
+    );
 
     if (info.summary) {
       sections.push(`RINGKASAN PROFESIONAL\n${info.summary}`);
@@ -55,7 +57,7 @@ export function resumeContentToText(content: Record<string, unknown>): string {
     const expItems = (content.experience as Array<Record<string, string>>)
       .map(
         (exp) =>
-          `${exp.position} di ${exp.company} (${exp.startDate} - ${exp.endDate || "Sekarang"})\n${exp.description || ""}`
+          `${exp.position} di ${exp.company} (${exp.startDate} - ${exp.endDate || "Sekarang"})\n${exp.description || ""}`,
       )
       .join("\n\n");
     sections.push(`PENGALAMAN KERJA\n${expItems}`);
@@ -66,7 +68,7 @@ export function resumeContentToText(content: Record<string, unknown>): string {
     const eduItems = (content.education as Array<Record<string, string>>)
       .map(
         (edu) =>
-          `${edu.degree} di ${edu.institution} (${edu.startYear} - ${edu.endYear || "Sekarang"}) IPK: ${edu.gpa || "-"}`
+          `${edu.degree} di ${edu.institution} (${edu.startYear} - ${edu.endYear || "Sekarang"}) IPK: ${edu.gpa || "-"}`,
       )
       .join("\n");
     sections.push(`PENDIDIKAN\n${eduItems}`);
@@ -82,7 +84,7 @@ export function resumeContentToText(content: Record<string, unknown>): string {
     const projectItems = (content.projects as Array<Record<string, string>>)
       .map(
         (proj) =>
-          `${proj.name}: ${proj.description || ""}\nTech: ${proj.technologies || ""}\n${proj.url ? `URL: ${proj.url}` : ""}`
+          `${proj.name}: ${proj.description || ""}\nTech: ${proj.technologies || ""}\n${proj.url ? `URL: ${proj.url}` : ""}`,
       )
       .join("\n\n");
     sections.push(`PROYEK\n${projectItems}`);

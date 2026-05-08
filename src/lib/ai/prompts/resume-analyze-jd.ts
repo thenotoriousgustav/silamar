@@ -12,7 +12,7 @@ export type ResumeAnalyzeJdResult = z.infer<typeof resumeAnalyzeJdSchema>;
 
 export function buildResumeAnalyzeJdPrompt(
   resumeContent: string,
-  jobDescription: string
+  jobDescription: string,
 ): string {
   return `
 Kamu adalah AI expert dalam mencocokkan resume dengan deskripsi pekerjaan untuk membantu fresh graduate Indonesia mendapatkan pekerjaan.

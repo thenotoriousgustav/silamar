@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       parsed.data.resumeContent,
       parsed.data.jobDescription ?? "",
     );
-    
+
     const { output: result } = await generateText({
       model: defaultModel,
       output: Output.object({

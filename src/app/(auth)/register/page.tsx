@@ -31,33 +31,39 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
-    const { error } = await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      callbackURL: "/dashboard",
-    }, {
-      onError: (ctx) => {
-        toast.error(ctx.error.message || "Gagal membuat akun");
-        setIsLoading(false);
+    const { error } = await authClient.signUp.email(
+      {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        callbackURL: "/dashboard",
       },
-      onSuccess: () => {
-        toast.success("Akun berhasil dibuat! Selamat datang 🎉");
-        router.push("/dashboard");
-        router.refresh();
-      }
-    });
+      {
+        onError: (ctx) => {
+          toast.error(ctx.error.message || "Gagal membuat akun");
+          setIsLoading(false);
+        },
+        onSuccess: () => {
+          toast.success("Akun berhasil dibuat! Selamat datang 🎉");
+          router.push("/dashboard");
+          router.refresh();
+        },
+      },
+    );
   };
 
   const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-    }, {
-      onError: (ctx) => {
-        toast.error(ctx.error.message);
-      }
-    });
+    await authClient.signIn.social(
+      {
+        provider: "google",
+        callbackURL: "/dashboard",
+      },
+      {
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      },
+    );
   };
 
   return (
@@ -75,7 +81,7 @@ export default function RegisterPage() {
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
             <div className="bg-primary shadow-primary/30 flex h-10 w-10 items-center justify-center rounded-none shadow-lg">
-              <Zap className="h-5 w-5 text-primary-foreground" />
+              <Zap className="text-primary-foreground h-5 w-5" />
             </div>
             <span className="gradient-text text-2xl font-extrabold">
               SiLamar
@@ -119,7 +125,7 @@ export default function RegisterPage() {
               <div className="w-full border-t border-white/5"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-surface-900 px-2 text-surface-400">
+              <span className="bg-surface-900 text-surface-400 px-2">
                 Atau email
               </span>
             </div>
@@ -184,7 +190,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-surface-400 hover:text-surface-200 absolute right-3 top-1/2 -translate-y-1/2"
+                  className="text-surface-400 hover:text-surface-200 absolute top-1/2 right-3 -translate-y-1/2"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -204,7 +210,7 @@ export default function RegisterPage() {
               type="submit"
               id="btn-submit-register"
               disabled={isLoading}
-              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 flex w-full items-center justify-center gap-2 rounded-none py-3 text-sm font-bold text-primary-foreground transition-all hover:shadow-lg disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex w-full items-center justify-center gap-2 rounded-none py-3 text-sm font-bold transition-all hover:shadow-lg disabled:opacity-50"
             >
               {isLoading ? (
                 <>

@@ -13,8 +13,8 @@ import { useHeaderDispatch } from "@/components/providers/header-provider";
 import { CoverLetterForm } from "./cover-letter-form";
 import { CoverLetterPreview } from "./cover-letter-preview";
 import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CoverLetterBuilderClientProps {
   id: string;
@@ -59,9 +59,13 @@ export function CoverLetterBuilderClient({
     titleRef.current = coverLetterTitle;
   }, [coverLetterTitle]);
 
-  // Collapse sidebar on mount
+  // Collapse sidebar on mount (only once)
+  const hasAutoCollapsed = useRef(false);
   useEffect(() => {
-    setOpen(false);
+    if (!hasAutoCollapsed.current) {
+      setOpen(false);
+      hasAutoCollapsed.current = true;
+    }
   }, [setOpen]);
 
   const saveRef = useRef(save);
