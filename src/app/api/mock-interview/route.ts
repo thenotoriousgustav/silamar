@@ -3,7 +3,8 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, aiUsageLogs } from "@/db/schema";
-import { callAI } from "@/lib/ai/gemini";
+import { generateText, Output } from "ai";
+import { defaultModel } from "@/lib/ai";
 import {
   buildMockInterviewQuestionsPrompt,
   buildMockInterviewFeedbackPrompt,
@@ -90,7 +91,15 @@ export async function POST(req: NextRequest) {
         parsed.data.resumeContent,
         parsed.data.jobDescription,
       );
-      result = await callAI(prompt, mockInterviewResultSchema);
+      
+      const { output } = await generateText({
+        model: defaultModel,
+        output: Output.object({
+          schema: mockInterviewResultSchema,
+        }),
+        prompt,
+      });
+      result = output;
 
       await db.insert(aiUsageLogs).values({
         id: randomUUID(),
@@ -106,7 +115,15 @@ export async function POST(req: NextRequest) {
         parsed.data.userAnswer,
         parsed.data.jobTitle,
       );
-      result = await callAI(prompt, mockInterviewFeedbackSchema);
+      
+      const { output } = await generateText({
+        model: defaultModel,
+        output: Output.object({
+          schema: mockInterviewFeedbackSchema,
+        }),
+        prompt,
+      });
+      result = output;
     }
 
     return NextResponse.json({ success: true, data: result }, { status: 200 });

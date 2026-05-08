@@ -3,18 +3,18 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, aiUsageLogs } from "@/db/schema";
-import { callAI } from "@/lib/ai/gemini";
+import { generateText, Output } from "ai";
+import { defaultModel } from "@/lib/ai";
 import {
   buildResumeAnalyzeJdPrompt,
   resumeAnalyzeJdSchema,
-  type ResumeAnalyzeJdResult,
 } from "@/lib/ai/prompts/resume-analyze-jd";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 const requestSchema = z.object({
   resumeContent: z.string().min(50, "Resume terlalu pendek"),
-  jobDescription: z.string().min(50, "Deskripsi kerja terlalu pendek"),
+  jobDescription: z.string().nullable().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Input tidak valid", details: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,14 +39,17 @@ export async function POST(req: NextRequest) {
       .where(eq(users.id, session.user.id));
 
     if (!user) {
-      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      );
     }
 
     const isPro = user.plan === "pro";
     if (!isPro && user.credits <= 0) {
       return NextResponse.json(
         { error: "Kredit tidak cukup. Beli kredit untuk melanjutkan." },
-        { status: 402 }
+        { status: 402 },
       );
     }
 
@@ -59,9 +62,16 @@ export async function POST(req: NextRequest) {
 
     const prompt = buildResumeAnalyzeJdPrompt(
       parsed.data.resumeContent,
-      parsed.data.jobDescription
+      parsed.data.jobDescription ?? "",
     );
-    const result = await callAI(prompt, resumeAnalyzeJdSchema);
+    
+    const { output: result } = await generateText({
+      model: defaultModel,
+      output: Output.object({
+        schema: resumeAnalyzeJdSchema,
+      }),
+      prompt,
+    });
 
     await db.insert(aiUsageLogs).values({
       id: randomUUID(),
@@ -75,6 +85,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, data: result }, { status: 200 });
   } catch (error) {
     console.error("[API] resume/analyze-jd error:", error);
-    return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Terjadi kesalahan server" },
+      { status: 500 },
+    );
   }
 }

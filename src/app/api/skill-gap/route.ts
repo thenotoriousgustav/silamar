@@ -3,11 +3,11 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, aiUsageLogs } from "@/db/schema";
-import { callAI } from "@/lib/ai/gemini";
+import { generateText, Output } from "ai";
+import { defaultModel } from "@/lib/ai";
 import {
   buildSkillGapPrompt,
   skillGapSchema,
-  type SkillGapResult,
 } from "@/lib/ai/prompts/skill-gap";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Input tidak valid", details: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,14 +40,17 @@ export async function POST(req: NextRequest) {
       .where(eq(users.id, session.user.id));
 
     if (!user) {
-      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      );
     }
 
     const isPro = user.plan === "pro";
     if (!isPro && user.credits <= 0) {
       return NextResponse.json(
         { error: "Kredit tidak cukup. Beli kredit untuk melanjutkan." },
-        { status: 402 }
+        { status: 402 },
       );
     }
 
@@ -61,9 +64,16 @@ export async function POST(req: NextRequest) {
     const prompt = buildSkillGapPrompt(
       parsed.data.skills,
       parsed.data.jobTitle,
-      parsed.data.jobDescription
+      parsed.data.jobDescription,
     );
-    const result = await callAI(prompt, skillGapSchema);
+    
+    const { output: result } = await generateText({
+      model: defaultModel,
+      output: Output.object({
+        schema: skillGapSchema,
+      }),
+      prompt,
+    });
 
     await db.insert(aiUsageLogs).values({
       id: randomUUID(),
@@ -77,6 +87,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, data: result }, { status: 200 });
   } catch (error) {
     console.error("[API] skill-gap error:", error);
-    return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Terjadi kesalahan server" },
+      { status: 500 },
+    );
   }
 }

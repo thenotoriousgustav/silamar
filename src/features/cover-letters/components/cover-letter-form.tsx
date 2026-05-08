@@ -64,9 +64,7 @@ export function CoverLetterForm({
     },
     onSuccess: (data) => {
       updateContent({
-        content: data.coverLetter,
-        subject: data.subject,
-        companyName: aiInput.company,
+        ...data,
       });
       toast.success("Cover letter berhasil di-generate! ✨");
       setIsOpen(false);

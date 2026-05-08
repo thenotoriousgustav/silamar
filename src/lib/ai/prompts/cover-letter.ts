@@ -1,8 +1,18 @@
 import { z } from "zod";
 
 export const coverLetterSchema = z.object({
-  coverLetter: z.string(),
+  fullName: z.string(),
+  phone: z.string(),
+  email: z.string(),
+  address: z.string(),
+  cityAndPostal: z.string(),
+  recipientName: z.string(),
+  companyName: z.string(),
+  department: z.string(),
+  recipientAddress: z.string(),
+  recipientCityAndPostal: z.string(),
   subject: z.string(),
+  content: z.string(),
   tips: z.array(z.string()),
 });
 
@@ -35,31 +45,37 @@ ${resumeContent}
 ${jobDescription ? `- Deskripsi Pekerjaan: ${jobDescription}` : ""}
 
 ## Instruksi:
-Buat surat lamaran dengan tone ${toneGuide[tone]} dalam format JSON berikut:
+Buat surat lamaran dengan tone ${toneGuide[tone]} dalam format JSON berikut yang sesuai dengan struktur database builder kami:
 
 {
-  "coverLetter": "<surat lamaran lengkap dalam Bahasa Indonesia, 3-4 paragraf>",
+  "fullName": "<nama lengkap dari resume>",
+  "phone": "<nomor telepon dari resume>",
+  "email": "<email dari resume>",
+  "address": "<alamat dari resume>",
+  "cityAndPostal": "<kota & kode pos dari resume>",
+  "recipientName": "Bapak/Ibu HRD",
+  "companyName": "${company}",
+  "department": "Human Resources",
+  "recipientAddress": "Alamat Perusahaan",
+  "recipientCityAndPostal": "Kota, Kode Pos",
   "subject": "<subjek email yang menarik untuk posisi ini>",
+  "content": "<isi surat lamaran lengkap dalam Bahasa Indonesia, 3-4 paragraf>",
   "tips": [
-    "<tips spesifik untuk meningkatkan peluang di perusahaan ini>",
-    "<tips 2>",
-    "<tips 3>"
+    "<tips spesifik 1>",
+    "<tips spesifik 2>",
+    "<tips spesifik 3>"
   ]
 }
 
-Panduan penulisan surat lamaran:
+Panduan penulisan isi surat (content):
 - Paragraf 1: Perkenalan dan posisi yang dilamar
 - Paragraf 2: Pengalaman dan skill relevan yang paling kuat
 - Paragraf 3: Mengapa tertarik dengan perusahaan ini spesifik
 - Paragraf 4: Penutup dan call to action
 
-Pastikan surat lamaran:
-- Personal dan tidak template biasa
-- Menyebutkan nama perusahaan secara spesifik
-- Menonjolkan pencapaian yang terukur
-- Panjang 250-350 kata
-- Tone yang sesuai dengan kultur perusahaan
-
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Pastikan:
+- Isi surat (content) menggunakan Bahasa Indonesia yang baik dan benar.
+- Menyebutkan nama perusahaan secara spesifik.
+- Hanya kembalikan JSON yang valid, tanpa teks lain.
 `;
 }

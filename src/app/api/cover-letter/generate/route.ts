@@ -3,22 +3,22 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, aiUsageLogs, coverLetters } from "@/db/schema";
-import { callAI } from "@/lib/ai/gemini";
+import { generateText, Output } from "ai";
+import { defaultModel } from "@/lib/ai";
 import {
   buildCoverLetterPrompt,
   coverLetterSchema,
-  type CoverLetterResult,
 } from "@/lib/ai/prompts/cover-letter";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 const requestSchema = z.object({
   resumeContent: z.string().min(50),
-  jobTitle: z.string().min(2),
-  company: z.string().min(2),
-  jobDescription: z.string().optional(),
+  jobTitle: z.string().min(1),
+  company: z.string().min(1),
+  jobDescription: z.string().nullable().optional(),
   tone: z.enum(["formal", "friendly", "professional"]).default("professional"),
-  resumeId: z.string().optional(),
+  resumeId: z.string().nullable().optional(),
   saveLetter: z.boolean().default(false),
 });
 
@@ -69,10 +69,17 @@ export async function POST(req: NextRequest) {
       parsed.data.resumeContent,
       parsed.data.jobTitle,
       parsed.data.company,
-      parsed.data.jobDescription,
+      parsed.data.jobDescription ?? undefined,
       parsed.data.tone,
     );
-    const result = await callAI(prompt, coverLetterSchema);
+
+    const { output: result } = await generateText({
+      model: defaultModel,
+      output: Output.object({
+        schema: coverLetterSchema,
+      }),
+      prompt,
+    });
 
     // Save cover letter if requested
     let coverLetterId: string | undefined;
@@ -84,7 +91,7 @@ export async function POST(req: NextRequest) {
         resumeId: parsed.data.resumeId ?? null,
         jobTitle: parsed.data.jobTitle,
         company: parsed.data.company,
-        content: result.coverLetter,
+        content: result,
       });
     }
 
