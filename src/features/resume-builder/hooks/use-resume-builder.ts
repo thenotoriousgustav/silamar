@@ -111,7 +111,7 @@ export function useResumeBuilder(
       startDate: "",
       endDate: "",
       isCurrentJob: false,
-      description: [],
+      description: "",
       location: "",
       employmentType: "",
     };
@@ -158,7 +158,7 @@ export function useResumeBuilder(
       endYear: "",
       isCurrentlyStudying: false,
       gpa: "",
-      description: [],
+      description: "",
     };
     setContent((prev: ResumeContent) => ({
       ...prev,
@@ -197,7 +197,7 @@ export function useResumeBuilder(
     const newProject: ResumeProject = {
       id: crypto.randomUUID(),
       name: "",
-      description: [],
+      description: "",
       link: "",
       technologies: [],
     };
@@ -319,7 +319,7 @@ export function useResumeBuilder(
     const newItem: ResumeCustomSectionItem = {
       id: crypto.randomUUID(),
       title: "",
-      description: [],
+      description: "",
     };
     setContent((prev: ResumeContent) => ({
       ...prev,

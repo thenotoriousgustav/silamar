@@ -87,6 +87,23 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     items: DescriptionItem[] | string[] | string | undefined,
   ) => {
     if (!items) return null;
+
+    // If it's a string and looks like HTML, render it safely
+    if (
+      typeof items === "string" &&
+      (items.includes("<p>") || items.includes("<ul>") || items.includes("<li>"))
+    ) {
+      return (
+        <div
+          className={cn(
+            "prose-resume mt-1 [&_li]:list-disc [&_ol]:list-decimal [&_ul]:list-disc [&_ul]:pl-4",
+            bodyTextClass,
+          )}
+          dangerouslySetInnerHTML={{ __html: items }}
+        />
+      );
+    }
+
     const bulletArray = Array.isArray(items)
       ? items.map((item) => (typeof item === "string" ? item : item.text))
       : (items as string).split("\n").filter(Boolean);
@@ -118,18 +135,27 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
       case "sectionTitle":
         return 45;
       case "experienceItem":
-        const bulletCount = Array.isArray(content.description)
-          ? content.description.length
-          : 0;
-        return 60 + bulletCount * 18;
+        const isHtml = typeof content.description === "string";
+        const itemCount = isHtml
+          ? (content.description.match(/<li/g) || []).length || 3
+          : Array.isArray(content.description)
+            ? content.description.length
+            : 0;
+        return 60 + itemCount * 18;
       case "educationItem":
         return 55;
       case "skillItem":
         return 25;
       case "projectItem":
-        return 70 + (content.description?.length ? 40 : 0);
+        const projectItemCount = typeof content.description === "string" 
+          ? (content.description.match(/<li/g) || []).length || 2
+          : content.description?.length || 0;
+        return 70 + (projectItemCount ? 40 : 0);
       case "customItem":
-        return 60 + (content.description?.length ? 30 : 0);
+        const customItemCount = typeof content.description === "string" 
+          ? (content.description.match(/<li/g) || []).length || 2
+          : content.description?.length || 0;
+        return 60 + (customItemCount ? 30 : 0);
       default:
         return 20;
     }

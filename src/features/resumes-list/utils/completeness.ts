@@ -54,7 +54,16 @@ export function calculateCompleteness(
       weight: 15,
       completed:
         content.experience.length > 0 &&
-        (content.experience[0].description?.join(" ").length || 0) > 30,
+        (() => {
+          const desc = content.experience[0].description;
+          if (typeof desc === "string") {
+            return desc.replace(/<[^>]*>/g, "").length;
+          }
+          if (Array.isArray(desc)) {
+            return (desc as any[]).map((item) => (typeof item === "string" ? item : item.text)).join(" ").length;
+          }
+          return 0;
+        })() > 30,
       category: "Pengalaman Kerja",
     },
     // 3. Education

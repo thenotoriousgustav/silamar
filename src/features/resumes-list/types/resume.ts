@@ -28,7 +28,7 @@ export interface ResumeExperience {
   startDate: string;
   endDate?: string;
   isCurrentJob: boolean;
-  description: DescriptionItem[];
+  description: string;
   location?: string;
   employmentType?: string;
 }
@@ -42,13 +42,13 @@ export interface ResumeEducation {
   endYear?: string;
   isCurrentlyStudying: boolean;
   gpa?: string;
-  description: DescriptionItem[];
+  description: string;
 }
 
 export interface ResumeProject {
   id: string;
   name: string;
-  description: DescriptionItem[];
+  description: string;
   technologies: string[];
   link?: string;
   startDate?: string;
@@ -66,7 +66,7 @@ export interface ResumeCustomSectionItem {
   title: string;
   subtitle?: string;
   date?: string;
-  description?: DescriptionItem[];
+  description?: string;
   link?: string;
 }
 

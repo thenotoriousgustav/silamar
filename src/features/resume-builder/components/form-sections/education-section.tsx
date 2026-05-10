@@ -17,6 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn, formatResumeDate } from "@/lib/utils";
+import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -333,6 +334,25 @@ export function EducationSection({
                                 </PopoverContent>
                               </Popover>
                             </div>
+                          </div>
+
+                          <div className="space-y-4 md:col-span-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Deskripsi (Opsional)
+                            </Label>
+                            <RichTextEditor
+                              content={
+                                typeof edu.description === "string"
+                                  ? edu.description
+                                  : Array.isArray(edu.description)
+                                    ? `<ul>${(edu.description as any).map((item: any) => `<li>${item.text || item}</li>`).join("")}</ul>`
+                                    : ""
+                              }
+                              onUpdate={(html) =>
+                                updateEducation(edu.id, { description: html })
+                              }
+                              minHeight="100px"
+                            />
                           </div>
                         </div>
                       </AccordionContent>

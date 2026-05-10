@@ -19,11 +19,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type {
+import {
   ResumeContent,
   ResumeCustomSection,
   ResumeCustomSectionItem,
 } from "@/features/resumes-list/types/resume";
+import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import {
   Sortable,
   SortableContent,
@@ -290,115 +291,28 @@ export function CustomSection({
                                       </div>
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
-                                      <div className="flex items-center justify-between">
-                                        <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                          Deskripsi Poin (Opsional)
-                                        </Label>
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => {
-                                            const bullets = [
-                                              ...(item.description || []),
-                                            ];
-                                            bullets.push({
-                                              id: crypto.randomUUID(),
-                                              text: "",
-                                            });
-                                            updateCustomSectionItem(
-                                              section.id,
-                                              item.id,
-                                              {
-                                                description: bullets,
-                                              },
-                                            );
-                                          }}
-                                          className="h-7 gap-1 px-2 text-[10px] font-bold"
-                                        >
-                                          <Plus className="h-3 w-3" /> Add Point
-                                        </Button>
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Sortable
-                                          value={item.description || []}
-                                          onValueChange={(newBullets) => {
-                                            updateCustomSectionItem(
-                                              section.id,
-                                              item.id,
-                                              {
-                                                description: newBullets,
-                                              },
-                                            );
-                                          }}
-                                          getItemValue={(i) => i.id}
-                                        >
-                                          <SortableContent className="space-y-2">
-                                            {(item.description || []).map(
-                                              (bullet, idx) => (
-                                                <SortableItem
-                                                  key={bullet.id}
-                                                  value={bullet.id}
-                                                  className="flex items-center gap-2"
-                                                >
-                                                  <SortableItemHandle
-                                                    asChild
-                                                    className="text-muted-foreground hover:text-primary cursor-grab transition-colors"
-                                                  >
-                                                    <GripVertical className="h-3.5 w-3.5" />
-                                                  </SortableItemHandle>
-                                                  <Input
-                                                    value={bullet.text || ""}
-                                                    onChange={(e) => {
-                                                      const newBullets = [
-                                                        ...(item.description ||
-                                                          []),
-                                                      ];
-                                                      newBullets[idx] = {
-                                                        ...newBullets[idx],
-                                                        text: e.target.value,
-                                                      };
-                                                      updateCustomSectionItem(
-                                                        section.id,
-                                                        item.id,
-                                                        {
-                                                          description:
-                                                            newBullets,
-                                                        },
-                                                      );
-                                                    }}
-                                                    className="bg-background border-border h-9 text-sm"
-                                                    placeholder="Detail tambahan..."
-                                                  />
-                                                  <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                      const newBullets = (
-                                                        item.description || []
-                                                      ).filter(
-                                                        (_, i) => i !== idx,
-                                                      );
-                                                      updateCustomSectionItem(
-                                                        section.id,
-                                                        item.id,
-                                                        {
-                                                          description:
-                                                            newBullets,
-                                                        },
-                                                      );
-                                                    }}
-                                                    className="hover:text-destructive h-9 w-9 shrink-0"
-                                                  >
-                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                  </Button>
-                                                </SortableItem>
-                                              ),
-                                            )}
-                                          </SortableContent>
-                                        </Sortable>
-                                      </div>
+                                      <Label className="text-muted-foreground text-xs font-medium uppercase">
+                                        Deskripsi Poin (Opsional)
+                                      </Label>
+                                      <RichTextEditor
+                                        content={
+                                          typeof item.description === "string"
+                                            ? item.description
+                                            : Array.isArray(item.description)
+                                              ? `<ul>${(item.description as any).map((bullet: any) => `<li>${bullet.text || bullet}</li>`).join("")}</ul>`
+                                              : ""
+                                        }
+                                        onUpdate={(html) =>
+                                          updateCustomSectionItem(
+                                            section.id,
+                                            item.id,
+                                            {
+                                              description: html,
+                                            },
+                                          )
+                                        }
+                                        minHeight="100px"
+                                      />
                                     </div>
                                   </div>
                                 </AccordionContent>

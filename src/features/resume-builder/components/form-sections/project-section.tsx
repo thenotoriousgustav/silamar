@@ -26,6 +26,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MonthPicker } from "@/components/ui/monthpicker";
+import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import type {
   ResumeContent,
   ResumeProject,
@@ -304,100 +305,22 @@ export function ProjectSection({
                             </div>
                           </div>
                           <div className="space-y-4 md:col-span-2">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                                Deskripsi Projek
-                              </Label>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const current = project.description || [];
-                                  updateProject(project.id, {
-                                    description: [
-                                      ...current,
-                                      { id: crypto.randomUUID(), text: "" },
-                                    ],
-                                  });
-                                }}
-                                className="hover:border-primary/50 hover:bg-primary/5 h-7 gap-1 px-2 text-[10px] font-semibold transition-all"
-                              >
-                                <Plus className="h-3 w-3" />
-                                Tambah Poin
-                              </Button>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Sortable
-                                value={project.description || []}
-                                onValueChange={(newBullets) => {
-                                  updateProject(project.id, {
-                                    description: newBullets,
-                                  });
-                                }}
-                                getItemValue={(item) => item.id}
-                              >
-                                <SortableContent className="space-y-2">
-                                  {(project.description || []).map(
-                                    (bullet, idx) => (
-                                      <SortableItem
-                                        key={bullet.id}
-                                        value={bullet.id}
-                                        className="group flex items-start gap-2"
-                                      >
-                                        <SortableItemHandle
-                                          asChild
-                                          className="text-muted-foreground hover:text-primary mt-3 cursor-grab transition-colors"
-                                        >
-                                          <GripVertical className="h-3.5 w-3.5" />
-                                        </SortableItemHandle>
-                                        <div className="relative flex-1">
-                                          <textarea
-                                            value={bullet.text || ""}
-                                            onChange={(e) => {
-                                              const newDesc = [
-                                                ...(project.description || []),
-                                              ];
-                                              newDesc[idx] = {
-                                                ...newDesc[idx],
-                                                text: e.target.value,
-                                              };
-                                              updateProject(project.id, {
-                                                description: newDesc,
-                                              });
-                                            }}
-                                            placeholder="Jelaskan kontribusi atau fitur utama projek ini..."
-                                            className="bg-background border-border focus:border-primary/50 custom-scrollbar min-h-15 w-full resize-none rounded-none border p-3 text-sm transition-all focus:ring-0"
-                                            rows={2}
-                                          />
-                                        </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          onClick={() => {
-                                            const newDesc =
-                                              project.description.filter(
-                                                (_, i) => i !== idx,
-                                              );
-                                            updateProject(project.id, {
-                                              description: newDesc,
-                                            });
-                                          }}
-                                          className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground h-8 w-8 shrink-0 opacity-0 transition-all group-hover:opacity-100"
-                                        >
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
-                                      </SortableItem>
-                                    ),
-                                  )}
-                                </SortableContent>
-                              </Sortable>
-                              {(project.description || []).length === 0 && (
-                                <p className="text-muted-foreground py-2 text-center text-xs italic">
-                                  Belum ada deskripsi yang ditambahkan.
-                                </p>
-                              )}
-                            </div>
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Deskripsi Projek
+                            </Label>
+                            <RichTextEditor
+                              content={
+                                typeof project.description === "string"
+                                  ? project.description
+                                  : Array.isArray(project.description)
+                                    ? `<ul>${(project.description as any).map((item: any) => `<li>${item.text || item}</li>`).join("")}</ul>`
+                                    : ""
+                              }
+                              onUpdate={(html) =>
+                                updateProject(project.id, { description: html })
+                              }
+                              minHeight="150px"
+                            />
                           </div>
                         </div>
                       </AccordionContent>

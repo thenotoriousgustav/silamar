@@ -1,25 +1,23 @@
 "use client";
 import "./tiptap.css";
 import { cn } from "@/lib/utils";
-// import { ImageExtension } from "@/components/tiptap/extensions/image";
-// import { ImagePlaceholder } from "@/components/tiptap/extensions/image-placeholder";
-// import SearchAndReplace from "@/components/tiptap/extensions/search-and-replace";
+import SearchAndReplace from "@/components/tiptap/extensions/search-and-replace";
 import { Color } from "@tiptap/extension-color";
-import { Highlight } from "@tiptap/extension-highlight";
-import { Link } from "@tiptap/extension-link";
-import { Subscript } from "@tiptap/extension-subscript";
-import { Superscript } from "@tiptap/extension-superscript";
-import { TextAlign } from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
+import Link from "@tiptap/extension-link";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
-import { Typography } from "@tiptap/extension-typography";
-import { Underline } from "@tiptap/extension-underline";
+import Typography from "@tiptap/extension-typography";
+import Underline from "@tiptap/extension-underline";
 import { EditorContent, type Extension, useEditor } from "@tiptap/react";
-import { StarterKit } from "@tiptap/starter-kit";
-// import { TipTapFloatingMenu } from "@/components/tiptap/extensions/floating-menu";
-// import { FloatingToolbar } from "@/components/tiptap/extensions/floating-toolbar";
-// import { EditorToolbar } from "./toolbars/editor-toolbar";
-import { Placeholder } from "@tiptap/extension-placeholder";
-import { content } from "@/lib/content";
+import StarterKit from "@tiptap/starter-kit";
+import { TipTapFloatingMenu } from "@/components/tiptap/extensions/floating-menu";
+import { FloatingToolbar } from "@/components/tiptap/extensions/floating-toolbar";
+import { EditorToolbar } from "./toolbars/editor-toolbar";
+import Placeholder from "@tiptap/extension-placeholder";
+import DragHandle from "@tiptap/extension-drag-handle-react";
 
 const extensions = [
   StarterKit.configure({
@@ -33,9 +31,6 @@ const extensions = [
         class: "list-disc",
       },
     },
-    heading: {
-      levels: [1, 2, 3, 4],
-    },
   }),
   Placeholder.configure({
     emptyNodeClass: "is-editor-empty",
@@ -45,11 +40,8 @@ const extensions = [
           return `Heading ${node.attrs.level}`;
         case "detailsSummary":
           return "Section title";
-        case "codeBlock":
-          // never show the placeholder when editing code
-          return "";
         default:
-          return "Write, type '/' for commands";
+          return "Write responsibilities & achievements...";
       }
     },
     includeChildren: false,
@@ -66,13 +58,23 @@ const extensions = [
   Highlight.configure({
     multicolor: true,
   }),
-  // ImageExtension,
-  // ImagePlaceholder,
-  // SearchAndReplace,
+  SearchAndReplace,
   Typography,
 ];
 
-export function RichTextEditorDemo({ className }: { className?: string }) {
+interface RichTextEditorProps {
+  content?: string;
+  onUpdate?: (html: string) => void;
+  className?: string;
+  minHeight?: string;
+}
+
+export function RichTextEditor({
+  content = "",
+  onUpdate,
+  className,
+  minHeight = "200px",
+}: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: extensions as Extension[],
@@ -83,29 +85,33 @@ export function RichTextEditorDemo({ className }: { className?: string }) {
       },
     },
     onUpdate: ({ editor }) => {
-      // do what you want to do with output
-      // Update stats
-      // saving as text/json/hmtml
-      // const text = editor.getHTML();
-      console.log(editor.getText());
+      if (onUpdate) {
+        onUpdate(editor.getHTML());
+      }
     },
   });
 
   if (!editor) return null;
 
   return (
-    <div
-      className={cn(
-        "bg-card relative max-h-[calc(100dvh-6rem)] w-full overflow-hidden overflow-y-scroll border pb-[60px] sm:pb-0",
-        className,
-      )}
-    >
-      {/* <EditorToolbar editor={editor} />
+    <div className={cn("bg-background relative w-full border", className)}>
+      <EditorToolbar editor={editor} />
       <FloatingToolbar editor={editor} />
-      <TipTapFloatingMenu editor={editor} /> */}
+      <TipTapFloatingMenu editor={editor} />
+      <DragHandle
+        editor={editor}
+        className="drag-handle"
+        nested={{ edgeDetection: { threshold: -16 } }}
+      >
+        <div className="custom-drag-handle" />
+      </DragHandle>
       <EditorContent
         editor={editor}
-        className="min-h-[600px] w-full min-w-full cursor-text sm:p-6"
+        className={cn(
+          "w-full cursor-text p-0",
+          "prose-sm prose-slate max-w-none",
+        )}
+        style={{ minHeight }}
       />
     </div>
   );
