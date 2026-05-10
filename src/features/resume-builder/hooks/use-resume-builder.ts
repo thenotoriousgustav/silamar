@@ -113,6 +113,7 @@ export function useResumeBuilder(
       isCurrentJob: false,
       description: [],
       location: "",
+      employmentType: "",
     };
     setContent((prev: ResumeContent) => ({
       ...prev,

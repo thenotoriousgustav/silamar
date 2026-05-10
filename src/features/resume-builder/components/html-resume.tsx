@@ -3,7 +3,11 @@ import type {
   ResumeContent,
   DescriptionItem,
 } from "@/features/resumes-list/types/resume";
-import { cn } from "@/lib/utils";
+import { cn, formatResumeDate } from "@/lib/utils";
+import { format, parse } from "date-fns";
+import { enUS } from "date-fns/locale";
+
+
 
 interface HtmlResumeProps {
   data: ResumeContent;
@@ -353,11 +357,15 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                   )}
                 >
                   {exp.position}
+                  {exp.employmentType && `, ${exp.employmentType}`}
                 </h3>
                 <span className="text-[10px] font-medium text-slate-500">
-                  {exp.startDate} —{" "}
-                  {exp.endDate ||
-                    (exp.isCurrentJob ? translations.present : "")}
+                  {formatResumeDate(exp.startDate)} —{" "}
+                  {exp.endDate
+                    ? formatResumeDate(exp.endDate)
+                    : exp.isCurrentJob
+                      ? translations.present
+                      : ""}
                 </span>
               </div>
               <div className="mb-1 flex items-baseline justify-between">
@@ -402,7 +410,8 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
             >
               <div className="mb-0.5 flex items-baseline justify-between">
                 <h3 className={headingTextClass}>
-                  {edu.degree} {edu.major}
+                  {edu.degree}
+                  {edu.major && `, ${edu.major}`}
                 </h3>
                 <span className="text-[10px] font-medium text-slate-500">
                   {edu.startYear} —{" "}
@@ -487,8 +496,8 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                 <h3 className={headingTextClass}>{project.name}</h3>
                 {(project.startDate || project.endDate) && (
                   <span className="text-[10px] font-medium text-slate-500">
-                    {project.startDate}{" "}
-                    {project.endDate ? `— ${project.endDate}` : ""}
+                    {formatResumeDate(project.startDate)}{" "}
+                    {project.endDate ? `— ${formatResumeDate(project.endDate)}` : ""}
                   </span>
                 )}
               </div>
@@ -540,7 +549,7 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
                   <h3 className={headingTextClass}>{item.title}</h3>
                   {item.date && (
                     <span className="text-[10px] font-medium text-slate-500">
-                      {item.date}
+                      {formatResumeDate(item.date)}
                     </span>
                   )}
                 </div>

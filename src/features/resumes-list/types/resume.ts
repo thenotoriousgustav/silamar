@@ -30,6 +30,7 @@ export interface ResumeExperience {
   isCurrentJob: boolean;
   description: DescriptionItem[];
   location?: string;
+  employmentType?: string;
 }
 
 export interface ResumeEducation {

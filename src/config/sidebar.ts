@@ -5,9 +5,6 @@ import {
   Files,
   FileUser,
   ScrollText,
-  Award,
-  FolderOpen,
-  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 

@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn, formatResumeDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -126,8 +127,8 @@ export function EducationSection({
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="text-muted-foreground text-[10px] font-medium uppercase">
-                                {edu.startYear || "Mulai"} —{" "}
-                                {edu.endYear || "Selesai"}
+                                {formatResumeDate(edu.startYear) || "Mulai"} —{" "}
+                                {formatResumeDate(edu.endYear) || "Selesai"}
                               </div>
                               <div
                                 role="button"
@@ -212,7 +213,7 @@ export function EducationSection({
                             </Label>
                             <div className="relative">
                               <Input
-                                value={edu.startYear || ""}
+                                value={formatResumeDate(edu.startYear) || ""}
                                 onChange={(e) =>
                                   updateEducation(edu.id, {
                                     startYear: e.target.value,
@@ -276,7 +277,7 @@ export function EducationSection({
                             </Label>
                             <div className="relative">
                               <Input
-                                value={edu.endYear || ""}
+                                value={formatResumeDate(edu.endYear) || ""}
                                 onChange={(e) =>
                                   updateEducation(edu.id, {
                                     endYear: e.target.value,

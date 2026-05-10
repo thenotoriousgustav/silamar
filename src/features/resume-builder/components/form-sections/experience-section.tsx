@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { format, parse } from "date-fns";
 import { enUS, id } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { cn, formatResumeDate } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -39,7 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type {
+import {
   ResumeContent,
   ResumeExperience,
 } from "@/features/resumes-list/types/resume";
@@ -151,16 +151,22 @@ export function ExperienceSection({
                               </span>
                               <div className="flex items-center gap-2">
                                 <span className="text-muted-foreground text-[10px]">
-                                  {exp.position || "Posisi"}
+                                  {exp.position ||
+                                    (lang === "id" ? "Posisi" : "Position")}
+                                  {exp.employmentType &&
+                                    ` • ${exp.employmentType}`}
                                 </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="text-muted-foreground text-[10px] font-medium uppercase">
-                                {exp.startDate || "Mulai"} —{" "}
+                                {formatResumeDate(exp.startDate) ||
+                                  (lang === "id" ? "Mulai" : "Start")}{" "}
+                                —{" "}
                                 {exp.isCurrentJob
                                   ? "Present"
-                                  : exp.endDate || "Selesai"}
+                                  : formatResumeDate(exp.endDate) ||
+                                    (lang === "id" ? "Selesai" : "End")}
                               </div>
                               <div
                                 role="button"
@@ -183,7 +189,7 @@ export function ExperienceSection({
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Perusahaan
+                              {lang === "id" ? "Perusahaan" : "Company"}
                             </Label>
                             <Input
                               value={exp.company || ""}
@@ -197,7 +203,7 @@ export function ExperienceSection({
                           </div>
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Posisi
+                              {lang === "id" ? "Posisi" : "Position"}
                             </Label>
                             <Input
                               value={exp.position || ""}
@@ -209,13 +215,34 @@ export function ExperienceSection({
                               className="bg-background border-border"
                             />
                           </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              {lang === "id"
+                                ? "Tipe Pekerjaan"
+                                : "Employment Type"}
+                            </Label>
+                            <Input
+                              value={exp.employmentType || ""}
+                              onChange={(e) =>
+                                updateExperience(exp.id, {
+                                  employmentType: e.target.value,
+                                })
+                              }
+                              placeholder={
+                                lang === "id"
+                                  ? "Contoh: Full-time, Remote, dll."
+                                  : "Example: Full-time, Remote, etc."
+                              }
+                              className="bg-background border-border"
+                            />
+                          </div>
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Tanggal Mulai
+                              {lang === "id" ? "Tanggal Mulai" : "Start Date"}
                             </Label>
                             <div className="relative">
                               <Input
-                                value={exp.startDate || ""}
+                                value={formatResumeDate(exp.startDate) || ""}
                                 onChange={(e) =>
                                   updateExperience(exp.id, {
                                     startDate: e.target.value,
@@ -274,14 +301,14 @@ export function ExperienceSection({
                           </div>
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
-                              Tanggal Selesai
+                              {lang === "id" ? "Tanggal Selesai" : "End Date"}
                             </Label>
                             <div className="relative">
                               <Input
                                 value={
                                   exp.isCurrentJob
                                     ? "Present"
-                                    : exp.endDate || ""
+                                    : formatResumeDate(exp.endDate) || ""
                                 }
                                 disabled={exp.isCurrentJob}
                                 onChange={(e) =>
@@ -356,7 +383,9 @@ export function ExperienceSection({
                               htmlFor={`current-${exp.id}`}
                               className="text-xs leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
-                              Masih bekerja disini
+                              {lang === "id"
+                                ? "Masih bekerja disini"
+                                : "Currently working here"}
                             </Label>
                           </div>
 
