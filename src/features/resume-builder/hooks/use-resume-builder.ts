@@ -59,6 +59,9 @@ export function useResumeBuilder(
     education: initialContent?.education || [],
     projects: initialContent?.projects || [],
     skills: initialContent?.skills || [],
+    certificates: initialContent?.certificates || [],
+    awards: initialContent?.awards || [],
+    publications: initialContent?.publications || [],
     customSections: initialContent?.customSections || [],
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -382,6 +385,75 @@ export function useResumeBuilder(
     [],
   );
 
+  // --- NEW: Predefined Sections (Certificates, Awards, Publications) ---
+  const updatePredefinedSectionItems = useCallback(
+    (
+      type: "certificates" | "awards" | "publications",
+      items: ResumeCustomSectionItem[],
+    ) => {
+      setContent((prev: ResumeContent) => ({ ...prev, [type]: items }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const addPredefinedSectionItem = useCallback(
+    (type: "certificates" | "awards" | "publications") => {
+      const newItem: ResumeCustomSectionItem = {
+        id: crypto.randomUUID(),
+        title: "",
+        description: "",
+      };
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        [type]: [...((prev[type] as any) || []), newItem],
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const updatePredefinedSectionItem = useCallback(
+    (
+      type: "certificates" | "awards" | "publications",
+      itemId: string,
+      data: Partial<ResumeCustomSectionItem>,
+    ) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        [type]: ((prev[type] as any) || []).map((item: any) =>
+          item.id === itemId ? { ...item, ...data } : item,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const removePredefinedSectionItem = useCallback(
+    (type: "certificates" | "awards" | "publications", itemId: string) => {
+      setContent((prev: ResumeContent) => ({
+        ...prev,
+        [type]: ((prev[type] as any) || []).filter(
+          (item: any) => item.id !== itemId,
+        ),
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
+  const addSectionToOrder = useCallback((sectionId: string) => {
+    setContent((prev: ResumeContent) => {
+      if (prev.sectionOrder?.includes(sectionId)) return prev;
+      return {
+        ...prev,
+        sectionOrder: [...(prev.sectionOrder || []), sectionId],
+      };
+    });
+    setIsDirty(true);
+  }, []);
+
   const updateStyle = useCallback(
     (styleUpdate: Partial<ResumeContent["style"]>) => {
       setContent((prev: ResumeContent) => ({
@@ -457,6 +529,11 @@ export function useResumeBuilder(
     updateCustomSectionItem,
     updateCustomSectionItemList,
     removeCustomSectionItem,
+    updatePredefinedSectionItems,
+    addPredefinedSectionItem,
+    updatePredefinedSectionItem,
+    removePredefinedSectionItem,
+    addSectionToOrder,
     updateStyle,
     updateSectionOrder,
     save,

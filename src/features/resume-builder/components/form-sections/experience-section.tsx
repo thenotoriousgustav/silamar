@@ -39,7 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
+import { Editor } from "@/components/editor/rich-text-editor";
 import type {
   ResumeContent,
   ResumeExperience,
@@ -396,18 +396,17 @@ export function ExperienceSection({
                                 ? "Deskripsi & Pencapaian"
                                 : "Key Responsibilities & Achievements"}
                             </Label>
-                            <RichTextEditor
-                              content={
+                            <Editor
+                              initialDescription={
                                 typeof exp.description === "string"
                                   ? exp.description
                                   : Array.isArray(exp.description)
-                                    ? `<ul>${(exp.description as any).map((item: any) => `<li>${item.text || item}</li>`).join("")}</ul>`
-                                    : ""
+                                    ? `<ul>${exp.description.map((item) => `<li>${item.text}</li>`).join("")}</ul>`
+                                    : undefined
                               }
-                              onUpdate={(html) =>
-                                updateExperience(exp.id, { description: html })
+                              onSerializedChange={(serialized) =>
+                                updateExperience(exp.id, { description: JSON.stringify(serialized) })
                               }
-                              minHeight="150px"
                             />
                           </div>
                         </div>

@@ -24,7 +24,7 @@ import {
   ResumeCustomSection,
   ResumeCustomSectionItem,
 } from "@/features/resumes-list/types/resume";
-import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
+import { Editor } from "@/components/editor/rich-text-editor";
 import {
   Sortable,
   SortableContent,
@@ -294,24 +294,23 @@ export function CustomSection({
                                       <Label className="text-muted-foreground text-xs font-medium uppercase">
                                         Deskripsi Poin (Opsional)
                                       </Label>
-                                      <RichTextEditor
-                                        content={
+                                      <Editor
+                                        initialDescription={
                                           typeof item.description === "string"
                                             ? item.description
                                             : Array.isArray(item.description)
-                                              ? `<ul>${(item.description as any).map((bullet: any) => `<li>${bullet.text || bullet}</li>`).join("")}</ul>`
-                                              : ""
+                                              ? `<ul>${(item.description as any[]).map((bullet: any) => `<li>${bullet.text || bullet}</li>`).join("")}</ul>`
+                                              : undefined
                                         }
-                                        onUpdate={(html) =>
+                                        onSerializedChange={(serialized) =>
                                           updateCustomSectionItem(
                                             section.id,
                                             item.id,
                                             {
-                                              description: html,
+                                              description: JSON.stringify(serialized),
                                             },
                                           )
                                         }
-                                        minHeight="100px"
                                       />
                                     </div>
                                   </div>

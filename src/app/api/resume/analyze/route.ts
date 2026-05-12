@@ -1,3 +1,5 @@
+// app/api/resume/import/route.ts
+
 import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { ResumeContentSchema } from "@/features/resumes-list/schema";
@@ -8,7 +10,6 @@ import { z } from "zod";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// Schema sederhana untuk ekstraksi AI agar lebih cepat (tanpa ID di level poin deskripsi)
 const ExtractionSchema = z.object({
   personalInfo: z.object({
     fullName: z.string(),
@@ -42,12 +43,18 @@ const ExtractionSchema = z.object({
       description: z.array(z.string()),
     }),
   ),
-  skills: z.array(
-    z.object({
-      category: z.string(),
-      items: z.array(z.string()),
-    }),
-  ),
+  skills: z
+    .array(
+      z.object({
+        category: z
+          .string()
+          .describe(
+            "The EXACT skill category name as written in the CV. Examples: 'Programming Languages', 'Frameworks'.",
+          ),
+        items: z.array(z.string()),
+      }),
+    )
+    .describe("Each skill category in the CV must be a SEPARATE entry."),
   projects: z.array(
     z.object({
       name: z.string(),
@@ -58,125 +65,100 @@ const ExtractionSchema = z.object({
       endDate: z.string(),
     }),
   ),
+  certificates: z.array(
+    z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      date: z.string(),
+      link: z.string(),
+      description: z.array(z.string()),
+    }),
+  ),
+  awards: z.array(
+    z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      date: z.string(),
+      description: z.array(z.string()),
+    }),
+  ),
+  publications: z.array(
+    z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      date: z.string(),
+      link: z.string(),
+      description: z.array(z.string()),
+    }),
+  ),
 });
+
+const errorResponse = (message: string, status = 400) =>
+  Response.json({ error: message }, { status });
+
+const addId = <T extends object>(obj: T) => ({ ...obj, id: uuidv4() });
+const mapWithIds = (items: any[]) =>
+  items.map((item) => ({
+    ...addId(item),
+    description: item.description?.map((text: string) => addId({ text })),
+  }));
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("pdf") as File;
 
-    if (!file) {
-      return Response.json({ error: "No file uploaded" }, { status: 400 });
-    }
+    if (!file) return errorResponse("No file uploaded");
+    if (file.type !== "application/pdf")
+      return errorResponse("File harus berformat PDF");
+    if (file.size > 5 * 1024 * 1024)
+      return errorResponse("Ukuran file maksimal 5MB");
 
-    if (file.type !== "application/pdf") {
-      return Response.json(
-        { error: "File harus berformat PDF" },
-        { status: 400 },
-      );
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      return Response.json(
-        { error: "Ukuran file maksimal 5MB" },
-        { status: 400 },
-      );
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    let extractedText = "";
-    try {
-      extractedText = await extractPdfText(buffer);
-    } catch (pdfError) {
-      console.error("PDF parse error:", pdfError);
-      return Response.json(
-        {
-          error:
-            "Gagal membaca PDF. Pastikan file tidak terenkripsi atau rusak.",
-        },
-        { status: 422 },
-      );
-    }
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const extractedText = await extractPdfText(buffer).catch(() => null);
 
     if (!extractedText || extractedText.trim().length < 50) {
-      return Response.json(
-        {
-          error:
-            "PDF tidak berisi teks yang cukup. Mungkin PDF hasil scan — gunakan PDF dengan teks asli.",
-        },
-        { status: 422 },
+      return errorResponse(
+        "PDF tidak berisi teks yang cukup atau gagal dibaca.",
+        422,
       );
     }
 
-    // Kirim ke AI menggunakan model gpt-4o-mini yang jauh lebih cepat
-    // Menggunakan ExtractionSchema yang lebih ringan (hanya string array untuk deskripsi)
     const { output: rawData } = await generateText({
       model: openai("gpt-4.1-nano"),
-      output: Output.object({
-        schema: ExtractionSchema,
-      }),
+      output: Output.object({ schema: ExtractionSchema }),
       messages: [
         {
+          role: "system",
+          content: `You are a precise resume parser. Extract information EXACTLY as written.
+          CRITICAL: Every skill category in the CV must be a SEPARATE object. Never merge categories.`,
+        },
+        {
           role: "user",
-          content: `Extract resume information from the text below.
-          
-Rules:
-1. Format dates as 'Month Year' or 'Year'. Use 'Present' for ongoing roles.
-2. Split experience, education, and project descriptions into clean bullet points.
-3. If information is missing, use empty strings or arrays.
-4. Categorize skills logically (e.g., 'Technical Skills', 'Soft Skills').
-
-Resume Text:
-"""
-${extractedText}
-"""`,
+          content: `Extract ALL information from this resume text:
+          """
+          ${extractedText}
+          """`,
         },
       ],
     });
 
-    // Transform data: Tambahkan UUID di server untuk efisiensi token AI
     const resumeData = {
       personalInfo: {
         ...rawData.personalInfo,
         linkedin: { label: "", url: rawData.personalInfo.linkedin },
         website: { label: "", url: rawData.personalInfo.website },
       },
-      experience: rawData.experience.map((exp) => ({
-        ...exp,
-        id: uuidv4(),
-        description: exp.description.map((text) => ({
-          id: uuidv4(),
-          text,
-        })),
-      })),
-      education: rawData.education.map((edu) => ({
-        ...edu,
-        id: uuidv4(),
-        description: edu.description.map((text) => ({
-          id: uuidv4(),
-          text,
-        })),
-      })),
-      skills: rawData.skills.map((skill) => ({
-        ...skill,
-        id: uuidv4(),
-      })),
-      projects: rawData.projects.map((proj) => ({
-        ...proj,
-        id: uuidv4(),
-        description: proj.description.map((text) => ({
-          id: uuidv4(),
-          text,
-        })),
-      })),
+      experience: mapWithIds(rawData.experience),
+      education: mapWithIds(rawData.education),
+      skills: rawData.skills.map(addId),
+      projects: mapWithIds(rawData.projects),
+      certificates: mapWithIds(rawData.certificates || []),
+      awards: mapWithIds(rawData.awards || []),
+      publications: mapWithIds(rawData.publications || []),
     };
 
-    // Validasi akhir dengan ResumeContentSchema asli untuk memastikan kompatibilitas
-    const validatedData = ResumeContentSchema.parse(resumeData);
-
-    return Response.json(validatedData);
+    return Response.json(ResumeContentSchema.parse(resumeData));
   } catch (error) {
     console.error("Analysis error:", error);
     return Response.json(

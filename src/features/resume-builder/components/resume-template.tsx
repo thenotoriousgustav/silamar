@@ -14,6 +14,7 @@ import type {
   ResumeContent,
   DescriptionItem,
 } from "@/features/resumes-list/types/resume";
+import { isLexicalJson, lexicalJsonToTextLines } from "@/lib/lexical-to-html";
 
 // Register custom fonts
 Font.register({
@@ -386,9 +387,18 @@ function BulletList({
   styles: any;
 }) {
   if (!items) return null;
-  const bulletArray = Array.isArray(items)
-    ? items.map((item) => (typeof item === "string" ? item : item.text))
-    : (items as string).split("\n").filter(Boolean);
+
+  let bulletArray: string[];
+
+  if (typeof items === "string" && isLexicalJson(items)) {
+    // Lexical serialized JSON → extract plain text lines
+    bulletArray = lexicalJsonToTextLines(items).filter(Boolean);
+  } else {
+    bulletArray = Array.isArray(items)
+      ? items.map((item) => (typeof item === "string" ? item : item.text))
+      : (items as string).split("\n").filter(Boolean);
+  }
+
   if (bulletArray.length === 0) return null;
 
   return (
@@ -410,11 +420,10 @@ function BulletList({
 
 const translations = {
   id: {
-    professionalSummary: "Ringkasan Profesional",
-    workExperience: "Pengalaman Kerja",
-    education: "Pendidikan",
-    skills: "Keahlian",
     projects: "Proyek",
+    certificates: "Sertifikat",
+    awards: "Penghargaan",
+    publications: "Publikasi",
     present: "Sekarang",
     gpa: "IPK",
   },
@@ -424,6 +433,9 @@ const translations = {
     education: "Education",
     skills: "Skills",
     projects: "Projects",
+    certificates: "Certificates",
+    awards: "Awards",
+    publications: "Publications",
     present: "Present",
     gpa: "GPA",
   },
@@ -584,142 +596,293 @@ export function ResumeTemplate({ data }: ResumeTemplateProps) {
           </View>
         )}
 
-        {/* Work Experience */}
-        {experience.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle} minPresenceAhead={20}>
-              {t.workExperience}
-            </Text>
-            {experience.map((exp, index) => (
-              <View key={index} style={styles.experienceItem}>
-                <View style={styles.experienceHeader}>
-                  <View style={styles.experienceTitleRow}>
-                    <Text style={styles.experienceTitle}>{exp.position}</Text>
-                    <Text style={styles.experienceDate}>
-                      {exp.startDate} —{" "}
-                      {exp.endDate || (exp.isCurrentJob ? t.present : "")}
-                    </Text>
+        {/* Render Sections in Order */}
+        {(
+          data.sectionOrder || [
+            "experience",
+            "education",
+            "skills",
+            "projects",
+            "custom",
+          ]
+        ).map((sectionId) => {
+          if (sectionId === "experience" && experience.length > 0) {
+            return (
+              <View key="experience">
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.workExperience}
+                </Text>
+                {experience.map((exp, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceHeader}>
+                      <View style={styles.experienceTitleRow}>
+                        <Text style={styles.experienceTitle}>
+                          {exp.position}
+                        </Text>
+                        <Text style={styles.experienceDate}>
+                          {exp.startDate} —{" "}
+                          {exp.endDate || (exp.isCurrentJob ? t.present : "")}
+                        </Text>
+                      </View>
+                      <View style={styles.experienceCompanyRow}>
+                        <Text style={styles.experienceCompany}>
+                          {exp.company}
+                        </Text>
+                        {exp.location && (
+                          <Text style={styles.experienceLocation}>
+                            {exp.location}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                    <BulletList items={exp.description} styles={styles} />
                   </View>
-                  <View style={styles.experienceCompanyRow}>
-                    <Text style={styles.experienceCompany}>{exp.company}</Text>
-                    {exp.location && (
-                      <Text style={styles.experienceLocation}>
-                        {exp.location}
+                ))}
+              </View>
+            );
+          }
+
+          if (sectionId === "education" && education.length > 0) {
+            return (
+              <View key="education">
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.education}
+                </Text>
+                {education.map((edu, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceTitleRow}>
+                      <Text style={styles.educationDegree}>
+                        {edu.degree} {edu.major}
+                      </Text>
+                      <Text style={styles.experienceDate}>
+                        {edu.startYear} —{" "}
+                        {edu.endYear ||
+                          (edu.isCurrentlyStudying ? t.present : "")}
+                      </Text>
+                    </View>
+                    <Text style={styles.educationSchool}>
+                      {edu.institution}
+                    </Text>
+                    {edu.gpa && (
+                      <Text style={styles.educationDetails}>
+                        {t.gpa}: {edu.gpa}
                       </Text>
                     )}
+                    {edu.description && (
+                      <BulletList items={edu.description} styles={styles} />
+                    )}
                   </View>
-                </View>
-                <BulletList items={exp.description} styles={styles} />
+                ))}
               </View>
-            ))}
-          </View>
-        )}
+            );
+          }
 
-        {/* Education */}
-        {education.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle} minPresenceAhead={20}>
-              {t.education}
-            </Text>
-            {education.map((edu, index) => (
-              <View key={index} style={styles.experienceItem}>
-                <View style={styles.experienceTitleRow}>
-                  <Text style={styles.educationDegree}>
-                    {edu.degree} {edu.major}
-                  </Text>
-                  <Text style={styles.experienceDate}>
-                    {edu.startYear} —{" "}
-                    {edu.endYear || (edu.isCurrentlyStudying ? t.present : "")}
-                  </Text>
-                </View>
-                <Text style={styles.educationSchool}>{edu.institution}</Text>
-                {edu.gpa && (
-                  <Text style={styles.educationDetails}>
-                    {t.gpa}: {edu.gpa}
-                  </Text>
-                )}
-                {edu.description && (
-                  <BulletList items={edu.description} styles={styles} />
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Skills */}
-        {skills.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle} minPresenceAhead={20}>
-              {t.skills}
-            </Text>
-            {skills.map((skill, index) => (
-              <View key={index} style={styles.skillCategory}>
-                <Text style={styles.skillsText}>
-                  <Text style={styles.skillCategoryName}>
-                    {skill.category}:{" "}
-                  </Text>
-                  {skill.items.join(", ")}
+          if (sectionId === "skills" && skills.length > 0) {
+            return (
+              <View key="skills" style={styles.section}>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.skills}
                 </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Custom Sections */}
-        {(data.customSections || []).map((section, sIndex) => (
-          <View key={sIndex} style={styles.section}>
-            <Text style={styles.sectionTitle} minPresenceAhead={20}>
-              {section.title}
-            </Text>
-            {section.items.map((item, iIndex) => (
-              <View key={iIndex} style={styles.experienceItem}>
-                <View style={styles.experienceTitleRow}>
-                  <Text style={styles.experienceTitle}>{item.title}</Text>
-                  {item.date && (
-                    <Text style={styles.experienceDate}>{item.date}</Text>
-                  )}
-                </View>
-                {item.subtitle && (
-                  <Text style={styles.experienceCompany}>{item.subtitle}</Text>
-                )}
-                {item.link && (
-                  <Link src={item.link} style={styles.projectUrl}>
-                    {cleanUrl(item.link)}
-                  </Link>
-                )}
-                <BulletList items={item.description || []} styles={styles} />
-              </View>
-            ))}
-          </View>
-        ))}
-
-        {/* Projects */}
-        {projects.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle} minPresenceAhead={20}>
-              {t.projects}
-            </Text>
-            {projects.map((project, index) => (
-              <View key={index} style={styles.experienceItem}>
-                <View style={styles.experienceTitleRow}>
-                  <Text style={styles.projectName}>{project.name}</Text>
-                  {(project.startDate || project.endDate) && (
-                    <Text style={styles.experienceDate}>
-                      {project.startDate}{" "}
-                      {project.endDate ? `— ${project.endDate}` : ""}
+                {skills.map((skill, index) => (
+                  <View key={index} style={styles.skillCategory}>
+                    <Text style={styles.skillsText}>
+                      <Text style={styles.skillCategoryName}>
+                        {skill.category}:{" "}
+                      </Text>
+                      {skill.items.join(", ")}
                     </Text>
-                  )}
-                </View>
-                {project.link && (
-                  <Link src={project.link} style={styles.projectUrl}>
-                    {cleanUrl(project.link)}
-                  </Link>
-                )}
-                <BulletList items={project.description} styles={styles} />
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        )}
+            );
+          }
+
+          if (sectionId === "projects" && projects.length > 0) {
+            return (
+              <View key="projects" style={styles.section}>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.projects}
+                </Text>
+                {projects.map((project, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceTitleRow}>
+                      <Text style={styles.projectName}>{project.name}</Text>
+                      {(project.startDate || project.endDate) && (
+                        <Text style={styles.experienceDate}>
+                          {project.startDate}{" "}
+                          {project.endDate ? `— ${project.endDate}` : ""}
+                        </Text>
+                      )}
+                    </View>
+                    {project.link && (
+                      <Link src={project.link} style={styles.projectUrl}>
+                        {cleanUrl(project.link)}
+                      </Link>
+                    )}
+                    <BulletList items={project.description} styles={styles} />
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          if (
+            sectionId === "certificates" &&
+            data.certificates &&
+            data.certificates.length > 0
+          ) {
+            return (
+              <View key="certificates" style={styles.section}>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.certificates}
+                </Text>
+                {data.certificates.map((item, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceTitleRow}>
+                      <Text style={styles.experienceTitle}>{item.title}</Text>
+                      {item.date && (
+                        <Text style={styles.experienceDate}>{item.date}</Text>
+                      )}
+                    </View>
+                    {item.subtitle && (
+                      <Text style={styles.experienceCompany}>
+                        {item.subtitle}
+                      </Text>
+                    )}
+                    {item.link && (
+                      <Link src={item.link} style={styles.projectUrl}>
+                        {cleanUrl(item.link)}
+                      </Link>
+                    )}
+                    <BulletList
+                      items={item.description || []}
+                      styles={styles}
+                    />
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          if (
+            sectionId === "awards" &&
+            data.awards &&
+            data.awards.length > 0
+          ) {
+            return (
+              <View key="awards" style={styles.section}>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.awards}
+                </Text>
+                {data.awards.map((item, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceTitleRow}>
+                      <Text style={styles.experienceTitle}>{item.title}</Text>
+                      {item.date && (
+                        <Text style={styles.experienceDate}>{item.date}</Text>
+                      )}
+                    </View>
+                    {item.subtitle && (
+                      <Text style={styles.experienceCompany}>
+                        {item.subtitle}
+                      </Text>
+                    )}
+                    <BulletList
+                      items={item.description || []}
+                      styles={styles}
+                    />
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          if (
+            sectionId === "publications" &&
+            data.publications &&
+            data.publications.length > 0
+          ) {
+            return (
+              <View key="publications" style={styles.section}>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {t.publications}
+                </Text>
+                {data.publications.map((item, index) => (
+                  <View key={index} style={styles.experienceItem}>
+                    <View style={styles.experienceTitleRow}>
+                      <Text style={styles.experienceTitle}>{item.title}</Text>
+                      {item.date && (
+                        <Text style={styles.experienceDate}>{item.date}</Text>
+                      )}
+                    </View>
+                    {item.subtitle && (
+                      <Text style={styles.experienceCompany}>
+                        {item.subtitle}
+                      </Text>
+                    )}
+                    {item.link && (
+                      <Link src={item.link} style={styles.projectUrl}>
+                        {cleanUrl(item.link)}
+                      </Link>
+                    )}
+                    <BulletList
+                      items={item.description || []}
+                      styles={styles}
+                    />
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          if (
+            sectionId === "custom" &&
+            data.customSections &&
+            data.customSections.length > 0
+          ) {
+            return (
+              <View key="custom">
+                {data.customSections.map((section, sIndex) => (
+                  <View key={sIndex} style={styles.section}>
+                    <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                      {section.title}
+                    </Text>
+                    {section.items.map((item, iIndex) => (
+                      <View key={iIndex} style={styles.experienceItem}>
+                        <View style={styles.experienceTitleRow}>
+                          <Text style={styles.experienceTitle}>
+                            {item.title}
+                          </Text>
+                          {item.date && (
+                            <Text style={styles.experienceDate}>
+                              {item.date}
+                            </Text>
+                          )}
+                        </View>
+                        {item.subtitle && (
+                          <Text style={styles.experienceCompany}>
+                            {item.subtitle}
+                          </Text>
+                        )}
+                        {item.link && (
+                          <Link src={item.link} style={styles.projectUrl}>
+                            {cleanUrl(item.link)}
+                          </Link>
+                        )}
+                        <BulletList
+                          items={item.description || []}
+                          styles={styles}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          return null;
+        })}
       </Page>
     </Document>
   );

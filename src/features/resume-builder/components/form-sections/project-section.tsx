@@ -26,7 +26,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MonthPicker } from "@/components/ui/monthpicker";
-import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
+import { Editor } from "@/components/editor/rich-text-editor";
 import type {
   ResumeContent,
   ResumeProject,
@@ -308,18 +308,17 @@ export function ProjectSection({
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Deskripsi Projek
                             </Label>
-                            <RichTextEditor
-                              content={
+                            <Editor
+                              initialDescription={
                                 typeof project.description === "string"
                                   ? project.description
                                   : Array.isArray(project.description)
-                                    ? `<ul>${(project.description as any).map((item: any) => `<li>${item.text || item}</li>`).join("")}</ul>`
-                                    : ""
+                                    ? `<ul>${(project.description as any[]).map((item) => `<li>${item.text || item}</li>`).join("")}</ul>`
+                                    : undefined
                               }
-                              onUpdate={(html) =>
-                                updateProject(project.id, { description: html })
+                              onSerializedChange={(serialized) =>
+                                updateProject(project.id, { description: JSON.stringify(serialized) })
                               }
-                              minHeight="150px"
                             />
                           </div>
                         </div>

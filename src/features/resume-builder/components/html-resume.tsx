@@ -6,6 +6,7 @@ import type {
 import { cn, formatResumeDate } from "@/lib/utils";
 import { format, parse } from "date-fns";
 import { enUS } from "date-fns/locale";
+import { isLexicalJson, lexicalJsonToHtml } from "@/lib/lexical-to-html";
 
 
 
@@ -21,6 +22,9 @@ const RESUME_TRANSLATIONS = {
     education: "Pendidikan",
     skills: "Keahlian",
     projects: "Proyek",
+    certificates: "Sertifikat",
+    awards: "Penghargaan",
+    publications: "Publikasi",
     present: "Sekarang",
     gpa: "IPK",
   },
@@ -30,6 +34,9 @@ const RESUME_TRANSLATIONS = {
     education: "Education",
     skills: "Skills",
     projects: "Projects",
+    certificates: "Certificates",
+    awards: "Awards",
+    publications: "Publications",
     present: "Present",
     gpa: "GPA",
   },
@@ -87,6 +94,23 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
     items: DescriptionItem[] | string[] | string | undefined,
   ) => {
     if (!items) return null;
+
+    // If it's a Lexical serialized JSON string, convert to HTML first
+    if (typeof items === "string" && isLexicalJson(items)) {
+      const html = lexicalJsonToHtml(items);
+      if (html) {
+        return (
+          <div
+            className={cn(
+              "prose-resume mt-1 [&_li]:list-disc [&_ol]:list-decimal [&_ul]:list-disc [&_ul]:pl-4",
+              bodyTextClass,
+            )}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        );
+      }
+      return null;
+    }
 
     // If it's a string and looks like HTML, render it safely
     if (
@@ -152,10 +176,14 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
           : content.description?.length || 0;
         return 70 + (projectItemCount ? 40 : 0);
       case "customItem":
-        const customItemCount = typeof content.description === "string" 
-          ? (content.description.match(/<li/g) || []).length || 2
-          : content.description?.length || 0;
-        return 60 + (customItemCount ? 30 : 0);
+      case "certificatesItem":
+      case "awardsItem":
+      case "publicationsItem":
+        const itemCont = content.description || "";
+        const itemCnt = typeof itemCont === "string" 
+          ? (itemCont.match(/<li/g) || []).length || 2
+          : Array.isArray(itemCont) ? itemCont.length : 0;
+        return 60 + (itemCnt ? 30 : 0);
       default:
         return 20;
     }
@@ -536,6 +564,101 @@ export function HtmlResume({ data, onJumpToSection }: HtmlResumeProps) {
             </div>
           );
           addToPage(projEl, estimateHeight("projectItem", project));
+        });
+      }
+
+      // Certificates
+      if (sectionId === "certificates" && data.certificates && data.certificates.length > 0) {
+        addToPage(
+          <h2
+            key="certs-title"
+            onClick={() => onJumpToSection?.("certificates")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" && "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" && "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+            )}
+          >
+            {translations.certificates}
+          </h2>,
+          estimateHeight("sectionTitle", null),
+        );
+        data.certificates.forEach((item, i) => {
+          addToPage(
+            <div key={`cert-${i}`} className={cn("mb-3", clickableClass)} onClick={() => onJumpToSection?.(`certificates-${item.id}`)}>
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3 className={headingTextClass}>{item.title}</h3>
+                {item.date && <span className="text-[10px] font-medium text-slate-500">{formatResumeDate(item.date)}</span>}
+              </div>
+              <div className={bodyTextClass}>{item.subtitle}</div>
+              {item.link && <div className="font-mono text-[9px] tracking-tight text-slate-500">{cleanUrl(item.link)}</div>}
+              {renderBulletList(item.description)}
+            </div>,
+            estimateHeight("certificatesItem", item)
+          );
+        });
+      }
+
+      // Awards
+      if (sectionId === "awards" && data.awards && data.awards.length > 0) {
+        addToPage(
+          <h2
+            key="awards-title"
+            onClick={() => onJumpToSection?.("awards")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" && "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" && "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+            )}
+          >
+            {translations.awards}
+          </h2>,
+          estimateHeight("sectionTitle", null),
+        );
+        data.awards.forEach((item, i) => {
+          addToPage(
+            <div key={`award-${i}`} className={cn("mb-3", clickableClass)} onClick={() => onJumpToSection?.(`awards-${item.id}`)}>
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3 className={headingTextClass}>{item.title}</h3>
+                {item.date && <span className="text-[10px] font-medium text-slate-500">{formatResumeDate(item.date)}</span>}
+              </div>
+              <div className={bodyTextClass}>{item.subtitle}</div>
+              {renderBulletList(item.description)}
+            </div>,
+            estimateHeight("awardsItem", item)
+          );
+        });
+      }
+
+      // Publications
+      if (sectionId === "publications" && data.publications && data.publications.length > 0) {
+        addToPage(
+          <h2
+            key="pubs-title"
+            onClick={() => onJumpToSection?.("publications")}
+            className={cn(
+              "hover:text-primary mb-2 cursor-pointer border-b border-slate-900 pb-0.5 text-xs font-bold tracking-widest text-slate-900 uppercase transition-colors",
+              templateId === "modern" && "mb-3 rounded-sm border-none bg-blue-50 p-1.5 px-3 text-blue-600",
+              templateId === "minimal" && "mb-3 border-l-2 border-none border-slate-900 pl-3 text-sm tracking-normal text-slate-900 normal-case",
+            )}
+          >
+            {translations.publications}
+          </h2>,
+          estimateHeight("sectionTitle", null),
+        );
+        data.publications.forEach((item, i) => {
+          addToPage(
+            <div key={`pub-${i}`} className={cn("mb-3", clickableClass)} onClick={() => onJumpToSection?.(`publications-${item.id}`)}>
+              <div className="mb-0.5 flex items-baseline justify-between">
+                <h3 className={headingTextClass}>{item.title}</h3>
+                {item.date && <span className="text-[10px] font-medium text-slate-500">{formatResumeDate(item.date)}</span>}
+              </div>
+              <div className={bodyTextClass}>{item.subtitle}</div>
+              {item.link && <div className="font-mono text-[9px] tracking-tight text-slate-500">{cleanUrl(item.link)}</div>}
+              {renderBulletList(item.description)}
+            </div>,
+            estimateHeight("publicationsItem", item)
+          );
         });
       }
 

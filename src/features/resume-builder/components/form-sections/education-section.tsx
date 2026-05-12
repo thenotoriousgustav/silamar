@@ -17,7 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn, formatResumeDate } from "@/lib/utils";
-import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
+import { Editor } from "@/components/editor/rich-text-editor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -340,18 +340,17 @@ export function EducationSection({
                             <Label className="text-muted-foreground text-xs font-medium uppercase">
                               Deskripsi (Opsional)
                             </Label>
-                            <RichTextEditor
-                              content={
+                            <Editor
+                              initialDescription={
                                 typeof edu.description === "string"
                                   ? edu.description
                                   : Array.isArray(edu.description)
-                                    ? `<ul>${(edu.description as any).map((item: any) => `<li>${item.text || item}</li>`).join("")}</ul>`
-                                    : ""
+                                    ? `<ul>${edu.description.map((item) => `<li>${item.text}</li>`).join("")}</ul>`
+                                    : undefined
                               }
-                              onUpdate={(html) =>
-                                updateEducation(edu.id, { description: html })
+                              onSerializedChange={(serialized) =>
+                                updateEducation(edu.id, { description: JSON.stringify(serialized) })
                               }
-                              minHeight="100px"
                             />
                           </div>
                         </div>

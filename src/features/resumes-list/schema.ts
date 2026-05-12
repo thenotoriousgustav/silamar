@@ -98,6 +98,15 @@ export const ResumeStyleSchema = z.object({
   templateId: z.string().default("classic"),
 });
 
+export const ResumeCustomSectionItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  subtitle: z.string().optional(),
+  date: z.string().optional(),
+  description: z.union([z.string(), z.array(DescriptionItemSchema)]).optional(),
+  link: z.string().optional(),
+});
+
 export const ResumeContentSchema = z.object({
   personalInfo: ResumePersonalInfoSchema,
   experience: z.array(ResumeExperienceSchema),
@@ -106,5 +115,18 @@ export const ResumeContentSchema = z.object({
     .array(ResumeSkillSchema)
     .describe("Categorized list of professional skills"),
   projects: z.array(ResumeProjectSchema),
+  certificates: z.array(ResumeCustomSectionItemSchema).optional(),
+  awards: z.array(ResumeCustomSectionItemSchema).optional(),
+  publications: z.array(ResumeCustomSectionItemSchema).optional(),
+  customSections: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        items: z.array(ResumeCustomSectionItemSchema),
+      }),
+    )
+    .optional(),
   style: ResumeStyleSchema.optional(),
+  sectionOrder: z.array(z.string()).optional(),
 });

@@ -1,0 +1,24 @@
+{    "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.profiles.osx": {
+    "zsh": {
+      "path": "/bin/zsh",
+      "args": ["-l"],
+    },
+    "bash": null,
+  },
+  "terminal.integrated.automationProfile.osx": {
+    "path": "/bin/zsh",
+    "args": ["--no-rcs", "--no-globalrcs"],
+  },
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.gpuAcceleration": "off",
+  "terminal.integrated.env.osx": {
+    "FIG_NEW_SESSION": "1",
+    "TERM": "dumb",
+    "NO_COLOR": "1",
+  },
+  "chat.tools.terminal.terminalProfile.osx": {
+    "path": "/bin/zsh",
+    "args": [],
+  },
+}

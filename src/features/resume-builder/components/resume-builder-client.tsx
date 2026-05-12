@@ -67,6 +67,11 @@ export function ResumeBuilderClient({
     updateCustomSectionItem,
     updateCustomSectionItemList,
     removeCustomSectionItem,
+    updatePredefinedSectionItems,
+    addPredefinedSectionItem,
+    updatePredefinedSectionItem,
+    removePredefinedSectionItem,
+    addSectionToOrder,
     updateStyle,
     updateSectionOrder,
     save,
@@ -355,6 +360,11 @@ export function ResumeBuilderClient({
             updateCustomSectionItem={updateCustomSectionItem}
             updateCustomSectionItemList={updateCustomSectionItemList}
             removeCustomSectionItem={removeCustomSectionItem}
+            updatePredefinedSectionItems={updatePredefinedSectionItems}
+            addPredefinedSectionItem={addPredefinedSectionItem}
+            updatePredefinedSectionItem={updatePredefinedSectionItem}
+            removePredefinedSectionItem={removePredefinedSectionItem}
+            addSectionToOrder={addSectionToOrder}
             updateStyle={updateStyle}
             updateSectionOrder={updateSectionOrder}
             jumpTarget={jumpTarget}
