@@ -34,10 +34,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import type {
-  ResumeContent,
-  ResumeExperience,
-} from "@/types/resume";
+import type { ResumeContent, ResumeExperience } from "@/types/resume";
 import { formatResumeDate } from "@/lib/utils";
 
 import { EmptyState } from "./empty-state";
@@ -395,7 +392,9 @@ export function ExperienceSection({
                                     : undefined
                               }
                               onSerializedChange={(serialized) =>
-                                updateExperience(exp.id, { description: JSON.stringify(serialized) })
+                                updateExperience(exp.id, {
+                                  description: JSON.stringify(serialized),
+                                })
                               }
                             />
                           </div>

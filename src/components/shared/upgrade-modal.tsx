@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 interface UpgradeModalProps {
@@ -28,7 +29,7 @@ export function UpgradeModal({ isOpen, onOpenChange }: UpgradeModalProps) {
           <div className="mb-4 flex h-12 w-12 items-center justify-center bg-white/20">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold italic">Upgrade ke Pro</h2>
+          <DialogTitle className="text-2xl font-bold italic">Upgrade ke Pro</DialogTitle>
           <p className="text-primary-foreground/80 mt-2 text-sm">
             Dapatkan akses penuh ke semua fitur premium dan tingkatkan peluang
             kerja kamu.

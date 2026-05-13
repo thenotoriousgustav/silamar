@@ -34,13 +34,9 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import type {
-  ResumeContent,
-  ResumeProject,
-} from "@/types/resume";
+import type { ResumeContent, ResumeProject } from "@/types/resume";
 
 import { EmptyState } from "./empty-state";
-
 
 interface ProjectSectionProps {
   content: ResumeContent;
@@ -320,7 +316,9 @@ export function ProjectSection({
                                     : undefined
                               }
                               onSerializedChange={(serialized) =>
-                                updateProject(project.id, { description: JSON.stringify(serialized) })
+                                updateProject(project.id, {
+                                  description: JSON.stringify(serialized),
+                                })
                               }
                             />
                           </div>

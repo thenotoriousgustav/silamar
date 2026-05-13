@@ -23,10 +23,7 @@ import {
   TagsInputItem,
   TagsInputList,
 } from "@/components/ui/tags-input";
-import type {
-  ResumeContent,
-  ResumeSkill,
-} from "@/types/resume";
+import type { ResumeContent, ResumeSkill } from "@/types/resume";
 
 interface SkillsSectionProps {
   content: ResumeContent;

@@ -1,0 +1,306 @@
+Bagian pertama yang user lihat — harus impactful dan langsung dipahami.
+tsoverallScore: {
+  total: 78,          // 0-100
+  grade: "B+",        // A+, A, B+, B, C+, C, D
+  label: "Cukup Baik",// "Luar Biasa", "Baik", "Perlu Perbaikan"
+  summary: "Resume kamu sudah cukup baik untuk melamar posisi entry-level, 
+            namun ada beberapa hal penting yang perlu diperbaiki agar 
+            lebih kompetitif di mata recruiter dan sistem ATS."
+}
+
+ATS Compatibility
+Ini yang paling penting untuk fresh graduate karena 75% perusahaan besar pakai ATS.
+tsatsCompatibility: {
+  score: 82,
+  passed: true,
+  checks: [
+    {
+      category: "Format File",
+      status: "pass",       // pass | warning | fail
+      message: "Format PDF sudah kompatibel dengan ATS"
+    },
+    {
+      category: "Kolom & Tabel",
+      status: "fail",
+      message: "Ditemukan layout 2 kolom yang dapat membingungkan ATS",
+      suggestion: "Gunakan layout 1 kolom untuk hasil terbaik"
+    },
+    {
+      category: "Font",
+      status: "pass",
+      message: "Font yang digunakan ATS-friendly"
+    },
+    {
+      category: "Header & Footer",
+      status: "warning",
+      message: "Informasi di header mungkin tidak terbaca ATS",
+      suggestion: "Pindahkan kontak ke body utama resume"
+    },
+    {
+      category: "Foto & Gambar",
+      status: "fail",
+      message: "Ditemukan foto/gambar — ATS tidak bisa membaca gambar",
+      suggestion: "Hapus foto dari resume untuk melamar ke perusahaan besar"
+    },
+    {
+      category: "Urutan Section",
+      status: "pass",
+      message: "Urutan section sudah sesuai standar"
+    },
+  ]
+}
+
+Section Scores
+Skor per bagian resume agar user tahu mana yang perlu diperbaiki.
+tssectionScores: [
+  {
+    section: "Informasi Kontak",
+    score: 95,
+    status: "excellent",
+    feedback: "Informasi kontak lengkap dan mudah ditemukan",
+    missing: []
+  },
+  {
+    section: "Ringkasan Profesional",
+    score: 60,
+    status: "needs_work",
+    feedback: "Summary terlalu pendek dan tidak mencantumkan value proposition",
+    missing: ["Target posisi yang jelas", "Skill utama", "Pencapaian singkat"],
+    suggestion: "Tambahkan 2-3 kalimat yang menjelaskan siapa kamu, skill utama, dan apa yang kamu tawarkan ke perusahaan"
+  },
+  {
+    section: "Pengalaman Kerja",
+    score: 70,
+    status: "good",
+    feedback: "Pengalaman sudah ada namun deskripsi kurang menunjukkan impact",
+    missing: ["Angka dan metric pencapaian", "Action verb yang kuat"],
+  },
+  {
+    section: "Pendidikan",
+    score: 90,
+    status: "excellent",
+    feedback: "Informasi pendidikan lengkap dan terstruktur dengan baik"
+  },
+  {
+    section: "Skills",
+    score: 65,
+    status: "needs_work",
+    feedback: "Skills terlalu umum, kurang spesifik untuk posisi yang dilamar",
+    missing: ["Technical skills spesifik", "Tools yang dikuasai", "Level proficiency"]
+  },
+  {
+    section: "Proyek",
+    score: 80,
+    status: "good",
+    feedback: "Proyek sudah ada namun kurang detail tentang teknologi yang digunakan"
+  },
+  {
+    section: "Organisasi",
+    score: 85,
+    status: "good",
+    feedback: "Pengalaman organisasi relevan dan menunjukkan leadership"
+  },
+]
+
+Content Quality
+Analisis kualitas penulisan konten resume.
+tscontentQuality: {
+  score: 72,
+  
+  // Analisis bullet points pengalaman
+  bulletPoints: {
+    score: 65,
+    total: 12,
+    withActionVerb: 7,       // berapa yang pakai action verb
+    withMetric: 3,           // berapa yang punya angka/metric
+    tooShort: 2,             // terlalu pendek (< 8 kata)
+    tooLong: 1,              // terlalu panjang (> 25 kata)
+    feedback: "5 dari 12 bullet point tidak menggunakan action verb yang kuat",
+    examples: {
+      before: "Bertanggung jawab atas pembuatan laporan keuangan",
+      after: "Menyusun dan mempresentasikan laporan keuangan bulanan kepada manajemen, meningkatkan akurasi pelaporan sebesar 20%"
+    }
+  },
+
+  // Analisis penggunaan action verb
+  actionVerbs: {
+    score: 70,
+    found: ["Mengembangkan", "Memimpin", "Meningkatkan"],
+    weak: ["Bertanggung jawab", "Membantu", "Terlibat"],
+    suggestions: ["Achieved", "Spearheaded", "Optimized", "Delivered"]
+  },
+
+  // Analisis panjang resume
+  length: {
+    pageCount: 2,
+    wordCount: 450,
+    status: "good",   // too_short | good | too_long
+    feedback: "Panjang resume ideal untuk fresh graduate (1-2 halaman)"
+  },
+
+  // Konsistensi format tanggal
+  dateConsistency: {
+    status: "warning",
+    feedback: "Format tanggal tidak konsisten (ada 'Jan 2023' dan 'January 2023')",
+    suggestion: "Gunakan format yang sama di seluruh resume"
+  },
+
+  // Typo & grammar
+  writingQuality: {
+    score: 85,
+    typosFound: 2,
+    grammarIssues: 1,
+    issues: [
+      { text: "Univercity", suggestion: "University" },
+      { text: "responsibilty", suggestion: "responsibility" },
+    ]
+  }
+}
+
+Keyword Analysis
+Sangat penting untuk lolos ATS.
+tskeywordAnalysis: {
+  score: 68,
+  
+  // Keyword yang sudah ada
+  found: [
+    { keyword: "JavaScript", count: 3, relevance: "high" },
+    { keyword: "React", count: 2, relevance: "high" },
+    { keyword: "Team player", count: 1, relevance: "medium" },
+  ],
+
+  // Keyword yang disarankan berdasarkan industri/posisi
+  suggested: [
+    { keyword: "REST API", priority: "high", reason: "Sangat sering dicari untuk posisi frontend" },
+    { keyword: "Git", priority: "high", reason: "Tool standar industri tech" },
+    { keyword: "Agile/Scrum", priority: "medium", reason: "Banyak perusahaan pakai metodologi ini" },
+    { keyword: "TypeScript", priority: "medium", reason: "Tren naik di industri" },
+  ],
+
+  // Keyword yang berlebihan / terlalu umum
+  overused: [
+    { keyword: "Hard working", reason: "Terlalu umum, tidak menambah nilai" },
+    { keyword: "Fast learner", reason: "Semua orang mengklaim ini — buktikan dengan contoh nyata" },
+  ]
+}
+
+Impact & Achievements
+tsimpactAnalysis: {
+  score: 55,
+  quantifiedAchievements: 2,   // berapa pencapaian yang ada angkanya
+  totalBullets: 12,
+  percentage: 17,               // % bullet yang punya metric
+  status: "needs_improvement",
+  feedback: "Hanya 2 dari 12 bullet point yang memiliki angka konkret. Recruiter lebih tertarik dengan pencapaian yang terukur.",
+  tips: [
+    "Tambahkan angka: berapa orang yang kamu pimpin?",
+    "Tambahkan persentase: seberapa besar peningkatan yang kamu buat?",
+    "Tambahkan skala: berapa besar project yang kamu kerjakan?",
+  ],
+  examples: [
+    {
+      before: "Memimpin tim dalam pengembangan aplikasi",
+      after: "Memimpin tim 5 orang dalam pengembangan aplikasi mobile yang mencapai 10.000+ downloads dalam 3 bulan pertama"
+    }
+  ]
+}
+
+Red Flags
+Hal-hal yang bisa langsung bikin resume ditolak recruiter.
+tsredFlags: [
+  {
+    severity: "high",     // high | medium | low
+    title: "Email Tidak Profesional",
+    description: "Email 'ganteng_banget99@gmail.com' terkesan tidak profesional",
+    suggestion: "Gunakan format nama.lengkap@gmail.com"
+  },
+  {
+    severity: "high",
+    title: "Gap Pekerjaan Tidak Dijelaskan",
+    description: "Ada gap 8 bulan antara Mei 2022 - Januari 2023 yang tidak dijelaskan",
+    suggestion: "Tambahkan kegiatan selama gap (freelance, kursus, volunteer, dll)"
+  },
+  {
+    severity: "medium",
+    title: "Foto di Resume",
+    description: "Foto dapat menyebabkan bias dan tidak terbaca ATS",
+    suggestion: "Hapus foto jika melamar ke perusahaan multinasional"
+  },
+  {
+    severity: "low",
+    title: "Referensi 'Available upon request'",
+    description: "Kalimat ini sudah outdated dan membuang space berharga",
+    suggestion: "Hapus baris ini, recruiter sudah tahu mereka bisa meminta referensi"
+  }
+]
+
+Strengths
+Feedback positif yang memotivasi user.
+tsstrengths: [
+  "Pengalaman organisasi yang kuat menunjukkan kemampuan leadership",
+  "Proyek personal relevan dengan posisi yang dilamar",
+  "IPK di atas 3.5 menjadi nilai tambah untuk fresh graduate",
+  "Sertifikasi Google Analytics menunjukkan inisiatif belajar mandiri",
+  "Format resume bersih dan mudah dibaca"
+]
+
+Prioritized Action Items
+Ini yang paling actionable — user langsung tahu apa yang harus dilakukan.
+tsactionItems: [
+  {
+    priority: 1,
+    impact: "high",
+    effort: "low",       // low | medium | high
+    title: "Perbaiki alamat email",
+    description: "Ganti email menjadi format profesional",
+    estimatedTime: "2 menit"
+  },
+  {
+    priority: 2,
+    impact: "high",
+    effort: "medium",
+    title: "Tambahkan metric ke pengalaman kerja",
+    description: "Quantify minimal 5 bullet point dengan angka konkret",
+    estimatedTime: "30 menit"
+  },
+  {
+    priority: 3,
+    impact: "high",
+    effort: "low",
+    title: "Perkuat Professional Summary",
+    description: "Tulis ulang summary dengan menyebutkan target posisi dan skill utama",
+    estimatedTime: "15 menit"
+  },
+  {
+    priority: 4,
+    impact: "medium",
+    effort: "low",
+    title: "Tambah keyword teknis",
+    description: "Masukkan keyword: REST API, Git, Agile ke section skills atau pengalaman",
+    estimatedTime: "10 menit"
+  },
+  {
+    priority: 5,
+    impact: "medium",
+    effort: "high",
+    title: "Ubah layout menjadi 1 kolom",
+    description: "Layout 2 kolom saat ini dapat merusak parsing ATS",
+    estimatedTime: "45 menit"
+  },
+]
+
+Competitive Insight
+tscompetitiveInsight: {
+  percentile: 68,   // resume ini lebih baik dari 68% resume yang dianalisis
+  industryBenchmark: {
+    industry: "Technology",
+    averageScore: 71,
+    userScore: 78,
+    status: "above_average"
+  },
+  topMissingElements: [
+    "GitHub profile link",
+    "Portfolio website",
+    "Sertifikasi teknis"
+  ]
+}

@@ -34,10 +34,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import type {
-  ResumeContent,
-  ResumeEducation,
-} from "@/types/resume";
+import type { ResumeContent, ResumeEducation } from "@/types/resume";
 import { cn, formatResumeDate } from "@/lib/utils";
 
 import { EmptyState } from "./empty-state";
@@ -351,7 +348,9 @@ export function EducationSection({
                                     : undefined
                               }
                               onSerializedChange={(serialized) =>
-                                updateEducation(edu.id, { description: JSON.stringify(serialized) })
+                                updateEducation(edu.id, {
+                                  description: JSON.stringify(serialized),
+                                })
                               }
                             />
                           </div>

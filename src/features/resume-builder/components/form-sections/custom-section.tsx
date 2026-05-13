@@ -308,7 +308,8 @@ export function CustomSection({
                                             section.id,
                                             item.id,
                                             {
-                                              description: JSON.stringify(serialized),
+                                              description:
+                                                JSON.stringify(serialized),
                                             },
                                           )
                                         }
@@ -336,16 +337,6 @@ export function CustomSection({
           ))}
         </SortableContent>
       </Sortable>
-
-      <Button
-        type="button"
-        variant="outline"
-        onClick={addCustomSection}
-        className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/50 w-full border-dashed py-6 transition-all"
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Tambah Seksi Kustom (Sertifikasi, Penghargaan, dll)
-      </Button>
     </>
   );
 }

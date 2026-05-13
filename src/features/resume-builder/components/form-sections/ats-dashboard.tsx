@@ -134,9 +134,9 @@ export function ATSDashboard({
                   <Zap className="h-7 w-7" />
                 </div>
                 <div>
-                  <h2 className="text-foreground text-2xl font-black tracking-tight italic">
+                  <DialogTitle className="text-foreground text-2xl font-black tracking-tight italic">
                     RESUME READINESS
-                  </h2>
+                  </DialogTitle>
                   <div className="flex items-center gap-2">
                     <div className="bg-primary/10 flex h-1.5 w-24 overflow-hidden rounded-none">
                       <div

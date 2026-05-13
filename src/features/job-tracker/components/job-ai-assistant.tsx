@@ -272,8 +272,15 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
               className="w-full text-xs font-bold"
               variant="outline"
               onClick={() => {
-                if (analysisResult) setView("analysis");
-                else analyzeMutation.mutate();
+                if (analysisResult) {
+                  setView("analysis");
+                } else if (selectedResume?.id) {
+                  router.push(
+                    `/resume-analyze?resumeId=${selectedResume.id}&jobId=${job.id}`,
+                  );
+                } else {
+                  toast.error("Pilih resume terlebih dahulu di tab Detail.");
+                }
               }}
               disabled={analyzeMutation.isPending}
             >

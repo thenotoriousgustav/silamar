@@ -25,10 +25,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import {
-  ResumeContent,
-  ResumeCustomSectionItem,
-} from "@/types/resume";
+import { ResumeContent, ResumeCustomSectionItem } from "@/types/resume";
 import { cn } from "@/lib/utils";
 
 interface ItemsListSectionProps {
