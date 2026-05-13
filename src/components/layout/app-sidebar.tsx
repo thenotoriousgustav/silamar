@@ -1,12 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { Zap, Settings, LogOut, ChevronUp } from "lucide-react";
-import { sidebarData } from "@/config/sidebar";
-import { NavMain } from "@/components/layout/nav-main";
-import { ModeToggle } from "@/components/layout/mode-toggle";
+import { useQuery } from "@tanstack/react-query";
+import { Briefcase, ChevronUp, LogOut, Settings , Zap } from "lucide-react";
 import Link from "next/link";
-import { useSession, signOut } from "@/lib/auth/client";
+import * as React from "react";
+
+import { ModeToggle } from "@/components/layout/mode-toggle";
+import { NavMain } from "@/components/layout/nav-main";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -17,20 +25,17 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { sidebarData } from "@/config/sidebar";
+// eslint-disable-next-line import/no-restricted-paths -- Layout component needs feature-specific sidebar items
 import { getTrackersAction } from "@/features/job-tracker/actions";
-import { useQuery } from "@tanstack/react-query";
+// eslint-disable-next-line import/no-restricted-paths -- Layout component needs feature-specific sidebar items
 import { CreateTrackerDialog } from "@/features/job-tracker/components/create-tracker-dialog";
+// eslint-disable-next-line import/no-restricted-paths -- Layout component needs feature-specific sidebar items
 import { TrackerActions } from "@/features/job-tracker/components/tracker-actions";
-import { Briefcase } from "lucide-react";
+import { signOut, useSession } from "@/lib/auth/client";
+
+
+
 
 export function AppSidebar() {
   const { data: session } = useSession();

@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { JobFormDrawer } from "./job-form-drawer";
 import type { JobApplication } from "@/features/job-tracker/types";
+
+import { DeleteJobDialog } from "./delete-job-dialog";
+import { JobFormDrawer } from "./job-form-drawer";
 
 interface JobTrackerDialogsProps {
   isAddOpen: boolean;
@@ -61,40 +53,11 @@ export function JobTrackerDialogs({
         }}
       />
 
-      <AlertDialog
-        open={!!jobToDelete}
-        onOpenChange={(open) => !open && setJobToDelete(null)}
-      >
-        <AlertDialogContent className="rounded-none">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">
-              Hapus Lamaran?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Lamaran kerja di{" "}
-              <span className="text-foreground font-semibold">
-                {jobToDelete?.company}
-              </span>{" "}
-              sebagai{" "}
-              <span className="text-foreground font-semibold">
-                {jobToDelete?.position}
-              </span>{" "}
-              akan dihapus secara permanen.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-none">
-              Batal
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-none"
-              onClick={() => jobToDelete && onConfirmDelete(jobToDelete.id)}
-            >
-              Hapus
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteJobDialog
+        job={jobToDelete}
+        onOpenChange={() => setJobToDelete(null)}
+        onConfirm={onConfirmDelete}
+      />
     </>
   );
 }

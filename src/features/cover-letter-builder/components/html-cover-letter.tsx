@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+
+import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
 interface HtmlCoverLetterProps {
   data: Partial<CoverLetterBuilderData>;
@@ -9,7 +10,7 @@ interface HtmlCoverLetterProps {
 
 const A4_HEIGHT = 1123;
 const PAGE_PADDING = 100; // 50px top + 50px bottom
-const CONTENT_HEIGHT_LIMIT = A4_HEIGHT - PAGE_PADDING;
+const _CONTENT_HEIGHT_LIMIT = A4_HEIGHT - PAGE_PADDING;
 
 export function HtmlCoverLetter({ data }: HtmlCoverLetterProps) {
   const {

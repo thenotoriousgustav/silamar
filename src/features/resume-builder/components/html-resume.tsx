@@ -1,12 +1,13 @@
+
 import React, { useMemo } from "react";
+
 import type {
-  ResumeContent,
   DescriptionItem,
-} from "@/features/resumes-list/types/resume";
-import { cn, formatResumeDate } from "@/lib/utils";
-import { format, parse } from "date-fns";
-import { enUS } from "date-fns/locale";
+  ResumeContent,
+} from "@/types/resume";
 import { isLexicalJson, lexicalJsonToHtml } from "@/lib/lexical-to-html";
+import { cn, formatResumeDate } from "@/lib/utils";
+
 
 
 

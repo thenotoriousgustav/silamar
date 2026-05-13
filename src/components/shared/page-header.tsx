@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils/cn";
 import { ReactNode } from "react";
+
+import { cn } from "@/lib/utils/cn";
 
 interface PageHeaderProps {
   title: string;

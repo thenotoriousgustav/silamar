@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { IS_APPLE, mergeRegister } from "@lexical/utils";
@@ -9,8 +8,8 @@ import {
   REDO_COMMAND,
   UNDO_COMMAND,
 } from "lexical";
-
 import { RedoIcon, UndoIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";
 import { Button } from "@/components/ui/button";

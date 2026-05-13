@@ -1,11 +1,11 @@
 import {
-  LayoutDashboard,
-  Target,
   Briefcase,
   Files,
   FileUser,
-  ScrollText,
+  LayoutDashboard,
   type LucideIcon,
+  ScrollText,
+  Target,
 } from "lucide-react";
 
 export interface NavItem {

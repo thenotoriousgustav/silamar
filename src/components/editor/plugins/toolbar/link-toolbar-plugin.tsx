@@ -1,14 +1,8 @@
-import { useCallback, useState } from "react";
 
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import {
-  $isRangeSelection,
-  // COMMAND_PRIORITY_NORMAL,
-  // KEY_MODIFIER_COMMAND,
-  type BaseSelection,
-} from "lexical";
-
+import { $isRangeSelection, type BaseSelection } from "lexical";
 import { LinkIcon } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";
 import { useUpdateToolbarHandler } from "@/components/editor/editor-hooks/use-update-toolbar";
@@ -37,31 +31,6 @@ export function LinkToolbarPlugin({
   };
 
   useUpdateToolbarHandler($updateToolbar);
-
-  // useEffect(() => {
-  //   return activeEditor.registerCommand(
-  //     KEY_MODIFIER_COMMAND,
-  //     (payload) => {
-  //       const event: KeyboardEvent = payload
-  //       const { code, ctrlKey, metaKey } = event
-
-  //       if (code === "KeyK" && (ctrlKey || metaKey)) {
-  //         event.preventDefault()
-  //         let url: string | null
-  //         if (!isLink) {
-  //           setIsLinkEditMode(true)
-  //           url = sanitizeUrl("https://")
-  //         } else {
-  //           setIsLinkEditMode(false)
-  //           url = null
-  //         }
-  //         return activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, url)
-  //       }
-  //       return false
-  //     },
-  //     COMMAND_PRIORITY_NORMAL
-  //   )
-  // }, [activeEditor, isLink, setIsLinkEditMode])
 
   const insertLink = useCallback(() => {
     if (!isLink) {

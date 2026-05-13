@@ -1,13 +1,14 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import {
   Briefcase,
   CalendarCheck,
+  TrendingUp,
   Trophy,
   XCircle,
-  TrendingUp,
 } from "lucide-react";
+
+import { Card } from "@/components/ui/card";
 import type { JobApplication } from "@/features/job-tracker/types";
 import { cn } from "@/lib/utils/cn";
 

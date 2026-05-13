@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Geist, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "sonner";
-import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { QueryProvider } from "@/components/providers/query-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "sonner";
+
+import { QueryProvider } from "@/components/providers/query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -15,12 +17,6 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -69,6 +65,7 @@ export default function RootLayout({
     >
       <body
         className="antialiased"
+        // eslint-disable-next-line react/no-unknown-property
         vaul-drawer-wrapper=""
         suppressHydrationWarning
       >

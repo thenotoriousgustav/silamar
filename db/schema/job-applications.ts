@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./auth";
 import { resumes } from "./resumes";
 

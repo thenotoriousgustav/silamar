@@ -1,17 +1,17 @@
-import Link from "next/link";
 import {
-  Zap,
-  FileText,
-  BarChart3,
-  Briefcase,
-  Mail,
-  Target,
-  Brain,
-  CheckCircle,
   ArrowRight,
-  Star,
+  BarChart3,
+  Brain,
+  Briefcase,
+  CheckCircle,
+  FileText,
+  Mail,
   Sparkles,
+  Star,
+  Target,
 } from "lucide-react";
+import Link from "next/link";
+
 import { formatCurrency } from "@/lib/utils/format";
 
 const features = [

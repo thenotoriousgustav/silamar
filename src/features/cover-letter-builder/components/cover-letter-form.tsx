@@ -1,29 +1,31 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { FileText, Layout, Loader2, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Sparkles, Loader2, FileText, Layout } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
+import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Accordion } from "@/components/ui/accordion";
-import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
+
+import { ContentSection } from "./form-sections/content-section";
+import { PersonalInfoSection } from "./form-sections/personal-info-section";
+import { RecipientSection } from "./form-sections/recipient-section";
 import { COVER_LETTER_TEMPLATES } from "./templates";
 
 // Import Modular Sections
-import { PersonalInfoSection } from "./form-sections/personal-info-section";
-import { RecipientSection } from "./form-sections/recipient-section";
-import { ContentSection } from "./form-sections/content-section";
 
 interface CoverLetterFormProps {
   content: CoverLetterBuilderData;

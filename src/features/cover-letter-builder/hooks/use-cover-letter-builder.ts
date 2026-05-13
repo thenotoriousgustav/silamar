@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  updateCoverLetterAction,
-} from "@/features/cover-letter-builder/actions";
-import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+
+import { updateCoverLetterAction } from "@/features/cover-letter-builder/actions/update-cover-letter";
+import type { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
 const DEFAULT_CONTENT: CoverLetterBuilderData = {
   fullName: "",
@@ -71,7 +70,7 @@ export function useCoverLetterBuilder(
   const save = useCallback(
     async (idToSave?: string, title?: string) => {
       const activeId = idToSave || id;
-      if (!activeId || !isDirtyRef.current) return;
+      if (!activeId || !isDirtyRef.current) return null;
 
       setIsSaving(true);
       try {
@@ -80,15 +79,20 @@ export function useCoverLetterBuilder(
           title: title,
         });
 
-        setIsDirty(false);
-        if (typeof window !== "undefined") {
-          localStorage.removeItem(`cover-letter-draft-${activeId}`);
+        if (result.success) {
+          setIsDirty(false);
+          if (typeof window !== "undefined") {
+            localStorage.removeItem(`cover-letter-draft-${activeId}`);
+          }
+          return result.data;
+        } else {
+          toast.error(result.error);
+          return null;
         }
-        return result;
       } catch (error) {
         console.error("Save error:", error);
         toast.error("Gagal menyimpan cover letter");
-        return false;
+        return null;
       } finally {
         setIsSaving(false);
       }

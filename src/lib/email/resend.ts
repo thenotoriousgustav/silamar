@@ -1,8 +1,39 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY!);
+import { env } from "@/config/env";
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "noreply@silamar.id";
+import type { EmailClient, SendEmailParams, SendEmailResult } from "./types";
+
+export const resend = new Resend(env.RESEND_API_KEY);
+
+const FROM_EMAIL = env.RESEND_FROM_EMAIL;
+
+// ─── EmailClient Interface Implementation ─────────────────────────────────────
+
+/**
+ * Creates an EmailClient backed by Resend.
+ * Use this factory function for dependency injection.
+ */
+export function createResendClient(): EmailClient {
+  const client = new Resend(env.RESEND_API_KEY);
+
+  return {
+    async sendEmail(params: SendEmailParams): Promise<SendEmailResult> {
+      const { data, error } = await client.emails.send({
+        from: FROM_EMAIL,
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+      });
+
+      if (error) {
+        throw new Error(`Failed to send email: ${error.message}`);
+      }
+
+      return { id: data?.id ?? "" };
+    },
+  };
+}
 
 // ─── Email Templates ──────────────────────────────────────────────────────────
 
@@ -77,7 +108,7 @@ export async function sendPaymentConfirmationEmail({
           </div>
 
           <div style="text-align: center; margin-bottom: 24px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" 
+            <a href="${env.NEXT_PUBLIC_APP_URL}/dashboard" 
                style="display: inline-block; background: #7C3AED; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
               Mulai Gunakan SiLamar →
             </a>
@@ -121,7 +152,7 @@ export async function sendWelcomeEmail({
             <li>🎯 Analisis skill gap</li>
           </ul>
           <div style="text-align: center; margin: 32px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard"
+            <a href="${env.NEXT_PUBLIC_APP_URL}/dashboard"
                style="display: inline-block; background: #7C3AED; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
               Mulai Sekarang →
             </a>

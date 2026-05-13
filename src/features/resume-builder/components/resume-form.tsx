@@ -1,144 +1,92 @@
 "use client";
 
-import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Accordion } from "@/components/ui/accordion";
-import { GripVertical } from "lucide-react";
 import {
-  Sortable,
-  SortableContent,
-  SortableItem,
-  SortableItemHandle,
-} from "@/components/ui/sortable";
-import type {
-  ResumeContent,
-  ResumeExperience,
-  ResumeEducation,
-  ResumeProject,
-  ResumeSkill,
-  ResumeCustomSection,
-  ResumeCustomSectionItem,
-} from "@/features/resumes-list/types/resume";
-
-// Import Modular Sections
-import { ATSDashboard } from "./form-sections/ats-dashboard";
-import { PersonalInfoSection } from "./form-sections/personal-info-section";
-import { ExperienceSection } from "./form-sections/experience-section";
-import { EducationSection } from "./form-sections/education-section";
-import { ProjectSection } from "./form-sections/project-section";
-import { SkillsSection } from "./form-sections/skills-section";
-import { CustomSection } from "./form-sections/custom-section";
-import { VisualSettingsSection } from "./form-sections/visual-settings-section";
-import { ItemsListSection } from "./form-sections/items-list-section";
-import {
-  CertificateIcon,
-  TrophyIcon,
   BookOpenIcon,
+  CertificateIcon,
   PlusIcon,
+  TrophyIcon,
 } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { GripVertical } from "lucide-react";
+import React, { useState } from "react";
+import { toast } from "sonner";
+
+import { Accordion } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import {
+  Sortable,
+  SortableContent,
+  SortableItem,
+  SortableItemHandle,
+} from "@/components/ui/sortable";
+import type { ResumeContent } from "@/types/resume";
+
+import type { ResumeFormHandlers } from "../types/resume-form-handlers";
+
+// Import Modular Sections
+import { ATSDashboard } from "./form-sections/ats-dashboard";
+import { CustomSection } from "./form-sections/custom-section";
+import { EducationSection } from "./form-sections/education-section";
+import { ExperienceSection } from "./form-sections/experience-section";
+import { ItemsListSection } from "./form-sections/items-list-section";
+import { PersonalInfoSection } from "./form-sections/personal-info-section";
+import { ProjectSection } from "./form-sections/project-section";
+import { SkillsSection } from "./form-sections/skills-section";
+import { VisualSettingsSection } from "./form-sections/visual-settings-section";
 
 interface ResumeFormProps {
   content: ResumeContent;
-  updatePersonalInfo: (info: Partial<ResumeContent["personalInfo"]>) => void;
-  addExperience: () => void;
-  updateExperience: (id: string, data: Partial<ResumeExperience>) => void;
-  removeExperience: (id: string) => void;
-  updateExperienceList: (experience: ResumeExperience[]) => void;
-  addEducation: () => void;
-  updateEducation: (id: string, data: Partial<ResumeEducation>) => void;
-  updateEducationList: (education: ResumeEducation[]) => void;
-  removeEducation: (id: string) => void;
-  addProject: () => void;
-  updateProject: (id: string, data: Partial<ResumeProject>) => void;
-  updateProjectList: (projects: ResumeProject[]) => void;
-  removeProject: (id: string) => void;
-  addSkillCategory: () => void;
-  updateSkillCategory: (id: string, data: Partial<ResumeSkill>) => void;
-  removeSkillCategory: (id: string) => void;
-  updateSkills: (skills: ResumeSkill[]) => void;
-  addCustomSection: () => void;
-  updateCustomSection: (id: string, data: Partial<ResumeCustomSection>) => void;
-  updateCustomSectionList: (sections: ResumeCustomSection[]) => void;
-  removeCustomSection: (id: string) => void;
-  addCustomSectionItem: (sectionId: string) => void;
-  updateCustomSectionItem: (
-    sectionId: string,
-    itemId: string,
-    data: Partial<ResumeCustomSectionItem>,
-  ) => void;
-  updateCustomSectionItemList: (
-    sectionId: string,
-    items: ResumeCustomSectionItem[],
-  ) => void;
-  removeCustomSectionItem: (sectionId: string, itemId: string) => void;
-  updatePredefinedSectionItems: (
-    type: "certificates" | "awards" | "publications",
-    items: ResumeCustomSectionItem[],
-  ) => void;
-  addPredefinedSectionItem: (
-    type: "certificates" | "awards" | "publications",
-  ) => void;
-  updatePredefinedSectionItem: (
-    type: "certificates" | "awards" | "publications",
-    itemId: string,
-    data: Partial<ResumeCustomSectionItem>,
-  ) => void;
-  removePredefinedSectionItem: (
-    type: "certificates" | "awards" | "publications",
-    itemId: string,
-  ) => void;
-  addSectionToOrder: (sectionId: string) => void;
-  updateStyle: (style: Partial<ResumeContent["style"]>) => void;
-  updateSectionOrder: (order: string[]) => void;
+  handlers: ResumeFormHandlers;
   jumpTarget?: string | null;
   onJumpEnd?: () => void;
 }
 
 export function ResumeForm({
   content,
-  updatePersonalInfo,
-  addExperience,
-  updateExperience,
-  removeExperience,
-  updateExperienceList,
-  addEducation,
-  updateEducation,
-  updateEducationList,
-  removeEducation,
-  addProject,
-  updateProject,
-  updateProjectList,
-  removeProject,
-  addSkillCategory,
-  updateSkillCategory,
-  removeSkillCategory,
-  updateSkills,
-  addCustomSection,
-  updateCustomSection,
-  updateCustomSectionList,
-  removeCustomSection,
-  addCustomSectionItem,
-  updateCustomSectionItem,
-  updateCustomSectionItemList,
-  removeCustomSectionItem,
-  updatePredefinedSectionItems,
-  addPredefinedSectionItem,
-  updatePredefinedSectionItem,
-  removePredefinedSectionItem,
-  addSectionToOrder,
-  updateStyle,
-  updateSectionOrder,
+  handlers,
   jumpTarget,
   onJumpEnd,
 }: ResumeFormProps) {
+  const {
+    updatePersonalInfo,
+    addExperience,
+    updateExperience,
+    removeExperience,
+    updateExperienceList,
+    addEducation,
+    updateEducation,
+    updateEducationList,
+    removeEducation,
+    addProject,
+    updateProject,
+    updateProjectList,
+    removeProject,
+    addSkillCategory,
+    updateSkillCategory,
+    removeSkillCategory,
+    updateSkills,
+    addCustomSection,
+    updateCustomSection,
+    updateCustomSectionList,
+    removeCustomSection,
+    addCustomSectionItem,
+    updateCustomSectionItem,
+    updateCustomSectionItemList,
+    removeCustomSectionItem,
+    updatePredefinedSectionItems,
+    addPredefinedSectionItem,
+    updatePredefinedSectionItem,
+    removePredefinedSectionItem,
+    addSectionToOrder,
+    updateStyle,
+    updateSectionOrder,
+  } = handlers;
   const [expandedItems, setExpandedItems] = useState<string[]>(["personal"]);
   const [atsResult, setAtsResult] = useState<{
     score: number;

@@ -1,9 +1,10 @@
 "use client";
 
-import { Plus, Kanban as KanbanIcon, Table2 } from "lucide-react";
+import { Kanban as KanbanIcon, Plus, Table2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { PageHeader } from "@/shared/page-header";
-import { Button } from "@/components/ui/button";
 
 interface JobTrackerHeaderProps {
   view: "kanban" | "table";

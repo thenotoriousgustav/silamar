@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 
 import {
   $isRangeSelection,
@@ -6,8 +5,8 @@ import {
   FORMAT_TEXT_COMMAND,
   type TextFormatType,
 } from "lexical";
-
 import { BoldIcon, UnderlineIcon } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";
 import { useUpdateToolbarHandler } from "@/components/editor/editor-hooks/use-update-toolbar";

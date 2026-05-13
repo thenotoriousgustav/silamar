@@ -1,18 +1,21 @@
 "use client";
 
-import { User, ChevronDown, Camera, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Camera, ChevronDown, User, X } from "lucide-react";
+import { useRef } from "react";
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
-import { useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { ResumeContent } from "@/types/resume";
+
+
 
 interface PersonalInfoSectionProps {
   content: ResumeContent;

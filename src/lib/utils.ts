@@ -1,12 +1,11 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
+import { format, parse } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-import { format, parse } from "date-fns";
-import { enUS } from "date-fns/locale";
 
 export function formatResumeDate(dateStr: string | undefined): string {
   if (!dateStr) return "";

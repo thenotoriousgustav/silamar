@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Upload, FileText, Loader2, X, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, FileText, Loader2, Upload, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,8 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+import type { ResumeContent } from "@/types/resume";
 
 interface ResumeImportDialogProps {
   isOpen: boolean;

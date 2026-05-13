@@ -74,6 +74,11 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Renders a Lexical text node to HTML with inline formatting.
+ * Uses a bitmask to apply formatting: 1=bold, 2=italic, 4=strikethrough,
+ * 8=underline, 16=code, 32=subscript, 64=superscript.
+ */
 function renderTextNode(node: LexicalTextNode): string {
   let html = escapeHtml(node.text);
   const fmt = node.format;
@@ -92,6 +97,11 @@ function renderChildren(children: LexicalNode[]): string {
   return children.map(renderNode).join("");
 }
 
+/**
+ * Recursively renders a Lexical AST node to HTML.
+ * Handles all block-level (paragraph, heading, quote, list) and inline
+ * (text, link, linebreak) node types with a fallback for unknown nodes.
+ */
 function renderNode(node: LexicalNode): string {
   switch (node.type) {
     case "text":

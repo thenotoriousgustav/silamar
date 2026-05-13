@@ -4,7 +4,6 @@ import {
   $getSelection,
   $isRangeSelection,
 } from "lexical";
-
 import { TextIcon } from "lucide-react";
 
 import { ComponentPickerOption } from "@/components/editor/plugins/picker/component-picker-option";

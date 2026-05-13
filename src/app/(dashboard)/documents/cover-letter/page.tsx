@@ -1,13 +1,26 @@
 import type { Metadata } from "next";
-import { getCoverLettersDTO } from "@/features/cover-letters-list/queries";
-import { CoverLetterListClient } from "@/features/cover-letters-list/components/cover-letter-list-client";
 
-export const metadata: Metadata = { title: "Cover Letters — SiLamar" };
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+import {
+  CoverLetterListClient,
+  getCoverLettersDTO,
+} from "@/features/cover-letters-list";
+
+export const metadata: Metadata = {
+  title: "Cover Letters",
+  description: "Lihat dan kelola semua cover letter yang telah kamu buat",
+};
 
 export default async function CoverLettersPage() {
   const coverLetters = await getCoverLettersDTO();
 
-  return <CoverLetterListClient initialCoverLetters={coverLetters as any} />;
+  const mapped = coverLetters.map((cl) => ({
+    id: cl.id,
+    title: cl.title,
+    jobTitle: cl.jobTitle ?? "",
+    company: cl.company ?? "",
+    content: typeof cl.content === "string" ? cl.content : "",
+    updatedAt: cl.updatedAt,
+  }));
+
+  return <CoverLetterListClient initialCoverLetters={mapped} />;
 }

@@ -1,20 +1,24 @@
+import { randomUUID } from "crypto";
+
+import { generateText, Output } from "ai";
+import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+
 import { db } from "@/db";
-import { users, aiUsageLogs } from "@/db/schema";
-import { generateText, Output } from "ai";
+import { aiUsageLogs, users } from "@/db/schema";
 import { defaultModel } from "@/lib/ai";
 import {
-  buildMockInterviewQuestionsPrompt,
   buildMockInterviewFeedbackPrompt,
-  mockInterviewResultSchema,
+  buildMockInterviewQuestionsPrompt,
+  type MockInterviewFeedbackResult,
   mockInterviewFeedbackSchema,
   type MockInterviewResult,
-  type MockInterviewFeedbackResult,
+  mockInterviewResultSchema,
 } from "@/lib/ai/prompts/mock-interview";
-import { eq, sql } from "drizzle-orm";
-import { randomUUID } from "crypto";
+import { auth } from "@/lib/auth";
+
+
 
 const generateSchema = z.object({
   action: z.literal("generate"),
@@ -36,6 +40,84 @@ const requestSchema = z.discriminatedUnion("action", [
   feedbackSchema,
 ]);
 
+/** Verifies user has credits and deducts one if not on Pro plan. */
+async function verifyAndDeductCredit(
+  userId: string,
+  shouldDeduct: boolean,
+): Promise<{ isPro: boolean; error?: NextResponse }> {
+  const [user] = await db
+    .select({ credits: users.credits, plan: users.plan })
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (!user) {
+    return {
+      isPro: false,
+      error: NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 },
+      ),
+    };
+  }
+
+  const isPro = user.plan === "pro";
+  if (shouldDeduct && !isPro && user.credits <= 0) {
+    return {
+      isPro,
+      error: NextResponse.json(
+        { error: "Kredit tidak cukup. Beli kredit untuk melanjutkan." },
+        { status: 402 },
+      ),
+    };
+  }
+
+  if (shouldDeduct && !isPro) {
+    await db
+      .update(users)
+      .set({ credits: sql`${users.credits} - 1` })
+      .where(eq(users.id, userId));
+  }
+
+  return { isPro };
+}
+
+/** Generates interview questions using AI. */
+async function handleGenerateQuestions(
+  data: z.infer<typeof generateSchema>,
+): Promise<MockInterviewResult> {
+  const prompt = buildMockInterviewQuestionsPrompt({
+    jobTitle: data.jobTitle,
+    company: data.company,
+    resumeContent: data.resumeContent,
+    jobDescription: data.jobDescription,
+  });
+
+  const { output } = await generateText({
+    model: defaultModel,
+    output: Output.object({ schema: mockInterviewResultSchema }),
+    prompt,
+  });
+  return output;
+}
+
+/** Generates feedback for a user's interview answer using AI. */
+async function handleFeedback(
+  data: z.infer<typeof feedbackSchema>,
+): Promise<MockInterviewFeedbackResult> {
+  const prompt = buildMockInterviewFeedbackPrompt(
+    data.question,
+    data.userAnswer,
+    data.jobTitle,
+  );
+
+  const { output } = await generateText({
+    model: defaultModel,
+    output: Output.object({ schema: mockInterviewFeedbackSchema }),
+    prompt,
+  });
+  return output;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -52,54 +134,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const [user] = await db
-      .select({ credits: users.credits, plan: users.plan })
-      .from(users)
-      .where(eq(users.id, session.user.id));
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User tidak ditemukan" },
-        { status: 404 },
-      );
-    }
-
-    // Feedback doesn't cost credit; only generating questions does
     const costCredit = parsed.data.action === "generate";
-    const isPro = user.plan === "pro";
-
-    if (costCredit && !isPro && user.credits <= 0) {
-      return NextResponse.json(
-        { error: "Kredit tidak cukup. Beli kredit untuk melanjutkan." },
-        { status: 402 },
-      );
-    }
-
-    if (costCredit && !isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} - 1` })
-        .where(eq(users.id, session.user.id));
-    }
+    const { isPro, error } = await verifyAndDeductCredit(
+      session.user.id,
+      costCredit,
+    );
+    if (error) return error;
 
     let result: MockInterviewResult | MockInterviewFeedbackResult;
 
     if (parsed.data.action === "generate") {
-      const prompt = buildMockInterviewQuestionsPrompt(
-        parsed.data.jobTitle,
-        parsed.data.company,
-        parsed.data.resumeContent,
-        parsed.data.jobDescription,
-      );
-
-      const { output } = await generateText({
-        model: defaultModel,
-        output: Output.object({
-          schema: mockInterviewResultSchema,
-        }),
-        prompt,
-      });
-      result = output;
+      result = await handleGenerateQuestions(parsed.data);
 
       await db.insert(aiUsageLogs).values({
         id: randomUUID(),
@@ -110,20 +155,7 @@ export async function POST(req: NextRequest) {
         outputData: {},
       });
     } else {
-      const prompt = buildMockInterviewFeedbackPrompt(
-        parsed.data.question,
-        parsed.data.userAnswer,
-        parsed.data.jobTitle,
-      );
-
-      const { output } = await generateText({
-        model: defaultModel,
-        output: Output.object({
-          schema: mockInterviewFeedbackSchema,
-        }),
-        prompt,
-      });
-      result = output;
+      result = await handleFeedback(parsed.data);
     }
 
     return NextResponse.json({ success: true, data: result }, { status: 200 });

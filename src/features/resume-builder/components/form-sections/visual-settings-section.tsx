@@ -1,19 +1,20 @@
 "use client";
 
 import {
-  Settings2,
   ChevronDown,
-  LayoutTemplate,
   Languages,
+  LayoutTemplate,
+  Settings2,
 } from "lucide-react";
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+import { Label } from "@/components/ui/label";
+import type { ResumeContent } from "@/types/resume";
 
 interface VisualSettingsSectionProps {
   content: ResumeContent;

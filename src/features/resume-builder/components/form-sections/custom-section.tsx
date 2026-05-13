@@ -1,36 +1,37 @@
 "use client";
 
 import {
+  Calendar as CalendarIcon,
+  ChevronDown,
+  ExternalLink,
+  GripVertical,
   LayoutGrid,
   Plus,
   Trash2,
-  Calendar as CalendarIcon,
-  ExternalLink,
-  GripVertical,
-  ChevronDown,
 } from "lucide-react";
+
+import { DynamicEditor as Editor } from "@/components/editor/dynamic-editor";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ResumeContent,
-  ResumeCustomSection,
-  ResumeCustomSectionItem,
-} from "@/features/resumes-list/types/resume";
-import { Editor } from "@/components/editor/rich-text-editor";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
+import {
+  ResumeContent,
+  ResumeCustomSection,
+  ResumeCustomSectionItem,
+} from "@/types/resume";
 
 interface CustomSectionProps {
   content: ResumeContent;

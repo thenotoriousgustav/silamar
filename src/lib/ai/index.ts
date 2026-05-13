@@ -1,7 +1,9 @@
 import { createOpenAI } from "@ai-sdk/openai";
 
+import { env } from "@/config/env";
+
 export const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
 });
 
 export const defaultModel = openai("gpt-4.1-nano");

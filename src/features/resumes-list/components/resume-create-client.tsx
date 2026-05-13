@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Sparkles, PencilLine, Loader2 } from "lucide-react";
+import { Loader2, PencilLine, Plus, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+// eslint-disable-next-line import/no-restricted-paths -- Resumes list needs resume creation actions
 import {
-  createResumeAction,
   createEmptyResumeAction,
-} from "@/features/resumes-list/actions";
-import { ResumeImportDialog } from "./resume-import-dialog";
-import { TemplateSelectionDialog } from "./template-selection-dialog";
+  createResumeAction,
+} from "@/features/resume-builder/actions";
 import type {
   ResumeContent,
   ResumeTemplateId,
-} from "@/features/resumes-list/types/resume";
+} from "@/types/resume";
+
+import { ResumeImportDialog } from "./resume-import-dialog";
+import { TemplateSelectionDialog } from "./template-selection-dialog";
 
 export function ResumeCreateClient() {
   const router = useRouter();
@@ -32,10 +35,14 @@ export function ResumeCreateClient() {
   const createMutation = useMutation({
     mutationFn: (data: { id: string; content: ResumeContent; title: string }) =>
       createResumeAction(data),
-    onSuccess: (newResume) => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Resume berhasil dibuat! 🚀");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      router.push(`/resume-builder/${newResume.id}`);
+      router.push(`/resume-builder/${result.data.id}`);
     },
     onError: (error) => {
       console.error("Create error:", error);
@@ -46,10 +53,14 @@ export function ResumeCreateClient() {
   const createEmptyMutation = useMutation({
     mutationFn: (templateId: ResumeTemplateId) =>
       createEmptyResumeAction(templateId),
-    onSuccess: (newResume) => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Resume berhasil dibuat! 🚀");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      router.push(`/resume-builder/${newResume.id}`);
+      router.push(`/resume-builder/${result.data.id}`);
     },
     onError: (error) => {
       console.error("Create error:", error);

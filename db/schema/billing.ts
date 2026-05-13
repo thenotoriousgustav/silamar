@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, integer, pgEnum } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./auth";
 
 export const transactionStatusEnum = pgEnum("transaction_status", [

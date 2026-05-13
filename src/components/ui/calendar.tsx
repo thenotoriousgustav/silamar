@@ -1,20 +1,20 @@
 "use client";
 
+import {
+  CaretDownIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from "@phosphor-icons/react";
 import * as React from "react";
 import {
+  type DayButton,
   DayPicker,
   getDefaultClassNames,
-  type DayButton,
   type Locale,
 } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  CaretLeftIcon,
-  CaretRightIcon,
-  CaretDownIcon,
-} from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 
 function Calendar({
   className,
@@ -91,7 +91,7 @@ function Calendar({
             : "[&>svg]:text-muted-foreground flex items-center gap-1 rounded-(--cell-radius) text-sm [&>svg]:size-3.5",
           defaultClassNames.caption_label,
         ),
-        table: "w-full border-collapse",
+        month_grid: cn("w-full border-collapse", defaultClassNames.month_grid),
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
           "text-muted-foreground flex-1 rounded-(--cell-radius) text-[0.8rem] font-normal select-none",

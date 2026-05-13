@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Loader2, AlertTriangle, Mail } from "lucide-react";
-import Link from "next/link";
+import { AlertTriangle, Loader2, Mail, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { DocumentCard } from "@/shared/document-card";
-import { PageHeader } from "@/shared/page-header";
-import { EmptyState } from "@/shared/empty-state";
-import { CoverLetterPreviewDrawer } from "./cover-letter-preview-drawer";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +16,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+// eslint-disable-next-line import/no-restricted-paths -- Cover letters list needs creation action
+import { createEmptyCoverLetterAction } from "@/features/cover-letter-builder/actions/create-cover-letter";
 import { deleteCoverLetterAction } from "@/features/cover-letters-list/actions";
-import { createEmptyCoverLetterAction } from "@/features/cover-letter-builder/actions";
+import { DocumentCard } from "@/shared/document-card";
+import { EmptyState } from "@/shared/empty-state";
 import { LoadingOverlay } from "@/shared/loading-spinner";
+import { PageHeader } from "@/shared/page-header";
+
+import { CoverLetterPreviewDrawer } from "./cover-letter-preview-drawer";
 
 interface CoverLetter {
   id: string;
@@ -53,10 +55,14 @@ export function CoverLetterListClient({
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteCoverLetterAction(id),
-    onSuccess: () => {
-      toast.success("Cover letter berhasil dihapus");
-      queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
-      setCoverLetterToDelete(null);
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Cover letter berhasil dihapus");
+        queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
+        setCoverLetterToDelete(null);
+      } else {
+        toast.error(result.error);
+      }
     },
     onError: (error) => {
       console.error("Delete error:", error);
@@ -66,10 +72,14 @@ export function CoverLetterListClient({
 
   const createMutation = useMutation({
     mutationFn: () => createEmptyCoverLetterAction(),
-    onSuccess: (newLetter) => {
-      toast.success("Cover letter berhasil dibuat! 🚀");
-      queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
-      router.push(`/cover-letter-builder/${newLetter.id}`);
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Cover letter berhasil dibuat! 🚀");
+        queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
+        router.push(`/cover-letter-builder/${result.data.id}`);
+      } else {
+        toast.error(result.error);
+      }
     },
     onError: (error) => {
       console.error("Create error:", error);
@@ -167,7 +177,7 @@ export function CoverLetterListClient({
       )}
 
       {createMutation.isPending && (
-        <LoadingOverlay message="Sedang membuat cover letter..." />
+        <LoadingOverlay label="Sedang membuat cover letter..." />
       )}
 
       <CoverLetterPreviewDrawer

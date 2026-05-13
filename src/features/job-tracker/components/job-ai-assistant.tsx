@@ -1,24 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Sparkles,
-  BrainCircuit,
-  FileSearch,
-  MessageSquareQuote,
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
-  Lightbulb,
-  Copy,
-  Save,
-  ExternalLink,
-  ChevronLeft,
-} from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+import {
+  BrainCircuit,
+  CheckCircle2,
+  ChevronLeft,
+  FileSearch,
+  Lightbulb,
+  Loader2,
+  MessageSquareQuote,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,12 +25,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { type JobApplication } from "@/features/job-tracker/types";
-import { type ResumeAnalyzeJdResult } from "@/lib/ai/prompts/resume-analyze-jd";
 import { type CoverLetterResult } from "@/lib/ai/prompts/cover-letter";
+import { type ResumeAnalyzeJdResult } from "@/lib/ai/prompts/resume-analyze-jd";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+
 
 interface JobAiAssistantProps {
   job: JobApplication;
@@ -46,9 +43,9 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
   const [view, setView] = useState<ViewState>("menu");
   const [analysisResult, setAnalysisResult] =
     useState<ResumeAnalyzeJdResult | null>(null);
-  const [coverLetterResult, setCoverLetterResult] =
+  const [_coverLetterResult, _setCoverLetterResult] =
     useState<CoverLetterResult | null>(null);
-  const [savedLetterId, setSavedLetterId] = useState<string | null>(null);
+  const [_savedLetterId, _setSavedLetterId] = useState<string | null>(null);
 
   const analyzeMutation = useMutation({
     mutationFn: async () => {
@@ -128,7 +125,7 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
     },
   });
 
-  const copyToClipboard = (text: string) => {
+  const _copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Teks disalin ke clipboard!");
   };

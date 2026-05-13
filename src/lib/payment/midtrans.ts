@@ -1,18 +1,32 @@
 // @ts-ignore — midtrans-client does not have perfect types
+import crypto from "crypto";
+
 import MidtransClient from "midtrans-client";
 
-const isProduction = process.env.MIDTRANS_IS_PRODUCTION === "true";
+import { env } from "@/config/env";
+import { resilientFetch } from "@/lib/http/resilient-fetch";
+import type { ActionResult } from "@/types/action-result";
+
+import type {
+  CreateTransactionParams,
+  PaymentClient,
+  SignatureVerificationParams,
+  SnapTransactionResult,
+  TransactionStatus,
+} from "./types";
+
+const isProduction = env.MIDTRANS_IS_PRODUCTION === "true";
 
 export const snap = new MidtransClient.Snap({
   isProduction,
-  serverKey: process.env.MIDTRANS_SERVER_KEY!,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY!,
+  serverKey: env.MIDTRANS_SERVER_KEY,
+  clientKey: env.MIDTRANS_CLIENT_KEY,
 });
 
 export const coreApi = new MidtransClient.CoreApi({
   isProduction,
-  serverKey: process.env.MIDTRANS_SERVER_KEY!,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY!,
+  serverKey: env.MIDTRANS_SERVER_KEY,
+  clientKey: env.MIDTRANS_CLIENT_KEY,
 });
 
 // ─── Credit Packages ──────────────────────────────────────────────────────────
@@ -36,7 +50,7 @@ export function getCreditPackage(id: string) {
   return CREDIT_PACKAGES.find((pkg) => pkg.id === id) ?? null;
 }
 
-// ─── Snap Transaction ─────────────────────────────────────────────────────────
+// ─── Snap Transaction (legacy export for backward compatibility) ──────────────
 
 interface CreateSnapTransactionParams {
   orderId: string;
@@ -72,24 +86,20 @@ export async function createSnapTransaction(
       secure: true,
     },
     callbacks: {
-      finish: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payment=success`,
+      finish: `${env.NEXT_PUBLIC_APP_URL}/dashboard?payment=success`,
     },
   };
 
   return snap.createTransaction(parameter);
 }
 
-// ─── Webhook Verification ─────────────────────────────────────────────────────
-
-import crypto from "crypto";
+// ─── Webhook Verification (legacy export for backward compatibility) ──────────
 
 export function verifyMidtransSignature(
-  orderId: string,
-  statusCode: string,
-  grossAmount: string,
-  receivedSignature: string,
+  params: SignatureVerificationParams,
 ): boolean {
-  const serverKey = process.env.MIDTRANS_SERVER_KEY!;
+  const { orderId, statusCode, grossAmount, receivedSignature } = params;
+  const serverKey = env.MIDTRANS_SERVER_KEY;
   const input = `${orderId}${statusCode}${grossAmount}${serverKey}`;
   const expectedSignature = crypto
     .createHash("sha512")
@@ -99,14 +109,7 @@ export function verifyMidtransSignature(
   return expectedSignature === receivedSignature;
 }
 
-export type MidtransTransactionStatus =
-  | "capture"
-  | "settlement"
-  | "pending"
-  | "deny"
-  | "cancel"
-  | "expire"
-  | "refund";
+export type MidtransTransactionStatus = TransactionStatus;
 
 export function isPaymentSuccessful(
   transactionStatus: MidtransTransactionStatus,
@@ -116,4 +119,97 @@ export function isPaymentSuccessful(
     return fraudStatus === "accept";
   }
   return transactionStatus === "settlement";
+}
+
+// ─── PaymentClient Implementation ────────────────────────────────────────────
+
+function getMidtransBaseUrl(): string {
+  return isProduction
+    ? "https://app.midtrans.com"
+    : "https://app.sandbox.midtrans.com";
+}
+
+function buildAuthHeader(): string {
+  return `Basic ${Buffer.from(`${env.MIDTRANS_SERVER_KEY}:`).toString("base64")}`;
+}
+
+/**
+ * Creates a PaymentClient backed by Midtrans.
+ * Uses resilientFetch for external HTTP calls with retry/backoff.
+ */
+export function createMidtransClient(): PaymentClient {
+  return {
+    async createTransaction(
+      params: CreateTransactionParams,
+    ): Promise<ActionResult<SnapTransactionResult>> {
+      const baseUrl = getMidtransBaseUrl();
+      const url = `${baseUrl}/snap/v1/transactions`;
+
+      const payload = {
+        transaction_details: {
+          order_id: params.orderId,
+          gross_amount: params.amount,
+        },
+        customer_details: {
+          first_name: params.customerName,
+          email: params.customerEmail,
+        },
+        item_details: [
+          {
+            id: params.itemId,
+            price: params.amount,
+            quantity: params.quantity,
+            name: params.itemName,
+          },
+        ],
+        credit_card: {
+          secure: true,
+        },
+        callbacks: {
+          finish: `${env.NEXT_PUBLIC_APP_URL}/dashboard?payment=success`,
+        },
+      };
+
+      const result = await resilientFetch<{
+        token: string;
+        redirect_url: string;
+      }>(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: buildAuthHeader(),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!result.success) {
+        return result;
+      }
+
+      return {
+        success: true,
+        data: {
+          token: result.data.token,
+          redirectUrl: result.data.redirect_url,
+        },
+      };
+    },
+
+    verifySignature(
+      params: SignatureVerificationParams,
+    ): boolean {
+      return verifyMidtransSignature(params);
+    },
+
+    isPaymentSuccessful(
+      transactionStatus: TransactionStatus,
+      fraudStatus?: string,
+    ): boolean {
+      if (transactionStatus === "capture") {
+        return fraudStatus === "accept";
+      }
+      return transactionStatus === "settlement";
+    },
+  };
 }

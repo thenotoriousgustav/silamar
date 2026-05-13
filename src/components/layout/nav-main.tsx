@@ -1,10 +1,10 @@
 "use client";
 
-import * as React from "react";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import * as React from "react";
 
 import {
   Collapsible,

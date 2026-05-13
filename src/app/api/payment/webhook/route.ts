@@ -1,15 +1,63 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { users, transactions } from "@/db/schema";
-import {
-  verifyMidtransSignature,
-  isPaymentSuccessful,
-  PRO_SUBSCRIPTION,
-  type MidtransTransactionStatus,
-} from "@/lib/payment/midtrans";
-import { sendPaymentConfirmationEmail } from "@/lib/email/resend";
-import { getCreditPackage } from "@/lib/payment/midtrans";
 import { eq, sql } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
+
+import { db } from "@/db";
+import { transactions, users } from "@/db/schema";
+import { sendPaymentConfirmationEmail } from "@/lib/email/resend";
+import {
+  isPaymentSuccessful,
+  type MidtransTransactionStatus,
+  PRO_SUBSCRIPTION,
+  verifyMidtransSignature,
+} from "@/lib/payment/midtrans";
+import { getCreditPackage } from "@/lib/payment/midtrans";
+
+type TransactionStatus = "success" | "pending" | "failed" | "expired";
+
+/**
+ * Derives the normalized transaction status from Midtrans webhook data.
+ * Maps Midtrans-specific statuses (capture, settlement, cancel, expire, deny)
+ * to our internal status enum.
+ */
+function deriveTransactionStatus(
+  transactionStatus: string,
+  paymentSuccess: boolean,
+): TransactionStatus {
+  if (paymentSuccess) return "success";
+  if (["cancel", "expire"].includes(transactionStatus)) return "expired";
+  if (transactionStatus === "deny") return "failed";
+  return "pending";
+}
+
+/** Activates Pro subscription or adds credits based on the transaction package. */
+async function fulfillPayment(
+  userId: string,
+  packageId: string | null,
+  credits: number | null,
+): Promise<void> {
+  if (packageId === PRO_SUBSCRIPTION.id) {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + PRO_SUBSCRIPTION.duration);
+
+    await db
+      .update(users)
+      .set({ plan: "pro", planExpiresAt: expiresAt })
+      .where(eq(users.id, userId));
+  } else if (credits) {
+    await db
+      .update(users)
+      .set({ credits: sql`${users.credits} + ${credits}` })
+      .where(eq(users.id, userId));
+  }
+}
+
+/** Resolves the human-readable package name for the confirmation email. */
+function resolvePackageName(packageId: string | null): string {
+  if (packageId === PRO_SUBSCRIPTION.id) return PRO_SUBSCRIPTION.name;
+  const pkg = packageId ? getCreditPackage(packageId) : null;
+  return pkg?.name ?? "Paket SiLamar";
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,20 +73,17 @@ export async function POST(req: NextRequest) {
       payment_type: paymentType,
     } = body;
 
-    // 1. Verify Midtrans signature
-    const isValid = verifyMidtransSignature(
+    const isValid = verifyMidtransSignature({
       orderId,
       statusCode,
       grossAmount,
-      signatureKey,
-    );
-
+      receivedSignature: signatureKey,
+    });
     if (!isValid) {
       console.error("[Webhook] Invalid signature for order:", orderId);
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    // 2. Find transaction in database
     const [transaction] = await db
       .select()
       .from(transactions)
@@ -52,21 +97,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Determine payment success
     const paymentSuccess = isPaymentSuccessful(
       transactionStatus as MidtransTransactionStatus,
       fraudStatus,
     );
+    const newStatus = deriveTransactionStatus(transactionStatus, paymentSuccess);
 
-    // 4. Determine new status
-    const newStatus = (() => {
-      if (paymentSuccess) return "success";
-      if (["cancel", "expire"].includes(transactionStatus)) return "expired";
-      if (transactionStatus === "deny") return "failed";
-      return "pending";
-    })() as "success" | "pending" | "failed" | "expired";
-
-    // Update transaction status
     await db
       .update(transactions)
       .set({
@@ -80,7 +116,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // 5. Add credits or activate Pro plan
     const [user] = await db
       .select({ name: users.name, email: users.email })
       .from(users)
@@ -90,31 +125,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (transaction.packageId === PRO_SUBSCRIPTION.id) {
-      // Activate Pro subscription
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + PRO_SUBSCRIPTION.duration);
+    await fulfillPayment(
+      transaction.userId,
+      transaction.packageId,
+      transaction.credits,
+    );
 
-      await db
-        .update(users)
-        .set({ plan: "pro", planExpiresAt: expiresAt })
-        .where(eq(users.id, transaction.userId));
-    } else if (transaction.credits) {
-      // Add credits to user account
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} + ${transaction.credits}` })
-        .where(eq(users.id, transaction.userId));
-    }
+    revalidateTag("billing", "max");
+    revalidateTag("dashboard", "max");
 
-    // 6. Send confirmation email
-    const pkg = transaction.packageId
-      ? getCreditPackage(transaction.packageId)
-      : null;
-    const packageName =
-      transaction.packageId === PRO_SUBSCRIPTION.id
-        ? PRO_SUBSCRIPTION.name
-        : (pkg?.name ?? "Paket SiLamar");
+    const packageName = resolvePackageName(transaction.packageId);
 
     await sendPaymentConfirmationEmail({
       to: user.email,
@@ -124,7 +144,6 @@ export async function POST(req: NextRequest) {
       amount: transaction.amount,
       orderId: transaction.orderId,
     }).catch((err) => {
-      // Don't fail the webhook if email fails
       console.error("[Webhook] Failed to send confirmation email:", err);
     });
 

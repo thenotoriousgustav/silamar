@@ -28,12 +28,17 @@ export type MockInterviewFeedbackResult = z.infer<
   typeof mockInterviewFeedbackSchema
 >;
 
+type MockInterviewQuestionsParams = {
+  jobTitle: string;
+  company: string;
+  resumeContent: string;
+  jobDescription?: string;
+};
+
 export function buildMockInterviewQuestionsPrompt(
-  jobTitle: string,
-  company: string,
-  resumeContent: string,
-  jobDescription?: string,
+  params: MockInterviewQuestionsParams,
 ): string {
+  const { jobTitle, company, resumeContent, jobDescription } = params;
   return `
 Kamu adalah interviewer berpengalaman dari perusahaan top Indonesia yang membantu fresh graduate mempersiapkan diri untuk wawancara kerja.
 

@@ -1,23 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+import { pdf } from "@react-pdf/renderer";
 import {
-  Loader2,
+  Braces,
+  Check,
+  Copy,
   Download,
+  Eye,
+  Loader2,
+  RotateCcw,
   ZoomIn,
   ZoomOut,
-  RotateCcw,
-  Braces,
-  Copy,
-  Check,
-  Eye,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { pdf } from "@react-pdf/renderer";
-import { ResumeTemplate } from "./resume-template";
+
+import { Button } from "@/components/ui/button";
+import type { ResumeContent } from "@/types/resume";
+
+
 import { HtmlResume } from "./html-resume";
+import { ResumeTemplate } from "./resume-template";
 
 interface ResumePreviewProps {
   content: ResumeContent;

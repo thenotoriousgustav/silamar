@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
 import { Menu, X, Zap } from "lucide-react";
-import { signOut, useSession } from "@/lib/auth/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { signOut, useSession } from "@/lib/auth/client";
+
 
 const navLinks = [
   { href: "#fitur", label: "Fitur" },

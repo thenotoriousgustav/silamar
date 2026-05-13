@@ -18,13 +18,22 @@ export const coverLetterSchema = z.object({
 
 export type CoverLetterResult = z.infer<typeof coverLetterSchema>;
 
-export function buildCoverLetterPrompt(
-  resumeContent: string,
-  jobTitle: string,
-  company: string,
-  jobDescription?: string,
-  tone: "formal" | "friendly" | "professional" = "professional",
-): string {
+type CoverLetterPromptParams = {
+  resumeContent: string;
+  jobTitle: string;
+  company: string;
+  jobDescription?: string;
+  tone?: "formal" | "friendly" | "professional";
+};
+
+export function buildCoverLetterPrompt(params: CoverLetterPromptParams): string {
+  const {
+    resumeContent,
+    jobTitle,
+    company,
+    jobDescription,
+    tone = "professional",
+  } = params;
   const toneGuide = {
     formal: "sangat formal, sopan, dan tradisional",
     friendly: "hangat, antusias, dan personal namun tetap profesional",

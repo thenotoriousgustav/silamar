@@ -1,43 +1,46 @@
 "use client";
 
-import {
-  Code2,
-  Plus,
-  Trash2,
-  Calendar as CalendarIcon,
-  GripVertical,
-  ChevronDown,
-} from "lucide-react";
 import { format, parse } from "date-fns";
 import { enUS, id } from "date-fns/locale";
+import {
+  Calendar as CalendarIcon,
+  ChevronDown,
+  Code2,
+  GripVertical,
+  Plus,
+  Trash2,
+} from "lucide-react";
+
+import { DynamicEditor as Editor } from "@/components/editor/dynamic-editor";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { MonthPicker } from "@/components/ui/monthpicker";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MonthPicker } from "@/components/ui/monthpicker";
-import { Editor } from "@/components/editor/rich-text-editor";
-import type {
-  ResumeContent,
-  ResumeProject,
-} from "@/features/resumes-list/types/resume";
-import { EmptyState } from "./empty-state";
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
+import type {
+  ResumeContent,
+  ResumeProject,
+} from "@/types/resume";
+
+import { EmptyState } from "./empty-state";
+
 
 interface ProjectSectionProps {
   content: ResumeContent;

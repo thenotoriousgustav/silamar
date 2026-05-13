@@ -1,45 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Plus,
-  Loader2,
   AlertTriangle,
-  FileText,
   Briefcase,
-} from "lucide-react";
+  FileText,
+  Loader2,
+  PencilLine,
+ Plus, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { calculateCompleteness } from "@/features/resumes-list/utils/completeness";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-import type {
-  ResumeContent,
-  ResumeTemplateId,
-} from "@/features/resumes-list/types/resume";
-import {
-  deleteResumeAction,
-  getResumesAction,
-} from "@/features/resumes-list/actions";
-import {
-  createResumeAction,
-  createEmptyResumeAction,
-} from "@/features/resume-builder/actions";
-import { ResumeImportDialog } from "./resume-import-dialog";
-import { TemplateSelectionDialog } from "./template-selection-dialog";
-import { ResumePreviewDrawer } from "./resume-preview-drawer";
-import { DocumentCard } from "@/shared/document-card";
-import { PageHeader } from "@/shared/page-header";
-import { EmptyState } from "@/shared/empty-state";
-import { LoadingOverlay } from "@/shared/loading-spinner";
-import { Sparkles, PencilLine } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -52,6 +22,37 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+// eslint-disable-next-line import/no-restricted-paths -- Resumes list needs resume creation actions
+import {
+  createEmptyResumeAction,
+  createResumeAction,
+} from "@/features/resume-builder/actions";
+import {
+  deleteResumeAction,
+  getResumesAction,
+} from "@/features/resumes-list/actions";
+import type {
+  ResumeContent,
+  ResumeTemplateId,
+} from "@/types/resume";
+import { calculateCompleteness } from "@/features/resumes-list/utils/completeness";
+import { DocumentCard } from "@/shared/document-card";
+import { EmptyState } from "@/shared/empty-state";
+import { LoadingOverlay } from "@/shared/loading-spinner";
+import { PageHeader } from "@/shared/page-header";
+
+import { ResumeImportDialog } from "./resume-import-dialog";
+import { ResumePreviewDrawer } from "./resume-preview-drawer";
+import { TemplateSelectionDialog } from "./template-selection-dialog";
+
 
 interface Resume {
   id: string;
@@ -89,7 +90,11 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteResumeAction(id),
+    mutationFn: async (id: string) => {
+      const result = await deleteResumeAction(id);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     onSuccess: () => {
       toast.success("Resume berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
@@ -104,10 +109,14 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const createMutation = useMutation({
     mutationFn: (data: { id: string; content: ResumeContent; title: string }) =>
       createResumeAction(data),
-    onSuccess: (newResume) => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Resume berhasil dibuat! 🚀");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      router.push(`/resume-builder/${newResume.id}`);
+      router.push(`/resume-builder/${result.data.id}`);
     },
     onError: (error) => {
       console.error("Create error:", error);
@@ -118,10 +127,14 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const createEmptyMutation = useMutation({
     mutationFn: (templateId: ResumeTemplateId) =>
       createEmptyResumeAction(templateId),
-    onSuccess: (newResume) => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Resume berhasil dibuat! 🚀");
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
-      router.push(`/resume-builder/${newResume.id}`);
+      router.push(`/resume-builder/${result.data.id}`);
     },
     onError: (error) => {
       console.error("Create error:", error);

@@ -1,13 +1,4 @@
-import {
-  type JSX,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 
-import * as ReactDOM from "react-dom";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { DraggableBlockPlugin_EXPERIMENTAL } from "@lexical/react/LexicalDraggableBlockPlugin";
@@ -20,8 +11,16 @@ import {
   $isTextNode,
   type NodeKey,
 } from "lexical";
-
 import { GripVerticalIcon, PlusIcon } from "lucide-react";
+import {
+  type JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import * as ReactDOM from "react-dom";
 
 import { useEditorModal } from "@/components/editor/editor-hooks/use-modal";
 import { Button } from "@/components/ui/button";

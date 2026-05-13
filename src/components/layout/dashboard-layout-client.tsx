@@ -1,12 +1,11 @@
 "use client";
 
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import {
   HeaderProvider,
   useHeader,
 } from "@/components/providers/header-provider";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider , SidebarTrigger } from "@/components/ui/sidebar";
 
 function HeaderContent() {
   const { title, actions } = useHeader();

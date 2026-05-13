@@ -1,40 +1,41 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { addDays, format, isAfter, isToday, startOfDay } from "date-fns";
+import { id } from "date-fns/locale";
 import {
   Building2 as CompanyIcon,
-  Briefcase as PositionIcon,
   Clock as DateIcon,
-  Tag as TypeIcon,
-  Activity as StatusIcon,
+  ExternalLink,
   MoreHorizontal,
   PencilLine,
+  Briefcase as PositionIcon,
+  Activity as StatusIcon,
   Trash2,
-  ExternalLink,
+  Tag as TypeIcon,
 } from "lucide-react";
+
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  type JobStatus,
-  type JobType,
-  type JobApplication,
-} from "@/features/job-tracker/types";
 import {
   JOB_STATUS_LABELS,
   JOB_TYPE_LABELS,
   STATUS_BADGE,
 } from "@/features/job-tracker/constants";
-import { format, isToday, isAfter, addDays, startOfDay } from "date-fns";
-import { id } from "date-fns/locale";
+import {
+  type JobApplication,
+  type JobStatus,
+  type JobType,
+} from "@/features/job-tracker/types";
 import { cn } from "@/lib/utils/cn";
-import { Button } from "@/components/ui/button";
 
 interface GetColumnsProps {
   onEdit: (job: JobApplication) => void;

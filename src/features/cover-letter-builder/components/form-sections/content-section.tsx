@@ -1,15 +1,16 @@
 "use client";
 
 import { AlignLeft } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
 interface ContentSectionProps {
   content: CoverLetterBuilderData;

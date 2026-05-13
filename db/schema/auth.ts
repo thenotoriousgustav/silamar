@@ -1,10 +1,10 @@
 import {
-  pgTable,
-  text,
-  timestamp,
   boolean,
   integer,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 export const planEnum = pgEnum("plan", ["free", "pro"]);

@@ -2,18 +2,19 @@
 
 import {
   Document,
+  Font,
+  Image,
+  Link,
   Page,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  Font,
-  Link,
-  Image,
 } from "@react-pdf/renderer";
+
 import type {
-  ResumeContent,
   DescriptionItem,
-} from "@/features/resumes-list/types/resume";
+  ResumeContent,
+} from "@/types/resume";
 import { isLexicalJson, lexicalJsonToTextLines } from "@/lib/lexical-to-html";
 
 // Register custom fonts
@@ -97,7 +98,7 @@ const getStyles = (
   // Use the same font for bold/italic if separate files aren't provided
   const boldFont = pdfFont;
 
-  let styles: any = {
+  const styles: any = {
     page: {
       padding: 50,
       fontSize: baseFontSize,
@@ -420,6 +421,10 @@ function BulletList({
 
 const translations = {
   id: {
+    professionalSummary: "Ringkasan Profesional",
+    workExperience: "Pengalaman Kerja",
+    education: "Pendidikan",
+    skills: "Keahlian",
     projects: "Proyek",
     certificates: "Sertifikat",
     awards: "Penghargaan",

@@ -1,10 +1,17 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getResumeDTO } from "@/features/resume-builder/queries";
-import { ResumeBuilderClient } from "@/features/resume-builder/components/resume-builder-client";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+import {
+  getResumeById,
+  ResumeBuilderClient,
+} from "@/features/resume-builder";
+import type { ResumeContent } from "@/features/resume-builder";
+import { getSessionUser } from "@/lib/auth/session";
+
+export const metadata: Metadata = {
+  title: "Resume Builder",
+  description: "Buat dan edit resume ATS-friendly dengan AI",
+};
 
 export default async function ResumeBuilderPage({
   params,
@@ -13,7 +20,10 @@ export default async function ResumeBuilderPage({
 }) {
   const { id } = await params;
 
-  const resume = await getResumeDTO(id);
+  const user = await getSessionUser();
+  if (!user) notFound();
+
+  const resume = await getResumeById(id, user.id);
 
   if (!resume) notFound();
 

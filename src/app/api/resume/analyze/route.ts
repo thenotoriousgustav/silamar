@@ -1,13 +1,11 @@
-// app/api/resume/import/route.ts
-
-import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { ResumeContentSchema } from "@/features/resumes-list/schema";
-import { extractPdfText } from "@/features/resume-builder/utils/pdf-extractor";
+import { generateText, Output } from "ai";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
-export const dynamic = "force-dynamic";
+import { extractPdfText } from "@/features/resume-builder";
+import { ResumeContentSchema } from "@/features/resumes-list";
+
 export const runtime = "nodejs";
 
 const ExtractionSchema = z.object({

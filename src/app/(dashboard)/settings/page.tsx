@@ -1,22 +1,19 @@
+import { Bell, CreditCard, User } from "lucide-react";
 import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { Settings, User, CreditCard, Bell } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils/format";
-import { CREDIT_PACKAGES, PRO_SUBSCRIPTION } from "@/lib/payment/midtrans";
+import { notFound } from "next/navigation";
 
-export const metadata: Metadata = { title: "Pengaturan" };
+import { getSessionUser } from "@/lib/auth/session";
+import { CREDIT_PACKAGES, PRO_SUBSCRIPTION } from "@/lib/payment/midtrans";
+import { formatCurrency, formatDate } from "@/lib/utils/format";
+
+export const metadata: Metadata = {
+  title: "Pengaturan",
+  description: "Kelola akun, langganan, dan preferensi kamu",
+};
 
 export default async function SettingsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) redirect("/login");
-
-  const user = session.user as typeof session.user & {
-    credits?: number;
-    plan?: string;
-    planExpiresAt?: Date | null;
-  };
+  const user = await getSessionUser();
+  if (!user) notFound();
 
   return (
     <div className="space-y-6">

@@ -1,20 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { DotsThree, PencilSimple, Trash } from "@phosphor-icons/react";
-import { SidebarMenuAction } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  deleteTrackerAction,
-  updateTrackerAction,
-} from "@/features/job-tracker/actions";
+import * as React from "react";
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -33,9 +24,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { SidebarMenuAction } from "@/components/ui/sidebar";
+import {
+  deleteTrackerAction,
+  updateTrackerAction,
+} from "@/features/job-tracker/actions";
 
 interface TrackerActionsProps {
   tracker: {

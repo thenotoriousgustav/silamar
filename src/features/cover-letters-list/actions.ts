@@ -1,28 +1,29 @@
 "use server";
 
-import { db } from "@/db";
-import { coverLetters } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { eq, and } from "drizzle-orm";
-import { headers } from "next/headers";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-async function getSession() {
-  return await auth.api.getSession({
-    headers: await headers(),
-  });
-}
+import { db } from "@/db";
+import { coverLetters } from "@/db/schema";
+import { getSessionUser } from "@/lib/auth/session";
+import type { ActionResult } from "@/types/action-result";
 
-export async function deleteCoverLetterAction(id: string) {
-  const session = await getSession();
-  if (!session?.user) throw new Error("Unauthorized");
+export async function deleteCoverLetterAction(
+  id: string,
+): Promise<ActionResult<{ id: string }>> {
+  const user = await getSessionUser();
+  if (!user) return { success: false, error: "Unauthorized" };
 
-  await db
-    .delete(coverLetters)
-    .where(
-      and(eq(coverLetters.id, id), eq(coverLetters.userId, session.user.id)),
-    );
+  try {
+    await db
+      .delete(coverLetters)
+      .where(
+        and(eq(coverLetters.id, id), eq(coverLetters.userId, user.id)),
+      );
 
-  revalidatePath("/documents/cover-letter");
-  return { success: true };
+    revalidatePath("/documents/cover-letter");
+    return { success: true, data: { id } };
+  } catch {
+    return { success: false, error: "Failed to delete cover letter" };
+  }
 }

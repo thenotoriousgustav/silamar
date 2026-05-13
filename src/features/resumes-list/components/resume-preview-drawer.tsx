@@ -1,17 +1,18 @@
 "use client";
 
+import { PencilLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerClose,
-  DrawerFooter,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-
-import { PencilLine, X } from "lucide-react";
+// eslint-disable-next-line import/no-restricted-paths -- Preview drawer needs resume preview component
 import { ResumePreview } from "@/features/resume-builder/components/resume-preview";
 
 interface Resume {

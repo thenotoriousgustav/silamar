@@ -1,14 +1,17 @@
-import { getJobsDTO } from "@/features/job-tracker/queries";
-import { JobTrackerClient } from "@/features/job-tracker/components/job-tracker-client";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import {
-  VIEW_PREFERENCE_KEY,
   COLUMN_ORDER_KEY,
-} from "@/features/job-tracker/constants";
+  getJobsDTO,
+  JobTrackerClient,
+  VIEW_PREFERENCE_KEY,
+} from "@/features/job-tracker";
+
+export const metadata: Metadata = {
+  title: "Job Tracker",
+  description: "Lacak dan kelola semua lamaran kerja kamu di satu tempat",
+};
 
 export default async function JobTrackerPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -16,21 +19,23 @@ export default async function JobTrackerPage(props: {
   const searchParams = await props.searchParams;
   const trackerId = searchParams.trackerId as string | undefined;
 
-  const userJobs = await getJobsDTO({ trackerId });
   const cookieStore = await cookies();
 
-  const initialView =
-    (cookieStore.get(VIEW_PREFERENCE_KEY)?.value as "kanban" | "table") ||
-    "table";
+  const [userJobs, initialView, columnOrderCookie] = await Promise.all([
+    getJobsDTO({ trackerId }),
+    Promise.resolve(
+      (cookieStore.get(VIEW_PREFERENCE_KEY)?.value as "kanban" | "table") ||
+        "table",
+    ),
+    Promise.resolve(cookieStore.get(COLUMN_ORDER_KEY)?.value),
+  ]);
 
-  const columnOrderCookie = cookieStore.get(COLUMN_ORDER_KEY)?.value;
   let initialColumnOrder: string[] | undefined;
-
   if (columnOrderCookie) {
     try {
       initialColumnOrder = JSON.parse(decodeURIComponent(columnOrderCookie));
-    } catch (e) {
-      console.error("Failed to parse initial column order", e);
+    } catch {
+      // Invalid cookie value, use default order
     }
   }
 

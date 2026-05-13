@@ -1,60 +1,27 @@
-import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { resumes, jobApplications, aiUsageLogs } from "@/db/schema";
-import { eq, count, desc } from "drizzle-orm";
-import Link from "next/link";
 import {
-  FileText,
-  Briefcase,
-  BarChart3,
-  Mail,
-  Target,
-  Brain,
   ArrowRight,
+  BarChart3,
+  Brain,
+  Briefcase,
   Coins,
-  TrendingUp,
+  FileText,
+  Mail,
   Plus,
+  Target,
+  TrendingUp,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { getDashboardData } from "@/features/dashboard";
+import { getSessionUser } from "@/lib/auth/session";
 import { formatRelativeTime } from "@/lib/utils/format";
 
-export const metadata: Metadata = { title: "Dashboard" };
-
-async function getDashboardData(userId: string) {
-  const [resumeCount, jobCount, recentJobs, recentActivity] = await Promise.all(
-    [
-      db
-        .select({ count: count() })
-        .from(resumes)
-        .where(eq(resumes.userId, userId)),
-      db
-        .select({ count: count() })
-        .from(jobApplications)
-        .where(eq(jobApplications.userId, userId)),
-      db
-        .select()
-        .from(jobApplications)
-        .where(eq(jobApplications.userId, userId))
-        .orderBy(desc(jobApplications.createdAt))
-        .limit(5),
-      db
-        .select()
-        .from(aiUsageLogs)
-        .where(eq(aiUsageLogs.userId, userId))
-        .orderBy(desc(aiUsageLogs.createdAt))
-        .limit(5),
-    ],
-  );
-
-  return {
-    resumeCount: resumeCount[0]?.count ?? 0,
-    jobCount: jobCount[0]?.count ?? 0,
-    recentJobs,
-    recentActivity,
-  };
-}
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Kelola resume, cover letter, dan lamaran kerja kamu",
+};
 
 const quickActions = [
   {
@@ -105,23 +72,18 @@ const statusLabels: Record<string, string> = {
 };
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) redirect("/login");
+  const user = await getSessionUser();
+  if (!user) notFound();
 
-  const data = await getDashboardData(session.user.id);
-  const user = session.user as typeof session.user & {
-    credits?: number;
-    plan?: string;
-  };
-  const credits = user.credits ?? 0;
-  const plan = user.plan ?? "free";
+  const data = await getDashboardData();
+  if (!data) notFound();
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-foreground text-2xl font-bold">
-          Halo, {session.user.name?.split(" ")[0]}! 👋
+          Halo, {user.name?.split(" ")[0]}! 👋
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Semangat cari kerja hari ini!
@@ -169,10 +131,10 @@ export default async function DashboardPage() {
         <div className="glass p-5">
           <div className="mb-3 flex items-center justify-between">
             <div
-              className={`p-2 ${plan === "pro" ? "bg-primary/20" : "bg-amber-500/20"}`}
+              className={`p-2 ${user.plan === "pro" ? "bg-primary/20" : "bg-amber-500/20"}`}
             >
               <Coins
-                className={`h-4 w-4 ${plan === "pro" ? "text-primary" : "text-amber-400"}`}
+                className={`h-4 w-4 ${user.plan === "pro" ? "text-primary" : "text-amber-400"}`}
               />
             </div>
             <Link
@@ -183,10 +145,10 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <div className="text-foreground text-2xl font-bold">
-            {plan === "pro" ? "∞" : credits}
+            {user.plan === "pro" ? "∞" : user.credits}
           </div>
           <div className="text-muted-foreground text-xs">
-            {plan === "pro" ? "Pro subscription" : "Kredit tersisa"}
+            {user.plan === "pro" ? "Pro subscription" : "Kredit tersisa"}
           </div>
         </div>
 

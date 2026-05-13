@@ -1,11 +1,12 @@
 "use client";
 
-import { ReactNode } from "react";
-import { Trash2, ArrowRight } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils/format";
+import { ReactNode } from "react";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/format";
 
 interface DocumentCardProps {
   title: string;
@@ -32,8 +33,6 @@ export function DocumentCard({
   children,
   className,
 }: DocumentCardProps) {
-  const CardWrapper = onClick ? "div" : "div"; // Both are divs, but logic changes
-
   return (
     <div
       role={onClick ? "button" : undefined}

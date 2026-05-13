@@ -1,36 +1,39 @@
 "use server";
 
+import { and, eq } from "drizzle-orm";
+import { revalidatePath, updateTag } from "next/cache";
+
 import { db } from "@/db";
 import { resumes } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { eq, and } from "drizzle-orm";
-import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
-
 import { getResumesDTO } from "@/features/resumes-list/queries";
+import { getSessionUser } from "@/lib/auth/session";
+import type { ActionResult } from "@/types/action-result";
+
+import type { ResumeListItemWithDetailsDTO } from "./types/resume-list-item-dto";
 
 /**
- * Server Actions for Resume Builder
+ * Server Actions for Resumes List
  */
 
-async function getSession() {
-  return await auth.api.getSession({
-    headers: await headers(),
-  });
-}
-
-export async function getResumesAction() {
+export async function getResumesAction(): Promise<ResumeListItemWithDetailsDTO[]> {
   return await getResumesDTO();
 }
 
-export async function deleteResumeAction(id: string) {
-  const session = await getSession();
-  if (!session?.user) throw new Error("Unauthorized");
+export async function deleteResumeAction(
+  id: string,
+): Promise<ActionResult<{ id: string }>> {
+  const user = await getSessionUser();
+  if (!user) return { success: false, error: "Unauthorized" };
 
-  await db
-    .delete(resumes)
-    .where(and(eq(resumes.id, id), eq(resumes.userId, session.user.id)));
+  try {
+    await db
+      .delete(resumes)
+      .where(and(eq(resumes.id, id), eq(resumes.userId, user.id)));
 
-  revalidatePath("/documents/resumes");
-  return { success: true };
+    revalidatePath("/documents/resumes");
+    updateTag("dashboard");
+    return { success: true, data: { id } };
+  } catch {
+    return { success: false, error: "Failed to delete resume" };
+  }
 }

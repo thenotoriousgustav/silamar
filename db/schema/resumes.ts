@@ -1,11 +1,12 @@
 import {
-  pgTable,
-  text,
-  timestamp,
   boolean,
   integer,
   jsonb,
+  pgTable,
+  text,
+  timestamp,
 } from "drizzle-orm/pg-core";
+
 import { users } from "./auth";
 
 export const resumeTemplates = pgTable("resume_templates", {

@@ -1,14 +1,22 @@
 "use client";
 
-import { Code2, Plus, Trash2, GripVertical, ChevronDown } from "lucide-react";
+import { ChevronDown, Code2, GripVertical, Plus, Trash2 } from "lucide-react";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sortable,
+  SortableContent,
+  SortableItem,
+  SortableItemHandle,
+} from "@/components/ui/sortable";
 import {
   TagsInput,
   TagsInputInput,
@@ -18,15 +26,7 @@ import {
 import type {
   ResumeContent,
   ResumeSkill,
-} from "@/features/resumes-list/types/resume";
-import { Label } from "@/components/ui/label";
-
-import {
-  Sortable,
-  SortableContent,
-  SortableItem,
-  SortableItemHandle,
-} from "@/components/ui/sortable";
+} from "@/types/resume";
 
 interface SkillsSectionProps {
   content: ResumeContent;

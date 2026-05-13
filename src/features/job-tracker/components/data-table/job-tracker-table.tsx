@@ -1,25 +1,24 @@
 "use client";
 
 import type { Table as TanstackTable } from "@tanstack/react-table";
+import { ExternalLink, PencilLine, Trash2, X } from "lucide-react";
 
-import type { JobApplication } from "@/features/job-tracker/types";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import {
   ActionBar,
-  ActionBarSelection,
-  ActionBarSeparator,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
-  ActionBarClose,
+  ActionBarSelection,
+  ActionBarSeparator,
 } from "@/components/ui/action-bar";
 import { Button } from "@/components/ui/button";
-
-import { PencilLine, Trash2, X, ExternalLink } from "lucide-react";
 import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "@/components/ui/context-menu";
+import type { JobApplication } from "@/features/job-tracker/types";
 
 interface JobTrackerTableProps {
   table: TanstackTable<JobApplication>;

@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
-import { Loader2, Download, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { pdf } from "@react-pdf/renderer";
+import { Download, Loader2, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
+
+
 import { CoverLetterTemplate } from "./cover-letter-template";
 import { HtmlCoverLetter } from "./html-cover-letter";
 

@@ -1,5 +1,4 @@
 import { INSERT_ORDERED_LIST_COMMAND } from "@lexical/list";
-
 import { ListOrderedIcon } from "lucide-react";
 
 import { ComponentPickerOption } from "@/components/editor/plugins/picker/component-picker-option";

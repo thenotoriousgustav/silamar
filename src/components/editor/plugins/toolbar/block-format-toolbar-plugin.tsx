@@ -6,7 +6,6 @@ import {
   $isRootOrShadowRoot,
   type BaseSelection,
 } from "lexical";
-
 import { ChevronDownIcon } from "lucide-react";
 
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";

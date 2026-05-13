@@ -12,28 +12,28 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { RichTextExtension } from "@lexical/rich-text";
 import {
-  type EditorState,
-  type SerializedEditorState,
   configExtension,
   defineExtension,
+  type EditorState,
+  type SerializedEditorState,
 } from "lexical";
 import { useMemo, useState } from "react";
 
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable";
 import { DragDropPasteExtension } from "@/components/editor/extensions/drag-drop-paste-extension";
-import { FloatingLinkEditorPlugin } from "@/components/editor/plugins/floating-link-editor-plugin";
 import { DraggableBlockPlugin } from "@/components/editor/plugins/draggable-block-plugin";
-import { BlockFormatDropDown } from "@/components/editor/plugins/toolbar/block-format-toolbar-plugin";
-import { FormatBulletedList } from "@/components/editor/plugins/toolbar/block-format/format-bulleted-list";
-import { FormatNumberedList } from "@/components/editor/plugins/toolbar/block-format/format-numbered-list";
-import { FormatParagraph } from "@/components/editor/plugins/toolbar/block-format/format-paragraph";
-import { ResumeFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/resume-format-toolbar-plugin";
-import { HistoryToolbarPlugin } from "@/components/editor/plugins/toolbar/history-toolbar-plugin";
-import { LinkToolbarPlugin } from "@/components/editor/plugins/toolbar/link-toolbar-plugin";
-import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
+import { FloatingLinkEditorPlugin } from "@/components/editor/plugins/floating-link-editor-plugin";
 import { BulletedListPickerPlugin } from "@/components/editor/plugins/picker/bulleted-list-picker-plugin";
 import { NumberedListPickerPlugin } from "@/components/editor/plugins/picker/numbered-list-picker-plugin";
 import { ParagraphPickerPlugin } from "@/components/editor/plugins/picker/paragraph-picker-plugin";
+import { FormatBulletedList } from "@/components/editor/plugins/toolbar/block-format/format-bulleted-list";
+import { FormatNumberedList } from "@/components/editor/plugins/toolbar/block-format/format-numbered-list";
+import { FormatParagraph } from "@/components/editor/plugins/toolbar/block-format/format-paragraph";
+import { BlockFormatDropDown } from "@/components/editor/plugins/toolbar/block-format-toolbar-plugin";
+import { HistoryToolbarPlugin } from "@/components/editor/plugins/toolbar/history-toolbar-plugin";
+import { LinkToolbarPlugin } from "@/components/editor/plugins/toolbar/link-toolbar-plugin";
+import { ResumeFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/resume-format-toolbar-plugin";
+import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
 import { editorTheme } from "@/components/editor/themes/editor-theme";
 import { validateUrl } from "@/components/editor/utils/url";
 import { TooltipProvider } from "@/components/ui/tooltip";

@@ -1,5 +1,8 @@
 "use client";
 
+import { Check, LayoutTemplate } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Check, LayoutTemplate } from "lucide-react";
-import type { ResumeTemplateId } from "@/features/resumes-list/types/resume";
+import type { ResumeTemplateId } from "@/types/resume";
 import { cn } from "@/lib/utils";
 
 interface TemplateSelectionDialogProps {

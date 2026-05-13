@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
-
 import {
   $getSelection,
   type BaseSelection,
   COMMAND_PRIORITY_CRITICAL,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
+import { useEffect, useRef } from "react";
+
 
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";
 

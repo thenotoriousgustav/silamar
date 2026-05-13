@@ -1,17 +1,19 @@
 "use client";
 
+import { PencilLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerClose,
-  DrawerFooter,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+// eslint-disable-next-line import/no-restricted-paths -- Preview drawer needs cover letter preview component
 import { CoverLetterPreview } from "@/features/cover-letter-builder/components/cover-letter-preview";
-import { PencilLine, X } from "lucide-react";
 
 interface CoverLetter {
   id: string;

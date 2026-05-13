@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { updateResumeAction } from "@/features/resume-builder/actions";
+
+import { updateResumeAction } from "@/features/resume-builder/actions/update-resume";
 import type {
   ResumeContent,
-  ResumeExperience,
-  ResumeEducation,
-  ResumeProject,
-  ResumeSkill,
   ResumeCustomSection,
   ResumeCustomSectionItem,
-} from "@/features/resumes-list/types/resume";
+  ResumeEducation,
+  ResumeExperience,
+  ResumeProject,
+  ResumeSkill,
+} from "@/types/resume";
 
 const DEFAULT_RESUME: ResumeContent = {
   personalInfo: {

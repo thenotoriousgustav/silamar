@@ -1,10 +1,11 @@
 "use client";
 
-import * as React from "react";
+import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
+
 
 function Checkbox({
   className,

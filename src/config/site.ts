@@ -1,8 +1,10 @@
+import { env } from "@/config/env";
+
 export const siteConfig = {
   name: "SiLamar",
   description:
     "Platform AI-powered untuk membantu fresh graduate Indonesia melamar kerja lebih cerdas. Buat CV ATS-friendly, analisis resume, dan track lamaran kerja kamu.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  url: env.NEXT_PUBLIC_APP_URL,
   ogImage: "https://silamar.com/og.jpg",
   links: {
     twitter: "https://twitter.com/silamar",

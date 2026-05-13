@@ -2,9 +2,10 @@
 
 import {
   type Announcements,
-  type CollisionDetection,
   closestCenter,
   closestCorners,
+  type CollisionDetection,
+  defaultDropAnimationSideEffects,
   DndContext,
   type DndContextProps,
   type DragCancelEvent,
@@ -16,7 +17,6 @@ import {
   type DragStartEvent,
   type DropAnimation,
   type DroppableContainer,
-  defaultDropAnimationSideEffects,
   getFirstCollision,
   KeyboardCode,
   type KeyboardCoordinateGetter,

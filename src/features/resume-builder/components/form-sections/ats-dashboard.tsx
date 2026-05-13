@@ -1,24 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import {
-  Zap,
-  ChevronRight,
-  BarChart3,
-  Loader2,
-  CheckCircle2,
-  Sparkles,
   AlertTriangle,
+  BarChart3,
   CheckCircle,
+  CheckCircle2,
+  ChevronRight,
+  Loader2,
   Plus,
+  Sparkles,
+  Zap,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  calculateCompleteness,
-  getCompletenessFeedback,
-} from "@/features/resumes-list/utils/completeness";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +22,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+import type { ResumeContent } from "@/types/resume";
+import {
+  calculateCompleteness,
+  getCompletenessFeedback,
+} from "@/lib/utils/completeness";
+import { cn } from "@/lib/utils";
 
 interface ATSDashboardProps {
   content: ResumeContent;

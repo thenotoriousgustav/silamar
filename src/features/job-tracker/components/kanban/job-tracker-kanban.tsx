@@ -1,13 +1,15 @@
 "use client";
 
 import {
+  Briefcase,
   Building2,
   Clock,
+  GripVertical,
   PencilLine,
   Trash2,
-  GripVertical,
-  Briefcase,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Kanban,
   KanbanBoard,
@@ -16,18 +18,17 @@ import {
   KanbanItem,
   KanbanOverlay,
 } from "@/components/ui/kanban";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
-import { formatDate } from "@/lib/utils/format";
-import {
-  type JobStatus,
-  type JobApplication,
-} from "@/features/job-tracker/types";
 import {
   KANBAN_COLUMNS,
-  STATUS_COLORS,
   STATUS_BADGE,
+  STATUS_COLORS,
 } from "@/features/job-tracker/constants";
+import {
+  type JobApplication,
+  type JobStatus,
+} from "@/features/job-tracker/types";
+import { cn } from "@/lib/utils/cn";
+import { formatDate } from "@/lib/utils/format";
 
 interface JobTrackerKanbanProps {
   columns: Record<string, JobApplication[]>;

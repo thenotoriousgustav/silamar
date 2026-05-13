@@ -1,20 +1,31 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useCoverLetterBuilder } from "@/features/cover-letter-builder/hooks/use-cover-letter-builder";
-import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Eye, Loader2, Monitor, Save } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clsx } from "clsx";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
 import { useHeaderDispatch } from "@/components/providers/header-provider";
-import { CoverLetterForm } from "./cover-letter-form";
-import { CoverLetterPreview } from "./cover-letter-preview";
-import { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+import { SplitViewLayout } from "@/components/shared/split-view-layout";
+import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useQueryClient } from "@tanstack/react-query";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCoverLetterBuilder } from "@/features/cover-letter-builder/hooks/use-cover-letter-builder";
+import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
+
+import { CoverLetterForm } from "./cover-letter-form";
+
+const CoverLetterPreview = dynamic(() => import("./cover-letter-preview").then(mod => ({ default: mod.CoverLetterPreview })), {
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="animate-pulse bg-muted h-[600px] w-[420px] rounded-lg" />
+    </div>
+  ),
+  ssr: false,
+});
 
 interface CoverLetterBuilderClientProps {
   id: string;
@@ -263,38 +274,12 @@ export function CoverLetterBuilderClient({
   ]);
 
   return (
-    <div className="relative -m-6 flex h-[calc(100vh-64px)] flex-col overflow-hidden lg:-m-8">
-      <main className="flex flex-1 overflow-hidden">
-        {/* Left Side: Form */}
-        <div
-          className={clsx(
-            "border-border bg-background h-full border-r transition-all duration-500 ease-in-out",
-            viewMode === "form"
-              ? "w-full"
-              : viewMode === "split"
-                ? "w-5/10"
-                : "pointer-events-none w-0 overflow-hidden opacity-0",
-          )}
-        >
-          <CoverLetterForm content={content} updateContent={updateContent} />
-        </div>
-
-        {/* Right Side: Preview */}
-        <div
-          className={clsx(
-            "flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
-            viewMode === "preview"
-              ? "w-full"
-              : viewMode === "split"
-                ? "w-5/10"
-                : "pointer-events-none w-0 overflow-hidden opacity-0",
-          )}
-        >
-          <div className="flex h-full w-full items-center justify-center p-4 lg:p-8">
-            <CoverLetterPreview content={content} />
-          </div>
-        </div>
-      </main>
-    </div>
+    <SplitViewLayout
+      viewMode={viewMode}
+      formPanel={
+        <CoverLetterForm content={content} updateContent={updateContent} />
+      }
+      previewPanel={<CoverLetterPreview content={content} />}
+    />
   );
 }

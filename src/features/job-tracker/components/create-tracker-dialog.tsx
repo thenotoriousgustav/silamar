@@ -1,32 +1,34 @@
 "use client";
 
-import * as React from "react";
-import { Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+import * as React from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Field,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { createTrackerAction } from "@/features/job-tracker/actions";
-import { useQueryClient } from "@tanstack/react-query";
 
-import { createTrackerSchema, type CreateTrackerFormValues } from "../schema";
+
+import { type CreateTrackerFormValues, createTrackerSchema } from "../schemas";
 
 export function CreateTrackerDialog({
   trigger,
@@ -53,7 +55,7 @@ export function CreateTrackerDialog({
       queryClient.invalidateQueries({ queryKey: ["trackers"] });
       form.reset();
       setOpen(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Gagal membuat tracker");
     } finally {
       setIsLoading(false);

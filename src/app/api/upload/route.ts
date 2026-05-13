@@ -1,7 +1,9 @@
+import { randomUUID } from "crypto";
+
 import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/lib/auth";
 import { uploadResumePdf } from "@/lib/storage/r2";
-import { randomUUID } from "crypto";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["application/pdf"];

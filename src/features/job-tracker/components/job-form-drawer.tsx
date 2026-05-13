@@ -1,28 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CalendarIcon,
-  Building2,
-  Briefcase,
-  MapPin,
-  Globe,
-  DollarSign,
-  CalendarDays,
-  Loader2,
-  Trash2,
-  ExternalLink,
-  Info,
-  FileText,
-  Sparkles,
-} from "lucide-react";
+import { useMutation, useQuery , useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
+import {
+  Briefcase,
+  Building2,
+  CalendarDays,
+  DollarSign,
+  ExternalLink,
+  FileText,
+  Globe,
+  Info,
+  Loader2,
+  MapPin,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { FormDatePicker } from "@/components/shared/form-date-picker";
+import { FormFieldLabel } from "@/components/shared/form-field-label";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -30,38 +31,30 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import {
-  type JobStatus,
-  type JobApplication,
-} from "@/features/job-tracker/types";
+  createJobAction,
+  getUserResumesAction,
+  updateJobAction,
+} from "@/features/job-tracker/actions";
 import {
   JOB_STATUS_LABELS,
-  JOB_STATUS_COLORS,
   JOB_TYPE_LABELS,
 } from "@/features/job-tracker/constants";
-
 import {
-  createJobAction,
-  updateJobAction,
-  getUserResumesAction,
-} from "@/features/job-tracker/actions";
-import { useQuery } from "@tanstack/react-query";
-import { ResumeSelectorDialog } from "./resume-selector-dialog";
-import { jobApplicationSchema, type JobApplicationFormValues } from "../schema";
+  type JobApplication,
+  type JobStatus,
+} from "@/features/job-tracker/types";
+import { cn } from "@/lib/utils";
+import { triggerSuccessConfetti } from "@/lib/utils/confetti";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type JobApplicationFormValues, jobApplicationSchema } from "../schemas";
+
 import { JobAiAssistant } from "./job-ai-assistant";
+import { ResumeSelectorDialog } from "./resume-selector-dialog";
+
 
 interface JobFormDrawerProps {
   job: JobApplication | null;
@@ -72,8 +65,6 @@ interface JobFormDrawerProps {
   trackerId?: string | null;
 }
 
-import { triggerSuccessConfetti } from "@/lib/utils/confetti";
-
 export function JobFormDrawer({
   job,
   open,
@@ -82,18 +73,27 @@ export function JobFormDrawer({
   onDelete,
   trackerId,
 }: JobFormDrawerProps) {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const [isResumeSelectorOpen, setIsResumeSelectorOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("detail");
   const isEdit = !!job;
 
   const mutation = useMutation({
     mutationFn: (values: JobApplicationFormValues) => {
+      const payload = {
+        ...values,
+        appliedDate: values.appliedDate
+          ? values.appliedDate.toISOString()
+          : undefined,
+        interviewDate: values.interviewDate
+          ? values.interviewDate.toISOString()
+          : undefined,
+      };
       if (isEdit && job) {
-        return updateJobAction(job.id, values);
+        return updateJobAction(job.id, payload);
       }
       return createJobAction({
-        ...values,
+        ...payload,
         trackerId: values.trackerId || trackerId,
       });
     },
@@ -273,9 +273,11 @@ export function JobFormDrawer({
 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                      <Building2 className="h-3.5 w-3.5" /> Nama Perusahaan
-                    </Label>
+                    <FormFieldLabel
+                      icon={<Building2 className="h-3.5 w-3.5" />}
+                    >
+                      Nama Perusahaan
+                    </FormFieldLabel>
                     <Input
                       {...form.register("company")}
                       className="bg-background"
@@ -284,9 +286,11 @@ export function JobFormDrawer({
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                      <Briefcase className="h-3.5 w-3.5" /> Posisi Pekerjaan
-                    </Label>
+                    <FormFieldLabel
+                      icon={<Briefcase className="h-3.5 w-3.5" />}
+                    >
+                      Posisi Pekerjaan
+                    </FormFieldLabel>
                     <Input
                       {...form.register("position")}
                       className="bg-background"
@@ -296,9 +300,11 @@ export function JobFormDrawer({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <MapPin className="h-3.5 w-3.5" /> Lokasi
-                      </Label>
+                      <FormFieldLabel
+                        icon={<MapPin className="h-3.5 w-3.5" />}
+                      >
+                        Lokasi
+                      </FormFieldLabel>
                       <Input
                         {...form.register("location")}
                         className="bg-background"
@@ -307,9 +313,11 @@ export function JobFormDrawer({
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <CalendarDays className="h-3.5 w-3.5" /> Tipe Kerja
-                      </Label>
+                      <FormFieldLabel
+                        icon={<CalendarDays className="h-3.5 w-3.5" />}
+                      >
+                        Tipe Kerja
+                      </FormFieldLabel>
                       <select
                         {...form.register("type")}
                         className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
@@ -326,9 +334,7 @@ export function JobFormDrawer({
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                      Status Lamaran
-                    </Label>
+                    <FormFieldLabel>Status Lamaran</FormFieldLabel>
                     <select
                       {...form.register("status")}
                       className="border-input bg-background focus-visible:ring-primary flex h-9 w-full rounded-none border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
@@ -345,9 +351,11 @@ export function JobFormDrawer({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <DollarSign className="h-3.5 w-3.5" /> Estimasi Gaji
-                      </Label>
+                      <FormFieldLabel
+                        icon={<DollarSign className="h-3.5 w-3.5" />}
+                      >
+                        Estimasi Gaji
+                      </FormFieldLabel>
                       <Input
                         {...form.register("salary")}
                         className="bg-background"
@@ -356,9 +364,11 @@ export function JobFormDrawer({
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <Globe className="h-3.5 w-3.5" /> Link Lowongan
-                      </Label>
+                      <FormFieldLabel
+                        icon={<Globe className="h-3.5 w-3.5" />}
+                      >
+                        Link Lowongan
+                      </FormFieldLabel>
                       <div className="flex gap-2">
                         <Input
                           {...form.register("jobUrl")}
@@ -386,9 +396,11 @@ export function JobFormDrawer({
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                      <FileText className="h-3.5 w-3.5" /> Resume yang Digunakan
-                    </Label>
+                    <FormFieldLabel
+                      icon={<FileText className="h-3.5 w-3.5" />}
+                    >
+                      Resume yang Digunakan
+                    </FormFieldLabel>
                     <Controller
                       control={form.control}
                       name="resumeId"
@@ -453,99 +465,46 @@ export function JobFormDrawer({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <CalendarDays className="h-3.5 w-3.5" /> Tanggal Lamar
-                      </Label>
+                      <FormFieldLabel
+                        icon={<CalendarDays className="h-3.5 w-3.5" />}
+                      >
+                        Tanggal Lamar
+                      </FormFieldLabel>
                       <Controller
                         control={form.control}
                         name="appliedDate"
                         render={({ field }) => (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "bg-background h-9 w-full justify-start text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? (
-                                  format(field.value, "d MMM yyyy", {
-                                    locale: id,
-                                  })
-                                ) : (
-                                  <span>Pilih tanggal</span>
-                                )}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="pointer-events-auto z-100 w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                defaultMonth={field.value}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
+                          <FormDatePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Pilih tanggal"
+                          />
                         )}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                        <CalendarDays className="h-3.5 w-3.5" /> Jadwal
-                        Interview
-                      </Label>
+                      <FormFieldLabel
+                        icon={<CalendarDays className="h-3.5 w-3.5" />}
+                      >
+                        Jadwal Interview
+                      </FormFieldLabel>
                       <Controller
                         control={form.control}
                         name="interviewDate"
                         render={({ field }) => (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "bg-background h-9 w-full justify-start text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? (
-                                  format(field.value, "d MMM yyyy", {
-                                    locale: id,
-                                  })
-                                ) : (
-                                  <span>Pilih tanggal</span>
-                                )}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="pointer-events-auto z-100 w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                defaultMonth={field.value}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
+                          <FormDatePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Pilih tanggal"
+                          />
                         )}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-muted-foreground flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                      Deskripsi Pekerjaan
-                    </Label>
+                    <FormFieldLabel>Deskripsi Pekerjaan</FormFieldLabel>
                     <Textarea
                       {...form.register("description")}
                       placeholder="Tempel Job Description di sini untuk analisa AI..."

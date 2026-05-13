@@ -1,14 +1,12 @@
 "use client";
 
+import { Check, Sparkles } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Check } from "lucide-react";
 
 interface UpgradeModalProps {
   isOpen: boolean;

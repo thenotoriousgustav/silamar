@@ -1,11 +1,12 @@
 import {
-  pgTable,
-  text,
-  timestamp,
   integer,
   jsonb,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
 } from "drizzle-orm/pg-core";
+
 import { users } from "./auth";
 
 export const aiFeatureEnum = pgEnum("ai_feature", [

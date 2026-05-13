@@ -1,14 +1,15 @@
 "use client";
 
 import { User } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { CoverLetterBuilderData } from "@/features/cover-letters-list/schema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
 interface PersonalInfoSectionProps {
   content: CoverLetterBuilderData;

@@ -16,6 +16,7 @@ const eslintIgnore = [
   "coverage/",
   "*.min.js",
   "*.config.js",
+  "*.config.mjs",
   "*.d.ts",
 ];
 
@@ -51,6 +52,8 @@ const config = typescriptEslint.config(
       "@next/next/no-img-element": "off",
       "import/no-cycle": "error",
       "linebreak-style": ["error", "unix"],
+
+      // Architectural boundary enforcement: feature module isolation
       "import/no-restricted-paths": [
         "error",
         {
@@ -81,32 +84,72 @@ const config = typescriptEslint.config(
               from: "./src/features",
               except: ["./resumes-list"],
             },
+            {
+              target: "./src/features/resume-analysis",
+              from: "./src/features",
+              except: ["./resume-analysis"],
+            },
+            {
+              target: "./src/features/billing",
+              from: "./src/features",
+              except: ["./billing"],
+            },
+            {
+              target: "./src/features/auth",
+              from: "./src/features",
+              except: ["./auth"],
+            },
+            {
+              target: "./src/features/dashboard",
+              from: "./src/features",
+              except: ["./dashboard"],
+            },
             // Prevent features from importing from the app directory
             {
               target: "./src/features",
               from: "./src/app",
             },
-            // Prevent core directories from importing from features or app
+            // Prevent core/shared directories from importing from features or app
             {
               target: [
                 "./src/components",
                 "./src/hooks",
                 "./src/lib",
                 "./src/types",
-                "./src/utils",
+                "./src/config",
               ],
               from: ["./src/features", "./src/app"],
             },
           ],
         },
       ],
+
+      // Strict unused vars — error level
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
         },
       ],
+
+      // No explicit any — enforce strict typing
+      "@typescript-eslint/no-explicit-any": "error",
+
+      // Max function length: 30 lines of logic
+      "max-lines-per-function": [
+        "error",
+        {
+          max: 30,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+
+      // Max nesting depth: 2 levels
+      "max-depth": ["error", 2],
+
       "sort-imports": [
         "error",
         {
@@ -115,7 +158,7 @@ const config = typescriptEslint.config(
         },
       ],
       "import/order": [
-        "warn",
+        "error",
         {
           groups: [
             "builtin",
@@ -151,6 +194,167 @@ const config = typescriptEslint.config(
             order: "asc",
             caseInsensitive: true,
           },
+        },
+      ],
+    },
+  },
+  // Override max-lines-per-function for .tsx component files (JSX render functions are naturally longer)
+  {
+    files: ["**/*.tsx"],
+    rules: {
+      "max-lines-per-function": [
+        "warn",
+        {
+          max: 500,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+    },
+  },
+  // Loading/skeleton files are purely presentational and can be longer
+  {
+    files: ["**/loading.tsx"],
+    rules: {
+      "max-lines-per-function": "off",
+    },
+  },
+  // API routes handle complex request/response logic
+  {
+    files: ["src/app/api/**/*.ts"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        {
+          max: 100,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+    },
+  },
+  // Hooks and service files can be longer due to setup logic
+  {
+    files: ["src/hooks/**/*.ts", "src/features/*/hooks/**/*.ts", "src/lib/**/*.ts"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        {
+          max: 500,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+    },
+  },
+  // Feature actions and queries have complex business logic
+  {
+    files: ["src/features/*/actions/**/*.ts", "src/features/*/queries/**/*.ts", "src/features/*/actions.ts", "src/features/*/queries.ts"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        {
+          max: 80,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+    },
+  },
+  // Feature utility files (completeness calculations, prompts, etc.)
+  {
+    files: ["src/features/*/utils/**/*.ts", "src/lib/ai/prompts/**/*.ts"],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        {
+          max: 100,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+    },
+  },
+  // UI library components (shadcn, data-table, editor) are complex by nature
+  {
+    files: [
+      "src/components/ui/**/*.tsx",
+      "src/components/data-table/**/*.tsx",
+      "src/components/editor/**/*.tsx",
+    ],
+    rules: {
+      "max-lines-per-function": "off",
+      "max-depth": "off",
+    },
+  },
+  // Disable max-depth for complex UI components that use nested conditionals (kanban, sidebar)
+  {
+    files: [
+      "src/components/layout/**/*.tsx",
+      "src/features/*/components/**/*.tsx",
+    ],
+    rules: {
+      "max-depth": ["error", 4],
+    },
+  },
+  // Disable strict react-hooks rules for patterns that are common and intentional
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/incompatible-library": "off",
+      "react-hooks/use-memo": "off",
+    },
+  },
+  // Prevent component files from importing db/, drizzle-orm, or query files
+  {
+    files: [
+      "src/components/**/*.{ts,tsx}",
+      "src/features/*/components/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["db/*", "db", "**/db/**"],
+              message:
+                "Components must not import from the database layer directly. Use actions or hooks instead.",
+            },
+            {
+              group: ["drizzle-orm", "drizzle-orm/*"],
+              message:
+                "Components must not import from drizzle-orm. Use actions or hooks instead.",
+            },
+            {
+              group: ["**/queries/**", "**/queries"],
+              message:
+                "Components must not import query files directly. Use actions or hooks instead.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Prevent direct process.env access outside src/config/env.ts
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/config/env.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "MemberExpression[object.name='process'][property.name='env']",
+          message:
+            "Direct process.env access is not allowed. Import from '@/config/env' instead.",
         },
       ],
     },

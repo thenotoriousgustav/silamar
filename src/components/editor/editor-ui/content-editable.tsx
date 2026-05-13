@@ -1,6 +1,6 @@
+import { ContentEditable as LexicalContentEditable } from "@lexical/react/LexicalContentEditable";
 import type { JSX } from "react";
 
-import { ContentEditable as LexicalContentEditable } from "@lexical/react/LexicalContentEditable";
 import { cn } from "@/lib/utils";
 
 type Props = {

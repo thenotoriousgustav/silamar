@@ -1,13 +1,4 @@
-import {
-  type Dispatch,
-  type JSX,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
 
-import { createPortal } from "react-dom";
 
 import {
   $createLinkNode,
@@ -31,8 +22,16 @@ import {
   type LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-
 import { Check, Pencil, Trash, X } from "lucide-react";
+import {
+  type Dispatch,
+  type JSX,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 import { getSelectedNode } from "@/components/editor/utils/get-selected-node";
 import { setFloatingElemPositionForLinkEditor } from "@/components/editor/utils/set-floating-elem-position-for-link-editor";

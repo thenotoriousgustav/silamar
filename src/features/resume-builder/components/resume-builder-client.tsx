@@ -1,22 +1,32 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useResumeBuilder } from "@/features/resume-builder/hooks/use-resume-builder";
-import { Save, ArrowLeft, Monitor, Eye, Loader2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Eye, Loader2, Monitor, Save } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clsx } from "clsx";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useHeaderDispatch } from "@/components/providers/header-provider";
-import { ResumeForm } from "./resume-form";
-import { ResumePreview } from "./resume-preview";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { useHeaderDispatch } from "@/components/providers/header-provider";
+import { SplitViewLayout } from "@/components/shared/split-view-layout";
+import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useResumeBuilder } from "@/features/resume-builder/hooks/use-resume-builder";
+import type { ResumeContent } from "@/features/resume-builder/types/resume-content";
+
 import { updateResumeAction } from "../actions";
+import { ResumeForm } from "./resume-form";
+
+const ResumePreview = dynamic(() => import("./resume-preview").then(mod => ({ default: mod.ResumePreview })), {
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="animate-pulse bg-muted h-[600px] w-[420px] rounded-lg" />
+    </div>
+  ),
+  ssr: false,
+});
 
 interface ResumeBuilderClientProps {
   id: string;
@@ -319,81 +329,58 @@ export function ResumeBuilderClient({
   }
 
   return (
-    <div className="relative -m-6 flex h-[calc(100vh-64px)] flex-col overflow-hidden lg:-m-8">
-      {/* Builder Body */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* Left Side: Form */}
-        <div
-          className={clsx(
-            "border-border bg-background h-full border-r transition-all duration-500 ease-in-out",
-            viewMode === "form"
-              ? "w-full"
-              : viewMode === "split"
-                ? "w-5/10"
-                : "pointer-events-none w-0 overflow-hidden opacity-0",
-          )}
-        >
-          <ResumeForm
-            content={content}
-            updatePersonalInfo={updatePersonalInfo}
-            addExperience={addExperience}
-            updateExperience={updateExperience}
-            updateExperienceList={updateExperienceList}
-            removeExperience={removeExperience}
-            addEducation={addEducation}
-            updateEducation={updateEducation}
-            updateEducationList={updateEducationList}
-            removeEducation={removeEducation}
-            addProject={addProject}
-            updateProject={updateProject}
-            updateProjectList={updateProjectList}
-            removeProject={removeProject}
-            updateSkills={updateSkills}
-            addSkillCategory={addSkillCategory}
-            updateSkillCategory={updateSkillCategory}
-            removeSkillCategory={removeSkillCategory}
-            addCustomSection={addCustomSection}
-            updateCustomSection={updateCustomSection}
-            updateCustomSectionList={updateCustomSectionList}
-            removeCustomSection={removeCustomSection}
-            addCustomSectionItem={addCustomSectionItem}
-            updateCustomSectionItem={updateCustomSectionItem}
-            updateCustomSectionItemList={updateCustomSectionItemList}
-            removeCustomSectionItem={removeCustomSectionItem}
-            updatePredefinedSectionItems={updatePredefinedSectionItems}
-            addPredefinedSectionItem={addPredefinedSectionItem}
-            updatePredefinedSectionItem={updatePredefinedSectionItem}
-            removePredefinedSectionItem={removePredefinedSectionItem}
-            addSectionToOrder={addSectionToOrder}
-            updateStyle={updateStyle}
-            updateSectionOrder={updateSectionOrder}
-            jumpTarget={jumpTarget}
-            onJumpEnd={() => setJumpTarget(null)}
-          />
-        </div>
-
-        {/* Right Side: Preview */}
-        <div
-          className={clsx(
-            "flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
-            viewMode === "preview"
-              ? "w-full"
-              : viewMode === "split"
-                ? "w-5/10"
-                : "pointer-events-none w-0 overflow-hidden opacity-0",
-          )}
-        >
-          <div className="flex h-full w-full items-center justify-center p-4 lg:p-8">
-            <ResumePreview
-              content={content}
-              onJumpToSection={(target) => {
-                if (viewMode === "preview") setViewMode("split");
-                setJumpTarget(target);
-              }}
-            />
-          </div>
-        </div>
-      </main>
-    </div>
+    <SplitViewLayout
+      viewMode={viewMode}
+      formPanel={
+        <ResumeForm
+          content={content}
+          handlers={{
+            updatePersonalInfo,
+            addExperience,
+            updateExperience,
+            updateExperienceList,
+            removeExperience,
+            addEducation,
+            updateEducation,
+            updateEducationList,
+            removeEducation,
+            addProject,
+            updateProject,
+            updateProjectList,
+            removeProject,
+            updateSkills,
+            addSkillCategory,
+            updateSkillCategory,
+            removeSkillCategory,
+            addCustomSection,
+            updateCustomSection,
+            updateCustomSectionList,
+            removeCustomSection,
+            addCustomSectionItem,
+            updateCustomSectionItem,
+            updateCustomSectionItemList,
+            removeCustomSectionItem,
+            updatePredefinedSectionItems,
+            addPredefinedSectionItem,
+            updatePredefinedSectionItem,
+            removePredefinedSectionItem,
+            addSectionToOrder,
+            updateStyle,
+            updateSectionOrder,
+          }}
+          jumpTarget={jumpTarget}
+          onJumpEnd={() => setJumpTarget(null)}
+        />
+      }
+      previewPanel={
+        <ResumePreview
+          content={content}
+          onJumpToSection={(target) => {
+            if (viewMode === "preview") setViewMode("split");
+            setJumpTarget(target);
+          }}
+        />
+      }
+    />
   );
 }

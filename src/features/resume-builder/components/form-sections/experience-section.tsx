@@ -1,56 +1,46 @@
 "use client";
 
+import { format, parse } from "date-fns";
+import { enUS, id as idLocale } from "date-fns/locale";
 import {
   Briefcase,
+  Calendar as CalendarIcon,
+  ChevronDown,
+  GripVertical,
   Plus,
   Trash2,
-  Calendar as CalendarIcon,
-  ChevronUp,
-  ChevronDown,
-  Sparkles,
-  Loader2,
-  FileText,
-  TrendingUp,
-  SpellCheck,
-  GripVertical,
 } from "lucide-react";
-import { format, parse } from "date-fns";
-import { enUS, id } from "date-fns/locale";
-import { cn, formatResumeDate } from "@/lib/utils";
+
+import { DynamicEditor as Editor } from "@/components/editor/dynamic-editor";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { MonthPicker } from "@/components/ui/monthpicker";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MonthPicker } from "@/components/ui/monthpicker";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Editor } from "@/components/editor/rich-text-editor";
-import type {
-  ResumeContent,
-  ResumeExperience,
-} from "@/features/resumes-list/types/resume";
-import { EmptyState } from "./empty-state";
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
+import type {
+  ResumeContent,
+  ResumeExperience,
+} from "@/types/resume";
+import { formatResumeDate } from "@/lib/utils";
+
+import { EmptyState } from "./empty-state";
 
 interface ExperienceSectionProps {
   content: ResumeContent;
@@ -73,8 +63,8 @@ export function ExperienceSection({
   updateExperience,
   removeExperience,
   updateExperienceList,
-  handleOptimize,
-  optimizingId,
+  handleOptimize: _handleOptimize,
+  optimizingId: _optimizingId,
 }: ExperienceSectionProps) {
   const lang = content.style?.language || "id";
 

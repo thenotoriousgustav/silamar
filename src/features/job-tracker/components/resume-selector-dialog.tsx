@@ -1,33 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Search,
-  FileText,
-  Check,
-  Eye,
-  Calendar,
-  Sparkles,
-  Loader2,
-  X,
-  Plus,
-} from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import {
+  Calendar,
+  Check,
+  Eye,
+  FileText,
+  Plus,
+  Search,
+  Sparkles,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+// eslint-disable-next-line import/no-restricted-paths -- Job tracker needs resume preview for selection
 import { ResumePreview } from "@/features/resume-builder/components/resume-preview";
-import type { ResumeContent } from "@/features/resumes-list/types/resume";
+import type { ResumeContent } from "@/types/resume";
+import { cn } from "@/lib/utils";
 
 interface Resume {
   id: string;

@@ -4,12 +4,11 @@ export * from "./job-applications";
 export * from "./ai";
 export * from "./billing";
 
-import { users } from "./auth";
-import { resumes } from "./resumes";
-import { jobApplications } from "./job-applications";
-import { coverLetters } from "./resumes";
 import { aiUsageLogs } from "./ai";
+import { users } from "./auth";
 import { transactions } from "./billing";
+import { jobApplications } from "./job-applications";
+import { coverLetters , resumes } from "./resumes";
 
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 

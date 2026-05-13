@@ -1,4 +1,5 @@
 import type { Column } from "@tanstack/react-table";
+
 import { dataTableConfig } from "@/config/data-table";
 import type {
   ExtendedColumnFilter,
@@ -6,6 +7,11 @@ import type {
   FilterVariant,
 } from "@/types/data-table";
 
+/**
+ * Computes CSS styles for pinned table columns (sticky positioning).
+ * Applies box-shadow borders, position offsets, and z-index based on
+ * whether the column is pinned left, pinned right, or unpinned.
+ */
 export function getColumnPinningStyle<TData>({
   column,
   withBorder = false,
@@ -19,24 +25,31 @@ export function getColumnPinningStyle<TData>({
   const isFirstRightPinnedColumn =
     isPinned === "right" && column.getIsFirstColumn("right");
 
+  const boxShadow = !withBorder
+    ? undefined
+    : isLastLeftPinnedColumn
+      ? "-4px 0 4px -4px var(--border) inset"
+      : isFirstRightPinnedColumn
+        ? "4px 0 4px -4px var(--border) inset"
+        : undefined;
+
   return {
-    boxShadow: withBorder
-      ? isLastLeftPinnedColumn
-        ? "-4px 0 4px -4px var(--border) inset"
-        : isFirstRightPinnedColumn
-          ? "4px 0 4px -4px var(--border) inset"
-          : undefined
-      : undefined,
+    boxShadow,
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
     opacity: isPinned ? 0.97 : 1,
     position: isPinned ? "sticky" : "relative",
-    background: isPinned ? "var(--background)" : "var(--background)",
+    background: "var(--background)",
     width: column.getSize(),
     zIndex: isPinned ? 1 : undefined,
   };
 }
 
+/**
+ * Returns the available filter operators for a given filter variant type.
+ * Maps each variant (text, number, range, date, etc.) to its corresponding
+ * operator set from the data table configuration.
+ */
 export function getFilterOperators(filterVariant: FilterVariant) {
   const operatorMap: Record<
     FilterVariant,

@@ -1,30 +1,31 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import type { JobApplication, JobStatus } from "@/features/job-tracker/types";
+
 import {
-  KANBAN_COLUMNS,
-  VIEW_PREFERENCE_KEY,
-  COLUMN_ORDER_KEY,
-} from "@/features/job-tracker/constants";
-import {
-  getJobsAction,
   deleteJobAction,
+  getJobsAction,
   updateJobAction,
 } from "@/features/job-tracker/actions";
+import {
+  COLUMN_ORDER_KEY,
+  KANBAN_COLUMNS,
+  VIEW_PREFERENCE_KEY,
+} from "@/features/job-tracker/constants";
+import type { JobApplication, JobStatus } from "@/features/job-tracker/types";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { DragEndEvent } from "@dnd-kit/core";
-
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { JobTrackerTable } from "./data-table/job-tracker-table";
-import { JobTrackerKanban } from "./kanban/job-tracker-kanban";
-import { JobTrackerHeader } from "./job-tracker-header";
-import { JobTrackerDialogs } from "./job-tracker-dialogs";
-import { getJobTrackerColumns } from "./data-table/job-tracker-table-columns";
 import { triggerSuccessConfetti } from "@/lib/utils/confetti";
+
+import { JobTrackerTable } from "./data-table/job-tracker-table";
+import { getJobTrackerColumns } from "./data-table/job-tracker-table-columns";
+import { JobTrackerDialogs } from "./job-tracker-dialogs";
+import { JobTrackerHeader } from "./job-tracker-header";
 import { JobTrackerStats } from "./job-tracker-stats";
+import { JobTrackerKanban } from "./kanban/job-tracker-kanban";
 
 interface JobTrackerClientProps {
   initialJobs: JobApplication[];
