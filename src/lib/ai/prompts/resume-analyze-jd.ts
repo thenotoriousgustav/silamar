@@ -15,43 +15,43 @@ export function buildResumeAnalyzeJdPrompt(
   jobDescription: string,
 ): string {
   return `
-Kamu adalah AI expert dalam mencocokkan resume dengan deskripsi pekerjaan untuk membantu fresh graduate Indonesia mendapatkan pekerjaan.
+You are an AI expert in matching resumes to job descriptions to help job seekers land their target roles.
 
-Analisis kecocokan antara resume dan deskripsi pekerjaan berikut.
+Analyze the match between the resume and the job description below.
 
 ## Resume:
 ${resumeContent}
 
-## Deskripsi Pekerjaan:
+## Job Description:
 ${jobDescription}
 
-## Instruksi:
-Analisis kecocokan dan berikan hasil dalam format JSON berikut (semua teks dalam Bahasa Indonesia):
+## Instructions:
+Analyze the match and return the result in the following JSON format:
 
 {
-  "matchScore": <angka 0-100 yang menunjukkan persentase kecocokan>,
+  "matchScore": <number 0-100 indicating the match percentage>,
   "matchedKeywords": [
-    "<keyword yang ada di resume dan juga di JD>",
-    "<keyword yang matched>"
+    "<keyword present in both the resume and the JD>",
+    "<matched keyword>"
   ],
   "missingKeywords": [
-    "<keyword penting di JD yang TIDAK ada di resume>",
+    "<important keyword in the JD that is NOT in the resume>",
     "<missing keyword>"
   ],
   "suggestions": [
-    "<saran spesifik untuk meningkatkan kecocokan>",
-    "<saran 2>",
-    "<saran 3>"
+    "<specific suggestion to improve the match>",
+    "<suggestion 2>",
+    "<suggestion 3>"
   ],
-  "verdict": "<kesimpulan 2-3 kalimat apakah resume cocok dan apa yang harus dilakukan>"
+  "verdict": "<2-3 sentence conclusion on whether the resume is a good fit and what should be done>"
 }
 
-Panduan penilaian match score:
-- 80-100: Sangat cocok, sangat direkomendasikan untuk melamar
-- 60-79: Cukup cocok, perlu beberapa penyesuaian
-- 40-59: Kurang cocok, perlu banyak perbaikan
-- 0-39: Tidak cocok, pertimbangkan posisi lain
+Match score guide:
+- 80-100: Excellent match, highly recommended to apply
+- 60-79: Good match, a few adjustments needed
+- 40-59: Partial match, significant improvements required
+- 0-39: Poor match, consider other positions
 
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Return only valid JSON, no other text.
 `;
 }

@@ -2,7 +2,6 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Loader2, Mail, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,14 +16,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-// eslint-disable-next-line import/no-restricted-paths -- Cover letters list needs creation action
-import { createEmptyCoverLetterAction } from "@/features/cover-letter-builder/actions/create-cover-letter";
 import { deleteCoverLetterAction } from "@/features/cover-letters-list/actions";
 import { DocumentCard } from "@/shared/document-card";
 import { EmptyState } from "@/shared/empty-state";
-import { LoadingOverlay } from "@/shared/loading-spinner";
 import { PageHeader } from "@/shared/page-header";
 
+import { CreateCoverLetterDialog } from "./create-cover-letter-dialog";
 import { CoverLetterPreviewDrawer } from "./cover-letter-preview-drawer";
 
 interface CoverLetter {
@@ -43,13 +40,10 @@ interface CoverLetterListClientProps {
 export function CoverLetterListClient({
   initialCoverLetters,
 }: CoverLetterListClientProps) {
-  const router = useRouter();
-  const [coverLetterToDelete, setCoverLetterToDelete] = useState<string | null>(
-    null,
-  );
-  const [selectedLetterForPreview, setSelectedLetterForPreview] =
-    useState<CoverLetter | null>(null);
+  const [coverLetterToDelete, setCoverLetterToDelete] = useState<string | null>(null);
+  const [selectedLetterForPreview, setSelectedLetterForPreview] = useState<CoverLetter | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -70,23 +64,6 @@ export function CoverLetterListClient({
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: () => createEmptyCoverLetterAction(),
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Cover letter berhasil dibuat! 🚀");
-        queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
-        router.push(`/cover-letter-builder/${result.data.id}`);
-      } else {
-        toast.error(result.error);
-      }
-    },
-    onError: (error) => {
-      console.error("Create error:", error);
-      toast.error("Gagal membuat cover letter");
-    },
-  });
-
   const handleDelete = () => {
     if (coverLetterToDelete) {
       deleteMutation.mutate(coverLetterToDelete);
@@ -100,15 +77,10 @@ export function CoverLetterListClient({
         description="Kelola surat lamaran yang telah kamu buat"
       >
         <Button
-          onClick={() => createMutation.mutate()}
-          disabled={createMutation.isPending}
+          onClick={() => setIsCreateDialogOpen(true)}
           className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex items-center gap-2 px-4 py-5 text-sm font-semibold transition-all hover:shadow-md"
         >
-          {createMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
+          <Plus className="h-4 w-4" />
           Buat Cover Letter Baru
         </Button>
       </PageHeader>
@@ -120,15 +92,10 @@ export function CoverLetterListClient({
           description="Gunakan AI Generator kami untuk membuat surat lamaran yang profesional dalam hitungan detik."
           action={
             <Button
-              onClick={() => createMutation.mutate()}
-              disabled={createMutation.isPending}
+              onClick={() => setIsCreateDialogOpen(true)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 px-6 py-3 text-sm font-semibold"
             >
-              {createMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="h-4 w-4" />
-              )}
+              <Plus className="h-4 w-4" />
               Buat Cover Letter Pertama
             </Button>
           }
@@ -158,16 +125,11 @@ export function CoverLetterListClient({
 
           {/* New cover letter card */}
           <button
-            onClick={() => createMutation.mutate()}
-            disabled={createMutation.isPending}
-            className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all disabled:opacity-50"
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="hover:border-primary/30 hover:bg-muted/50 border-border flex flex-col items-center justify-center rounded-none border border-dashed p-6 text-center transition-all"
           >
             <div className="border-border mb-3 flex h-12 w-12 items-center justify-center border border-dashed">
-              {createMutation.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Plus className="text-muted-foreground h-5 w-5" />
-              )}
+              <Plus className="text-muted-foreground h-5 w-5" />
             </div>
             <span className="text-muted-foreground text-sm font-medium">
               Buat Cover Letter Baru
@@ -176,9 +138,10 @@ export function CoverLetterListClient({
         </div>
       )}
 
-      {createMutation.isPending && (
-        <LoadingOverlay label="Sedang membuat cover letter..." />
-      )}
+      <CreateCoverLetterDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
 
       <CoverLetterPreviewDrawer
         isOpen={isPreviewOpen}

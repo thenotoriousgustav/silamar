@@ -108,16 +108,16 @@ export async function POST(request: Request) {
 
     if (!file) return errorResponse("No file uploaded");
     if (file.type !== "application/pdf")
-      return errorResponse("File harus berformat PDF");
+      return errorResponse("File must be in PDF format");
     if (file.size > 5 * 1024 * 1024)
-      return errorResponse("Ukuran file maksimal 5MB");
+      return errorResponse("Maximum file size is 5MB");
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const extractedText = await extractPdfText(buffer).catch(() => null);
 
     if (!extractedText || extractedText.trim().length < 50) {
       return errorResponse(
-        "PDF tidak berisi teks yang cukup atau gagal dibaca.",
+        "PDF does not contain enough text or could not be read.",
         422,
       );
     }
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
     console.error("Analysis error:", error);
     return Response.json(
       {
-        error: "Gagal menganalisis resume",
+        error: "Failed to analyze resume",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },

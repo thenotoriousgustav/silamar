@@ -19,35 +19,35 @@ export type ResumeAnalyzeResult = z.infer<typeof resumeAnalyzeSchema>;
 
 export function buildResumeAnalyzePrompt(resumeContent: string): string {
   return `
-Kamu adalah AI expert dalam analisis resume/CV yang telah membantu ribuan fresh graduate Indonesia mendapatkan pekerjaan impian mereka.
+You are an AI expert in resume analysis who has helped thousands of job seekers land their dream jobs.
 
-Analisis resume berikut dan berikan evaluasi ATS (Applicant Tracking System) yang komprehensif dalam konteks pasar kerja Indonesia.
+Analyze the following resume and provide a comprehensive ATS (Applicant Tracking System) evaluation.
 
-## Resume yang Dianalisis:
+## Resume to Analyze:
 ${resumeContent}
 
-## Instruksi:
-Berikan analisis detail dalam format JSON berikut (semua teks dalam Bahasa Indonesia):
+## Instructions:
+Provide a detailed analysis in the following JSON format:
 
 {
-  "atsScore": <angka 0-100 berdasarkan kualitas ATS keseluruhan>,
-  "overallFeedback": "<feedback umum 2-3 kalimat tentang resume ini>",
+  "atsScore": <number 0-100 based on overall ATS quality>,
+  "overallFeedback": "<general feedback in 2-3 sentences about this resume>",
   "strengths": [
-    "<kekuatan 1>",
-    "<kekuatan 2>",
-    "<kekuatan 3>"
+    "<strength 1>",
+    "<strength 2>",
+    "<strength 3>"
   ],
   "improvements": [
-    "<saran perbaikan 1>",
-    "<saran perbaikan 2>",
-    "<saran perbaikan 3>"
+    "<improvement suggestion 1>",
+    "<improvement suggestion 2>",
+    "<improvement suggestion 3>"
   ],
   "keywordSuggestions": [
-    "<keyword ATS yang disarankan 1>",
-    "<keyword ATS yang disarankan 2>",
-    "<keyword ATS yang disarankan 3>",
-    "<keyword ATS yang disarankan 4>",
-    "<keyword ATS yang disarankan 5>"
+    "<suggested ATS keyword 1>",
+    "<suggested ATS keyword 2>",
+    "<suggested ATS keyword 3>",
+    "<suggested ATS keyword 4>",
+    "<suggested ATS keyword 5>"
   ],
   "sectionScores": {
     "contact": <0-100>,
@@ -58,14 +58,14 @@ Berikan analisis detail dalam format JSON berikut (semua teks dalam Bahasa Indon
   }
 }
 
-Faktor penilaian ATS:
-- Format yang bersih dan mudah dibaca mesin
-- Penggunaan keyword yang relevan
-- Kelengkapan informasi kontak
-- Deskripsi pengalaman yang kuantitatif (angka, persentase)
-- Urutan informasi yang logis
-- Tidak ada gambar, tabel, atau elemen yang sulit dibaca ATS
+ATS scoring factors:
+- Clean format that is easy for machines to read
+- Use of relevant keywords
+- Complete contact information
+- Quantitative experience descriptions (numbers, percentages)
+- Logical ordering of information
+- No images, tables, or elements that are difficult for ATS to parse
 
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Return only valid JSON, no other text.
 `;
 }

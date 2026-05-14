@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Comprehensive analysis API error:", error);
     return Response.json(
-      { error: "Gagal menganalisis resume" },
+      { error: "Failed to analyze resume" },
       { status: 500 },
     );
   }

@@ -17,7 +17,7 @@ import { auth } from "@/lib/auth";
 
 
 const requestSchema = z.object({
-  resumeContent: z.string().min(50, "Resume terlalu pendek"),
+  resumeContent: z.string().min(50, "Resume is too short"),
   jobDescription: z.string().nullable().optional(),
 });
 
@@ -35,7 +35,7 @@ async function verifyAndDeductCredit(userId: string): Promise<{
     return {
       isPro: false,
       error: NextResponse.json(
-        { error: "User tidak ditemukan" },
+        { error: "User not found" },
         { status: 404 },
       ),
     };
@@ -46,7 +46,7 @@ async function verifyAndDeductCredit(userId: string): Promise<{
     return {
       isPro,
       error: NextResponse.json(
-        { error: "Kredit tidak cukup. Beli kredit untuk melanjutkan." },
+        { error: "Insufficient credits. Purchase credits to continue." },
         { status: 402 },
       ),
     };
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Input tidak valid", details: parsed.error.flatten() },
+        { error: "Invalid input", details: parsed.error.flatten() },
         { status: 400 },
       );
     }
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("[API] resume/analyze-jd error:", error);
     return NextResponse.json(
-      { error: "Terjadi kesalahan server" },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

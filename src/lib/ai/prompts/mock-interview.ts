@@ -40,52 +40,52 @@ export function buildMockInterviewQuestionsPrompt(
 ): string {
   const { jobTitle, company, resumeContent, jobDescription } = params;
   return `
-Kamu adalah interviewer berpengalaman dari perusahaan top Indonesia yang membantu fresh graduate mempersiapkan diri untuk wawancara kerja.
+You are an experienced interviewer from a top company helping job seekers prepare for interviews.
 
-Buat 8-10 pertanyaan interview yang relevan dan realistis.
+Generate 8-10 relevant and realistic interview questions.
 
-## Posisi yang Dilamar:
-- Jabatan: ${jobTitle}
-- Perusahaan: ${company}
-${jobDescription ? `- Deskripsi Pekerjaan: ${jobDescription}` : ""}
+## Position Applied For:
+- Job Title: ${jobTitle}
+- Company: ${company}
+${jobDescription ? `- Job Description: ${jobDescription}` : ""}
 
-## Resume Pelamar:
+## Applicant's Resume:
 ${resumeContent}
 
-## Instruksi:
-Buat pertanyaan interview dalam format JSON berikut (dalam Bahasa Indonesia):
+## Instructions:
+Generate interview questions in the following JSON format:
 
 {
   "questions": [
     {
       "id": "q1",
       "category": "behavioral|technical|situational|hr",
-      "question": "<pertanyaan interview yang spesifik dan relevan>",
-      "tips": "<tips singkat cara menjawab pertanyaan ini>",
-      "sampleAnswer": "<contoh jawaban yang baik dalam 2-3 kalimat>"
+      "question": "<specific and relevant interview question>",
+      "tips": "<brief tips on how to answer this question>",
+      "sampleAnswer": "<example of a good answer in 2-3 sentences>"
     }
   ],
   "interviewTips": [
-    "<tips umum untuk interview di perusahaan/industri ini>",
-    "<tips 2>",
-    "<tips 3>"
+    "<general tip for interviewing at this company/industry>",
+    "<tip 2>",
+    "<tip 3>"
   ],
   "commonMistakes": [
-    "<kesalahan umum yang harus dihindari>",
-    "<kesalahan 2>",
-    "<kesalahan 3>"
+    "<common mistake to avoid>",
+    "<mistake 2>",
+    "<mistake 3>"
   ]
 }
 
-Distribusi pertanyaan:
-- 2-3 pertanyaan behavioral (pengalaman masa lalu)
-- 2-3 pertanyaan technical (skill teknis relevan)
-- 2 pertanyaan situational (bagaimana kamu akan menghadapi situasi X)
-- 1-2 pertanyaan HR (motivasi, gaji, karier)
+Question distribution:
+- 2-3 behavioral questions (past experience)
+- 2-3 technical questions (relevant technical skills)
+- 2 situational questions (how would you handle situation X)
+- 1-2 HR questions (motivation, salary, career goals)
 
-Buat pertanyaan yang spesifik berdasarkan resume dan posisi, bukan pertanyaan generik.
+Make questions specific based on the resume and position, not generic questions.
 
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Return only valid JSON, no other text.
 `;
 }
 
@@ -95,40 +95,40 @@ export function buildMockInterviewFeedbackPrompt(
   jobTitle: string,
 ): string {
   return `
-Kamu adalah interviewer berpengalaman yang memberikan feedback konstruktif kepada fresh graduate Indonesia.
+You are an experienced interviewer providing constructive feedback to a job candidate.
 
-## Pertanyaan Interview:
+## Interview Question:
 ${question}
 
-## Posisi yang Dilamar:
+## Position Applied For:
 ${jobTitle}
 
-## Jawaban yang Diberikan:
+## Candidate's Answer:
 ${userAnswer}
 
-## Instruksi:
-Berikan feedback yang konstruktif dan actionable dalam format JSON berikut (dalam Bahasa Indonesia):
+## Instructions:
+Provide constructive and actionable feedback in the following JSON format:
 
 {
-  "score": <0-100 skor kualitas jawaban>,
+  "score": <0-100 quality score for the answer>,
   "strengths": [
-    "<hal yang sudah bagus dari jawaban ini>"
+    "<what was good about this answer>"
   ],
   "improvements": [
-    "<hal yang bisa diperbaiki>"
+    "<what could be improved>"
   ],
-  "improvedAnswer": "<contoh jawaban yang lebih baik dan lengkap>",
-  "overallFeedback": "<feedback keseluruhan yang motivatif dalam 2 kalimat>"
+  "improvedAnswer": "<example of a better and more complete answer>",
+  "overallFeedback": "<overall motivating feedback in 2 sentences>"
 }
 
-Panduan penilaian:
-- 90-100: Jawaban sempurna, spesifik, dan meyakinkan
-- 70-89: Jawaban baik, ada beberapa area yang bisa diperkuat
-- 50-69: Cukup, tapi perlu lebih spesifik dan terstruktur
-- 0-49: Perlu banyak perbaikan
+Scoring guide:
+- 90-100: Perfect answer, specific and convincing
+- 70-89: Good answer, a few areas could be strengthened
+- 50-69: Adequate, but needs to be more specific and structured
+- 0-49: Needs significant improvement
 
-Gunakan metode STAR (Situation, Task, Action, Result) sebagai acuan.
+Use the STAR method (Situation, Task, Action, Result) as a reference.
 
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Return only valid JSON, no other text.
 `;
 }

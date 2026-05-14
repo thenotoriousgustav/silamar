@@ -35,56 +35,56 @@ export function buildCoverLetterPrompt(params: CoverLetterPromptParams): string 
     tone = "professional",
   } = params;
   const toneGuide = {
-    formal: "sangat formal, sopan, dan tradisional",
-    friendly: "hangat, antusias, dan personal namun tetap profesional",
-    professional: "profesional, percaya diri, dan terstruktur dengan baik",
+    formal: "very formal, polite, and traditional",
+    friendly: "warm, enthusiastic, and personal yet still professional",
+    professional: "professional, confident, and well-structured",
   };
 
   return `
-Kamu adalah expert penulis surat lamaran kerja yang telah membantu ribuan fresh graduate Indonesia mendapatkan panggilan interview.
+You are an expert cover letter writer who has helped thousands of job seekers land interviews.
 
-Buat surat lamaran kerja yang menarik dan personal berdasarkan informasi berikut.
+Write a compelling and personalized cover letter based on the following information.
 
-## Data Pelamar (dari Resume):
+## Applicant Data (from Resume):
 ${resumeContent}
 
-## Posisi yang Dilamar:
-- Jabatan: ${jobTitle}
-- Perusahaan: ${company}
-${jobDescription ? `- Deskripsi Pekerjaan: ${jobDescription}` : ""}
+## Position Applied For:
+- Job Title: ${jobTitle}
+- Company: ${company}
+${jobDescription ? `- Job Description: ${jobDescription}` : ""}
 
-## Instruksi:
-Buat surat lamaran dengan tone ${toneGuide[tone]} dalam format JSON berikut yang sesuai dengan struktur database builder kami:
+## Instructions:
+Write a cover letter with a ${toneGuide[tone]} tone in the following JSON format matching our builder's database structure:
 
 {
-  "fullName": "<nama lengkap dari resume>",
-  "phone": "<nomor telepon dari resume>",
-  "email": "<email dari resume>",
-  "address": "<alamat dari resume>",
-  "cityAndPostal": "<kota & kode pos dari resume>",
-  "recipientName": "Bapak/Ibu HRD",
+  "fullName": "<full name from resume>",
+  "phone": "<phone number from resume>",
+  "email": "<email from resume>",
+  "address": "<address from resume>",
+  "cityAndPostal": "<city & postal code from resume>",
+  "recipientName": "Hiring Manager",
   "companyName": "${company}",
   "department": "Human Resources",
-  "recipientAddress": "Alamat Perusahaan",
-  "recipientCityAndPostal": "Kota, Kode Pos",
-  "subject": "<subjek email yang menarik untuk posisi ini>",
-  "content": "<isi surat lamaran lengkap dalam Bahasa Indonesia, 3-4 paragraf>",
+  "recipientAddress": "Company Address",
+  "recipientCityAndPostal": "City, Postal Code",
+  "subject": "<compelling email subject line for this position>",
+  "content": "<full cover letter body, 3-4 paragraphs>",
   "tips": [
-    "<tips spesifik 1>",
-    "<tips spesifik 2>",
-    "<tips spesifik 3>"
+    "<specific tip 1>",
+    "<specific tip 2>",
+    "<specific tip 3>"
   ]
 }
 
-Panduan penulisan isi surat (content):
-- Paragraf 1: Perkenalan dan posisi yang dilamar
-- Paragraf 2: Pengalaman dan skill relevan yang paling kuat
-- Paragraf 3: Mengapa tertarik dengan perusahaan ini spesifik
-- Paragraf 4: Penutup dan call to action
+Cover letter body writing guide (content):
+- Paragraph 1: Introduction and the position being applied for
+- Paragraph 2: Most relevant experience and skills
+- Paragraph 3: Why you are specifically interested in this company
+- Paragraph 4: Closing and call to action
 
-Pastikan:
-- Isi surat (content) menggunakan Bahasa Indonesia yang baik dan benar.
-- Menyebutkan nama perusahaan secara spesifik.
-- Hanya kembalikan JSON yang valid, tanpa teks lain.
+Make sure:
+- The cover letter body (content) is written in clear, professional English.
+- The company name is mentioned specifically.
+- Return only valid JSON, no other text.
 `;
 }

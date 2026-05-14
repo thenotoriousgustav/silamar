@@ -23,52 +23,51 @@ export function buildSkillGapPrompt(
   jobDescription: string,
 ): string {
   return `
-Kamu adalah career advisor expert yang membantu fresh graduate Indonesia mengidentifikasi kesenjangan skill untuk karier impian mereka.
+You are an expert career advisor helping job seekers identify skill gaps for their target career.
 
-Analisis skill gap antara skill yang dimiliki dengan requirement posisi yang diinginkan.
+Analyze the skill gap between the skills the user currently has and the requirements of the desired position.
 
-## Skill yang Dimiliki User:
+## User's Current Skills:
 ${userSkills.join(", ")}
 
-## Posisi Target:
+## Target Position:
 ${jobTitle}
 
-## Deskripsi Pekerjaan / Requirement:
+## Job Description / Requirements:
 ${jobDescription}
 
-## Instruksi:
-Berikan analisis skill gap yang actionable dalam format JSON berikut (dalam Bahasa Indonesia):
+## Instructions:
+Provide an actionable skill gap analysis in the following JSON format:
 
 {
   "matchedSkills": [
-    "<skill yang sudah dimiliki dan relevan dengan posisi>"
+    "<skill the user already has that is relevant to the position>"
   ],
   "missingSkills": [
     {
-      "skill": "<nama skill yang kurang>",
+      "skill": "<name of the missing skill>",
       "priority": "high|medium|low",
-      "howToLearn": "<cara belajar skill ini: platform, kursus, atau resource spesifik>"
+      "howToLearn": "<how to learn this skill: specific platform, course, or resource>"
     }
   ],
-  "overallGapScore": <0-100, semakin tinggi semakin siap>,
+  "overallGapScore": <0-100, higher means more ready>,
   "learningPath": [
-    "<langkah 1 yang harus dilakukan>",
-    "<langkah 2>",
-    "<langkah 3>",
-    "<langkah 4>",
-    "<langkah 5>"
+    "<step 1 to take>",
+    "<step 2>",
+    "<step 3>",
+    "<step 4>",
+    "<step 5>"
   ],
-  "estimatedTimeToReady": "<estimasi waktu untuk siap melamar posisi ini, contoh: '3-6 bulan'>",
-  "verdict": "<kesimpulan singkat dan motivasi 2-3 kalimat>"
+  "estimatedTimeToReady": "<estimated time to be ready to apply for this position, e.g. '3-6 months'>",
+  "verdict": "<brief conclusion and motivating summary in 2-3 sentences>"
 }
 
-Catatan:
-- Priority "high" = skill yang sangat sering disebutkan di JD atau kritikal untuk pekerjaan
-- Priority "medium" = skill yang membantu tapi tidak wajib
+Notes:
+- Priority "high" = skill frequently mentioned in the JD or critical for the role
+- Priority "medium" = helpful but not mandatory
 - Priority "low" = nice to have
-- Berikan resource belajar yang spesifik (contoh: "Kursus Python di Dicoding", "Bootcamp React di Buildwithangga")
-- Focus pada platform Indonesia jika ada
+- Provide specific learning resources (e.g., "Python course on Coursera", "React Bootcamp on Udemy")
 
-Hanya kembalikan JSON yang valid, tanpa teks lain.
+Return only valid JSON, no other text.
 `;
 }

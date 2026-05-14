@@ -37,14 +37,14 @@ export async function analyzeComprehensive(input: {
       .where(eq(users.id, user.id));
 
     if (!dbUser) {
-      return { success: false, error: "User tidak ditemukan" };
+      return { success: false, error: "User not found" };
     }
 
     const isPro = dbUser.plan === "pro";
     if (!isPro && dbUser.credits <= 0) {
       return {
         success: false,
-        error: "Kredit tidak cukup. Beli kredit untuk melanjutkan.",
+        error: "Insufficient credits. Purchase credits to continue.",
       };
     }
 
@@ -56,7 +56,7 @@ export async function analyzeComprehensive(input: {
       .limit(1);
 
     if (!resume) {
-      return { success: false, error: "Resume tidak ditemukan" };
+      return { success: false, error: "Resume not found" };
     }
 
     const resumeContent =
@@ -107,7 +107,7 @@ export async function analyzeComprehensive(input: {
     console.error("Comprehensive analysis error:", error);
     return {
       success: false,
-      error: "Terjadi kesalahan saat menganalisis resume",
+      error: "An error occurred while analyzing the resume",
     };
   }
 }
