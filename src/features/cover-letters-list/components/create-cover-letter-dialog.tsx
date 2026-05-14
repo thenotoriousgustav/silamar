@@ -2,10 +2,9 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  ArrowRight,
+  ArrowLeft,
   BookOpen,
   Briefcase,
-  ChevronDown,
   FileText,
   Loader2,
   Sparkles,
@@ -38,7 +37,7 @@ import { getUserResumesAction } from "@/features/job-tracker/actions";
 import { getJobsForSelectAction } from "../actions/get-jobs-for-select";
 import { generateAndCreateCoverLetterAction } from "../actions/generate-cover-letter";
 
-type Mode = "select" | "blank" | "generate" | "example";
+type Mode = "select" | "generate";
 type JobSource = "job-tracker" | "manual";
 
 interface CreateCoverLetterDialogProps {
@@ -110,7 +109,7 @@ export function CreateCoverLetterDialog({
     mutationFn: () => createEmptyCoverLetterAction(),
     onSuccess: (result) => {
       if (result.success) {
-        onOpenChange(false);
+        handleClose();
         router.push(`/cover-letter-builder/${result.data.id}`);
       } else {
         toast.error(result.error);
@@ -119,21 +118,16 @@ export function CreateCoverLetterDialog({
     onError: () => toast.error("Gagal membuat cover letter"),
   });
 
-  // Example creation (blank with pre-filled example content)
+  // Example creation
   const exampleMutation = useMutation({
-    mutationFn: async () => {
-      // Create blank then redirect — the example content is pre-filled via localStorage
-      const result = await createEmptyCoverLetterAction();
-      return result;
-    },
+    mutationFn: () => createEmptyCoverLetterAction(),
     onSuccess: (result) => {
       if (result.success) {
-        // Store example content in localStorage for the builder to pick up
         localStorage.setItem(
           `cover-letter-draft-${result.data.id}`,
           JSON.stringify({ content: EXAMPLE_CONTENT, updatedAt: new Date().toISOString() }),
         );
-        onOpenChange(false);
+        handleClose();
         router.push(`/cover-letter-builder/${result.data.id}`);
       } else {
         toast.error(result.error);
@@ -149,8 +143,8 @@ export function CreateCoverLetterDialog({
       const company = jobSource === "job-tracker" ? selectedJob?.company ?? "" : manualCompany;
       const jobDescription = jobSource === "job-tracker" ? selectedJob?.description ?? "" : manualJobDesc;
 
-      if (!jobTitle || !company) throw new Error("Job title and company are required");
-      if (!selectedResume?.content) throw new Error("Please select a resume");
+      if (!jobTitle || !company) throw new Error("Job title dan perusahaan wajib diisi");
+      if (!selectedResume?.content) throw new Error("Pilih resume terlebih dahulu");
 
       const resumeContent =
         typeof selectedResume.content === "string"
@@ -169,7 +163,7 @@ export function CreateCoverLetterDialog({
     onSuccess: (result) => {
       if (result.success) {
         toast.success("Cover letter berhasil di-generate! ✨");
-        onOpenChange(false);
+        handleClose();
         router.push(`/cover-letter-builder/${result.data.id}`);
       } else {
         toast.error(result.error);
@@ -184,10 +178,14 @@ export function CreateCoverLetterDialog({
       ? !!selectedJobId
       : manualJobTitle.trim() && manualCompany.trim());
 
+  const isAnyPending =
+    blankMutation.isPending ||
+    exampleMutation.isPending ||
+    generateMutation.isPending;
+
   const handleClose = () => {
-    if (generateMutation.isPending || blankMutation.isPending || exampleMutation.isPending) return;
+    if (isAnyPending) return;
     onOpenChange(false);
-    // Reset state after close animation
     setTimeout(() => {
       setMode("select");
       setJobSource("job-tracker");
@@ -202,35 +200,35 @@ export function CreateCoverLetterDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-background border-border max-w-lg rounded-none p-0">
-        {/* Mode selection screen */}
+      <DialogContent className="bg-background border-border sm:max-w-2xl rounded-none p-0">
+
+        {/* ── Mode selection ── */}
         {mode === "select" && (
           <>
             <DialogHeader className="border-border border-b px-6 pt-6 pb-5">
-              <DialogTitle className="text-lg font-bold">Buat Cover Letter</DialogTitle>
+              <DialogTitle className="text-xl font-bold">
+                Buat Cover Letter
+              </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm">
                 Pilih cara membuat cover letter kamu
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3 p-6">
+            <div className="grid grid-cols-3 gap-4 p-6">
               {/* Generate with AI */}
               <button
                 onClick={() => setMode("generate")}
-                className="border-border hover:border-primary/40 hover:bg-primary/5 group flex w-full items-start gap-4 border p-4 text-left transition-all"
+                className="border-border hover:border-primary/40 hover:bg-primary/5 group flex min-h-[200px] flex-col items-center gap-5 border p-6 text-center transition-all"
               >
-                <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center">
-                  <Sparkles className="h-5 w-5" />
+                <div className="bg-primary flex h-16 w-16 items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110">
+                  <Sparkles className="h-8 w-8" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">Generate dengan AI</p>
-                    <ArrowRight className="text-muted-foreground group-hover:text-primary h-4 w-4 transition-colors" />
-                  </div>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
-                    AI membuat cover letter personal berdasarkan resume dan lowongan kamu
+                <div>
+                  <p className="text-sm font-bold">Generate AI</p>
+                  <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
+                    AI membuat cover letter personal dari resume & lowongan kamu
                   </p>
-                  <span className="text-primary mt-1.5 inline-block text-[10px] font-bold tracking-wider uppercase">
+                  <span className="text-primary mt-2.5 inline-block text-[10px] font-bold tracking-wider uppercase">
                     1 Kredit
                   </span>
                 </div>
@@ -240,21 +238,18 @@ export function CreateCoverLetterDialog({
               <button
                 onClick={() => blankMutation.mutate()}
                 disabled={blankMutation.isPending}
-                className="border-border hover:border-border/80 hover:bg-muted/50 group flex w-full items-start gap-4 border p-4 text-left transition-all disabled:opacity-50"
+                className="border-border hover:border-border/80 hover:bg-muted/50 group flex min-h-[200px] flex-col items-center gap-5 border p-6 text-center transition-all disabled:opacity-50"
               >
-                <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center">
+                <div className="bg-muted/50 flex h-16 w-16 items-center justify-center transition-transform group-hover:scale-110">
                   {blankMutation.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
                   ) : (
-                    <FileText className="text-muted-foreground h-5 w-5" />
+                    <FileText className="text-muted-foreground h-8 w-8" />
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">Dari Awal</p>
-                    <ArrowRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors" />
-                  </div>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
+                <div>
+                  <p className="text-sm font-bold">Dari Nol</p>
+                  <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
                     Mulai dengan halaman kosong dan tulis sendiri
                   </p>
                 </div>
@@ -264,22 +259,19 @@ export function CreateCoverLetterDialog({
               <button
                 onClick={() => exampleMutation.mutate()}
                 disabled={exampleMutation.isPending}
-                className="border-border hover:border-border/80 hover:bg-muted/50 group flex w-full items-start gap-4 border p-4 text-left transition-all disabled:opacity-50"
+                className="border-border hover:border-border/80 hover:bg-muted/50 group flex min-h-[200px] flex-col items-center gap-5 border p-6 text-center transition-all disabled:opacity-50"
               >
-                <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center">
+                <div className="bg-muted/50 flex h-16 w-16 items-center justify-center transition-transform group-hover:scale-110">
                   {exampleMutation.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
                   ) : (
-                    <BookOpen className="text-muted-foreground h-5 w-5" />
+                    <BookOpen className="text-muted-foreground h-8 w-8" />
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">Gunakan Contoh</p>
-                    <ArrowRight className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors" />
-                  </div>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
-                    Mulai dari template yang sudah terisi dan sesuaikan sendiri
+                <div>
+                  <p className="text-sm font-bold">Gunakan Contoh</p>
+                  <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
+                    Template terisi yang bisa langsung diedit
                   </p>
                 </div>
               </button>
@@ -287,19 +279,20 @@ export function CreateCoverLetterDialog({
           </>
         )}
 
-        {/* Generate with AI screen */}
+        {/* ── Generate with AI ── */}
         {mode === "generate" && (
           <>
             <DialogHeader className="border-border border-b px-6 pt-6 pb-5">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setMode("select")}
-                  className="text-muted-foreground hover:text-foreground text-xs transition-colors"
-                >
-                  ← Kembali
-                </button>
-              </div>
-              <DialogTitle className="mt-1 text-lg font-bold">Generate dengan AI</DialogTitle>
+              <button
+                onClick={() => setMode("select")}
+                className="text-muted-foreground hover:text-foreground mb-1 flex items-center gap-1 text-xs transition-colors"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Kembali
+              </button>
+              <DialogTitle className="text-xl font-bold">
+                Generate dengan AI
+              </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm">
                 AI akan membuat cover letter personal berdasarkan data kamu
               </DialogDescription>
@@ -375,10 +368,11 @@ export function CreateCoverLetterDialog({
                     </Select>
                   )}
 
-                  {/* Preview selected job */}
                   {selectedJob && (
                     <div className="bg-muted/40 border-border space-y-1 border p-3">
-                      <p className="text-xs font-semibold">{selectedJob.position} @ {selectedJob.company}</p>
+                      <p className="text-xs font-semibold">
+                        {selectedJob.position} @ {selectedJob.company}
+                      </p>
                       {selectedJob.description ? (
                         <p className="text-muted-foreground line-clamp-2 text-[11px]">
                           {selectedJob.description}
@@ -425,14 +419,16 @@ export function CreateCoverLetterDialog({
                   <div className="space-y-1.5">
                     <Label className="text-xs font-bold tracking-wider uppercase">
                       Job Description{" "}
-                      <span className="text-muted-foreground font-normal normal-case">(opsional, tapi sangat disarankan)</span>
+                      <span className="text-muted-foreground font-normal normal-case">
+                        (opsional, tapi sangat disarankan)
+                      </span>
                     </Label>
                     <Textarea
                       value={manualJobDesc}
                       onChange={(e) => setManualJobDesc(e.target.value)}
                       placeholder="Tempel job description di sini untuk hasil yang lebih personal..."
                       rows={4}
-                      className="border-border rounded-none text-sm resize-none"
+                      className="border-border resize-none rounded-none text-sm"
                     />
                   </div>
                 </div>

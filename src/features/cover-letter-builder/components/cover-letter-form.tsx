@@ -6,6 +6,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Accordion } from "@/components/ui/accordion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,6 +48,7 @@ export function CoverLetterForm({
 }: CoverLetterFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [pendingTemplate, setPendingTemplate] = useState<Partial<CoverLetterBuilderData> | null>(null);
   const [expandedItems, setExpandedItems] = useState<string[]>([
     "personal",
     "recipient",
@@ -79,8 +90,33 @@ export function CoverLetterForm({
   const handleApplyTemplate = (
     templateData: Partial<CoverLetterBuilderData>,
   ) => {
-    updateContent(templateData);
+    // Template only replaces the letter structure (subject + content body),
+    // NOT personal info or recipient data — those belong to the user.
+    updateContent({
+      ...(templateData.subject !== undefined && { subject: templateData.subject }),
+      ...(templateData.content !== undefined && { content: templateData.content }),
+    });
     toast.success("Template berhasil diterapkan! 📝");
+    setIsTemplateModalOpen(false);
+  };
+
+  const handleTemplateClick = (templateData: Partial<CoverLetterBuilderData>) => {
+    // If there's existing content, ask for confirmation first
+    if (content.content && content.content.trim().length > 0) {
+      setPendingTemplate(templateData);
+      setIsTemplateModalOpen(false);
+    } else {
+      applyTemplate(templateData);
+    }
+  };
+
+  const applyTemplate = (templateData: Partial<CoverLetterBuilderData>) => {
+    updateContent({
+      ...(templateData.subject !== undefined && { subject: templateData.subject }),
+      ...(templateData.content !== undefined && { content: templateData.content }),
+    });
+    toast.success("Template berhasil diterapkan! 📝");
+    setPendingTemplate(null);
     setIsTemplateModalOpen(false);
   };
 
@@ -110,7 +146,7 @@ export function CoverLetterForm({
                 {COVER_LETTER_TEMPLATES.map((template) => (
                   <button
                     key={template.id}
-                    onClick={() => handleApplyTemplate(template.data)}
+                    onClick={() => handleTemplateClick(template.data)}
                     className="border-border hover:border-primary/30 bg-card group flex flex-col rounded-none border p-4 text-left transition-all hover:shadow-sm"
                   >
                     <div className="bg-primary/10 mb-3 flex h-10 w-10 items-center justify-center rounded-none transition-transform group-hover:scale-110">
@@ -226,6 +262,33 @@ export function CoverLetterForm({
         <RecipientSection content={content} updateContent={updateContent} />
         <ContentSection content={content} updateContent={updateContent} />
       </Accordion>
+
+      {/* Confirm template replacement */}
+      <AlertDialog
+        open={!!pendingTemplate}
+        onOpenChange={(open) => !open && setPendingTemplate(null)}
+      >
+        <AlertDialogContent className="bg-background border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold">
+              Ganti isi surat?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-sm">
+              Template ini akan mengganti <strong>subjek</strong> dan <strong>isi surat</strong> yang sudah kamu tulis. Data personal (nama, email, telepon) tidak akan berubah.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingTemplate(null)}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => pendingTemplate && applyTemplate(pendingTemplate)}
+            >
+              Ya, Ganti Template
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

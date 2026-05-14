@@ -18,7 +18,7 @@ export default async function CoverLettersPage() {
     title: cl.title,
     jobTitle: cl.jobTitle ?? "",
     company: cl.company ?? "",
-    content: typeof cl.content === "string" ? cl.content : "",
+    content: cl.content,
     updatedAt: cl.updatedAt,
   }));
 

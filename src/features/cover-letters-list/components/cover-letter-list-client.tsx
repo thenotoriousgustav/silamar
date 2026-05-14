@@ -29,8 +29,8 @@ interface CoverLetter {
   title: string;
   jobTitle: string;
   company: string;
+  content: any;
   updatedAt: Date;
-  content: string;
 }
 
 interface CoverLetterListClientProps {
