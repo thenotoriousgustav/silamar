@@ -244,3 +244,52 @@ export function lexicalJsonToHtml(value: string): string | null {
     return null;
   }
 }
+
+
+/**
+ * Extracts plain text lines from an HTML string.
+ * Used for PDF rendering (which doesn't support HTML).
+ * Preserves block-level structure (one line per paragraph/list item).
+ *
+ * Handles common rich-text HTML: <p>, <ul>, <ol>, <li>, <h1-6>, <br>.
+ */
+export function htmlToTextLines(html: string): string[] {
+  if (!html) return [];
+
+  // Strip script/style blocks entirely
+  const cleaned = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "");
+
+  // Insert newline before block-closing tags so they break into separate lines
+  const withBreaks = cleaned
+    .replace(/<\s*br\s*\/?\s*>/gi, "\n")
+    .replace(/<\/\s*(p|li|h[1-6]|div|blockquote)\s*>/gi, "\n");
+
+  // Strip all remaining tags
+  const textOnly = withBreaks.replace(/<[^>]+>/g, "");
+
+  // Decode common HTML entities
+  const decoded = textOnly
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+  return decoded
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+/**
+ * Detects whether a string contains HTML tags (heuristic).
+ * Used to choose between HTML and plain-text parsing.
+ */
+export function looksLikeHtml(value: string): boolean {
+  return /<\/?(p|ul|ol|li|h[1-6]|br|div|blockquote|strong|em|a)\b[^>]*>/i.test(
+    value,
+  );
+}

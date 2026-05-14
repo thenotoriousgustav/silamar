@@ -2,6 +2,7 @@ import {
   Briefcase,
   Files,
   FileUser,
+  Flame,
   LayoutDashboard,
   type LucideIcon,
   ScrollText,
@@ -54,6 +55,11 @@ export const sidebarData = {
       title: "Skill Gap",
       url: "/skill-gap",
       icon: Target,
+    },
+    {
+      title: "Mock Resume 🔥",
+      url: "/mock-resume",
+      icon: Flame,
     },
   ],
 };

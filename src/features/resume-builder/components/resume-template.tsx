@@ -15,7 +15,7 @@ import type {
   DescriptionItem,
   ResumeContent,
 } from "@/types/resume";
-import { isLexicalJson, lexicalJsonToTextLines } from "@/lib/lexical-to-html";
+import { htmlToTextLines, isLexicalJson, lexicalJsonToTextLines, looksLikeHtml } from "@/lib/lexical-to-html";
 
 // Register custom fonts
 Font.register({
@@ -391,13 +391,21 @@ function BulletList({
 
   let bulletArray: string[];
 
-  if (typeof items === "string" && isLexicalJson(items)) {
-    // Lexical serialized JSON → extract plain text lines
-    bulletArray = lexicalJsonToTextLines(items).filter(Boolean);
+  if (typeof items === "string") {
+    if (isLexicalJson(items)) {
+      // Lexical serialized JSON → extract plain text lines
+      bulletArray = lexicalJsonToTextLines(items).filter(Boolean);
+    } else if (looksLikeHtml(items)) {
+      // HTML string → strip tags and extract block-level lines
+      bulletArray = htmlToTextLines(items);
+    } else {
+      // Plain text with newlines
+      bulletArray = items.split("\n").filter(Boolean);
+    }
   } else {
     bulletArray = Array.isArray(items)
       ? items.map((item) => (typeof item === "string" ? item : item.text))
-      : (items as string).split("\n").filter(Boolean);
+      : [];
   }
 
   if (bulletArray.length === 0) return null;

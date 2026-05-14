@@ -1,6 +1,7 @@
 "use client";
 
 import { HistoryExtension } from "@lexical/history";
+import { $generateNodesFromDOM } from "@lexical/html";
 import {
   AutoLinkExtension,
   ClickableLinkExtension,
@@ -12,9 +13,11 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { RichTextExtension } from "@lexical/rich-text";
 import {
+  $getRoot,
   configExtension,
   defineExtension,
   type EditorState,
+  type LexicalEditor,
   type SerializedEditorState,
 } from "lexical";
 import { useMemo, useState } from "react";
@@ -71,27 +74,50 @@ export function Editor({
   };
 
   // Resolve the initial editor state for Lexical.
-  // $initialEditorState accepts: null | string (JSON) | EditorState | ((editor) => void)
-  const resolvedInitialState = useMemo((): string | EditorState | null => {
-    // If a serialized state object is provided, stringify it for Lexical
+  // $initialEditorState accepts: null | string (Lexical JSON) | EditorState | ((editor) => void)
+  // We support 3 input formats:
+  //   1. Lexical JSON string (from previous save) → pass as JSON string
+  //   2. HTML string (from old data or array conversion) → pass function that converts via DOMParser
+  //   3. EditorState object → pass directly
+  const resolvedInitialState = useMemo(():
+    | string
+    | EditorState
+    | ((editor: LexicalEditor) => void)
+    | null => {
+    // Case A: serialized state object provided
     if (editorSerializedState) {
       return JSON.stringify(editorSerializedState);
     }
-    // If initialDescription is a JSON string of SerializedEditorState, pass directly
+
+    // Case B: initialDescription string — could be Lexical JSON or HTML
     if (initialDescription) {
+      // Try parse as Lexical JSON first
       try {
         const parsed = JSON.parse(initialDescription);
         if (parsed && parsed.root) {
-          return initialDescription; // valid Lexical JSON string
+          return initialDescription; // valid Lexical JSON
         }
       } catch {
-        // Not valid JSON — editor will start empty
+        // Not JSON — fall through to HTML handling
       }
+
+      // Treat as HTML: build state via function initializer
+      const html = initialDescription;
+      return (editor: LexicalEditor) => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(html, "text/html");
+        const nodes = $generateNodesFromDOM(editor, dom);
+        const root = $getRoot();
+        root.clear();
+        root.append(...nodes);
+      };
     }
-    // If an EditorState object is provided
+
+    // Case C: EditorState object
     if (editorState) {
       return editorState;
     }
+
     return null;
   }, [editorSerializedState, initialDescription, editorState]);
 
