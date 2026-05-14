@@ -7,7 +7,7 @@ import { generateText, Output } from "ai";
 import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { aiUsageLogs, resumes, users } from "@/db/schema";
+import { aiUsageLogs, resumeAnalyses, resumes, users } from "@/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
 import type { ActionResult } from "@/types/action-result";
 
@@ -79,19 +79,27 @@ export async function analyzeComprehensive(input: {
     );
 
     const { output: result } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-mini"),
       output: Output.object({ schema: comprehensiveAnalysisResultSchema }),
       prompt,
     });
 
-    // Log usage
+    // Log usage and save to history
     await db.insert(aiUsageLogs).values({
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze",
       creditsUsed: isPro ? 0 : 1,
-      inputData: {},
-      outputData: { overallScore: result.overallScore.total },
+      inputData: { resumeId: input.resumeId },
+      outputData: result,
+    });
+
+    await db.insert(resumeAnalyses).values({
+      userId: user.id,
+      resumeId: input.resumeId,
+      overallScore: result.overallScore.total,
+      grade: result.overallScore.grade,
+      result: result,
     });
 
     return { success: true, data: result as ComprehensiveAnalysisDTO };

@@ -4,11 +4,11 @@ import { Clock, Zap } from "lucide-react";
 
 import type { ActionItem } from "../types/resume-analyzer-dto";
 
-interface AnalyzerActionItemsProps {
+interface ActionItemsProps {
   data: ActionItem[];
 }
 
-export function AnalyzerActionItems({ data }: AnalyzerActionItemsProps) {
+export function ActionItems({ data }: ActionItemsProps) {
   if (data.length === 0) return null;
 
   const impactColor = {

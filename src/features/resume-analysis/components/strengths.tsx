@@ -2,11 +2,11 @@
 
 import { CheckCircle2 } from "lucide-react";
 
-interface AnalyzerStrengthsProps {
+interface StrengthsProps {
   data: string[];
 }
 
-export function AnalyzerStrengths({ data }: AnalyzerStrengthsProps) {
+export function Strengths({ data }: StrengthsProps) {
   if (data.length === 0) return null;
 
   return (

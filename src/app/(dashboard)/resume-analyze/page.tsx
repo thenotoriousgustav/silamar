@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
-
 import { ResumeAnalyzerClient } from "@/features/resume-analysis/components/resume-analyzer-client";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Analisis Resume Mendalam",

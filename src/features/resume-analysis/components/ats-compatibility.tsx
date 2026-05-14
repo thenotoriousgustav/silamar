@@ -4,13 +4,13 @@ import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 
 import type { ATSCompatibility } from "../types/resume-analyzer-dto";
 
-interface AnalyzerATSCompatibilityProps {
+interface ATSCompatibilityProps {
   data: ATSCompatibility;
 }
 
-export function AnalyzerATSCompatibility({
+export function ATSCompatibility({
   data,
-}: AnalyzerATSCompatibilityProps) {
+}: ATSCompatibilityProps) {
   const statusIcon = {
     pass: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
     warning: <AlertTriangle className="h-4 w-4 text-amber-500" />,

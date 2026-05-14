@@ -2,7 +2,7 @@
 
 import type { SectionScoreItem } from "../types/resume-analyzer-dto";
 
-interface AnalyzerSectionScoresProps {
+interface SectionScoresProps {
   data: SectionScoreItem[];
 }
 
@@ -13,7 +13,7 @@ const statusLabels: Record<string, string> = {
   poor: "Kurang",
 };
 
-export function AnalyzerSectionScores({ data }: AnalyzerSectionScoresProps) {
+export function SectionScores({ data }: SectionScoresProps) {
   const scoreBg = (score: number) => {
     if (score >= 80) return "bg-emerald-500";
     if (score >= 60) return "bg-amber-500";

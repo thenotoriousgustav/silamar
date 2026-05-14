@@ -39,7 +39,7 @@ export function SplitViewLayout({
         {/* Right Side: Preview */}
         <div
           className={clsx(
-            "flex h-full flex-col items-center overflow-hidden transition-all duration-500 ease-in-out",
+            "flex h-full flex-col overflow-hidden transition-all duration-500 ease-in-out p-5",
             viewMode === "preview"
               ? "w-full"
               : viewMode === "split"
@@ -47,7 +47,7 @@ export function SplitViewLayout({
                 : "pointer-events-none w-0 overflow-hidden opacity-0",
           )}
         >
-          <div className="flex h-full w-full items-center justify-center p-4 lg:p-8">
+          <div className="h-full w-full overflow-hidden">
             {previewPanel}
           </div>
         </div>

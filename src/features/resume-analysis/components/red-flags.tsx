@@ -4,12 +4,12 @@ import { AlertTriangle } from "lucide-react";
 
 import type { RedFlag } from "../types/resume-analyzer-dto";
 
-interface AnalyzerRedFlagsProps {
+interface RedFlagsProps {
   data: RedFlag[];
   onHighlight?: (text: string | null) => void;
 }
 
-export function AnalyzerRedFlags({ data, onHighlight }: AnalyzerRedFlagsProps) {
+export function RedFlags({ data, onHighlight }: RedFlagsProps) {
   if (data.length === 0) return null;
 
   const severityConfig = {

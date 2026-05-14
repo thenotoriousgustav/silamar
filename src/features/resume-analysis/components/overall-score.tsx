@@ -2,11 +2,11 @@
 
 import type { OverallScore } from "../types/resume-analyzer-dto";
 
-interface AnalyzerOverallScoreProps {
+interface OverallScoreProps {
   data: OverallScore;
 }
 
-export function AnalyzerOverallScore({ data }: AnalyzerOverallScoreProps) {
+export function OverallScore({ data }: OverallScoreProps) {
   const scoreColor =
     data.total >= 80
       ? "text-emerald-500"

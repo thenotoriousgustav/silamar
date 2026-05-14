@@ -5,7 +5,9 @@ import {
   BrainCircuit,
   CheckCircle2,
   ChevronLeft,
+  Clock,
   FileSearch,
+  History,
   Lightbulb,
   Loader2,
   MessageSquareQuote,
@@ -15,6 +17,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +34,7 @@ import { type JobApplication } from "@/features/job-tracker/types";
 import { type CoverLetterResult } from "@/lib/ai/prompts/cover-letter";
 import { type ResumeAnalyzeJdResult } from "@/lib/ai/prompts/resume-analyze-jd";
 import { cn } from "@/lib/utils";
+import { getAnalysisHistory } from "@/features/resume-analysis/actions/get-analysis-history";
 
 
 interface JobAiAssistantProps {
@@ -46,6 +52,18 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
   const [_coverLetterResult, _setCoverLetterResult] =
     useState<CoverLetterResult | null>(null);
   const [_savedLetterId, _setSavedLetterId] = useState<string | null>(null);
+
+  // Fetch history for the selected resume
+  const { data: analysisHistory = [], isLoading: isLoadingHistory } = useQuery({
+    queryKey: ["resume-analysis-history", selectedResume?.id],
+    queryFn: async () => {
+      if (!selectedResume?.id) return [];
+      const res = await getAnalysisHistory(selectedResume.id);
+      if (!res.success) return [];
+      return res.data;
+    },
+    enabled: !!selectedResume?.id,
+  });
 
   const analyzeMutation = useMutation({
     mutationFn: async () => {
@@ -289,12 +307,56 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
                   <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                   Menganalisa...
                 </>
-              ) : analysisResult ? (
+              ) : analysisHistory.length > 0 ? (
                 "Lihat Analisa"
               ) : (
                 "Mulai Analisis"
               )}
             </Button>
+
+            {analysisHistory.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+                  <History className="h-3 w-3" /> Riwayat Analisa
+                </div>
+                <div className="space-y-1.5">
+                  {analysisHistory.slice(0, 3).map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between border border-border/50 bg-background/50 p-2 text-[10px]"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          "flex h-5 w-8 items-center justify-center font-bold text-white",
+                          item.overallScore >= 80 ? "bg-emerald-500" : item.overallScore >= 60 ? "bg-amber-500" : "bg-red-500"
+                        )}>
+                          {item.overallScore}
+                        </span>
+                        <div className="flex flex-col">
+                          <span className="font-bold">Skor Analisa</span>
+                          <span className="text-[9px] text-muted-foreground">
+                            {format(new Date(item.createdAt), "d MMM yyyy HH:mm", { locale: idLocale })}
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-[9px] font-bold"
+                        onClick={() => router.push(`/resume-analyze?resumeId=${selectedResume.id}&jobId=${job.id}`)}
+                      >
+                        Detail
+                      </Button>
+                    </div>
+                  ))}
+                  {analysisHistory.length > 3 && (
+                    <p className="text-center text-[9px] text-muted-foreground">
+                      +{analysisHistory.length - 3} riwayat lainnya
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -66,7 +66,7 @@ export function AppSidebar() {
   }, [trackers]);
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar">
+    <Sidebar collapsible="offcanvas" variant="sidebar">
       <SidebarHeader className="flex h-16 items-center justify-center">
         <div className="flex w-full items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">

@@ -7,18 +7,19 @@ export function buildComprehensiveAnalysisPrompt(
   jobDescription?: string,
 ): string {
   const jobContext = jobDescription
-    ? `\n## Deskripsi Pekerjaan Target:\n${jobDescription}\n\nGunakan deskripsi pekerjaan di atas sebagai konteks tambahan untuk menilai relevansi keyword, skill, dan pengalaman.`
+    ? `\n## Target Job Description:\n${jobDescription}\n\nUse the job description above as additional context to assess the relevance of keywords, skills, and experience in the analysis result (using the same language as the resume).`
     : "";
 
   return `
-Kamu adalah AI expert analisis resume/CV yang telah membantu ribuan profesional Indonesia. Lakukan analisis resume yang sangat komprehensif dan mendalam.
+Kamu adalah AI expert analisis resume/CV internasional. Tugas Anda adalah memberikan analisis resume yang sangat komprehensif dan mendalam.
 
 ## Resume yang Dianalisis:
 ${resumeContent}
 ${jobContext}
 
 ## Instruksi:
-Berikan analisis lengkap dalam format JSON berikut (semua teks dalam Bahasa Indonesia):
+- Deteksi bahasa yang digunakan dalam resume (Utamanya Bahasa Inggris atau Bahasa Indonesia).
+- Berikan analisis lengkap dalam format JSON berikut menggunakan bahasa yang sama dengan resume tersebut. Jika resume dalam Bahasa Inggris, gunakan Bahasa Inggris. Jika resume dalam Bahasa Indonesia, gunakan Bahasa Indonesia.
 
 {
   "overallScore": {

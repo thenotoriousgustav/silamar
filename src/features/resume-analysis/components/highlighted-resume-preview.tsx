@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import type { ResumeContent } from "@/types/resume";
 
 import { HtmlResume } from "@/features/resume-builder/components/html-resume";
@@ -38,6 +40,8 @@ export function HighlightedResumePreview({
   const containerRef = useRef<HTMLDivElement>(null);
   const resumeRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale] = useState(1);
+  const [zoom, setZoom] = useState(1);
+  const [contentHeight, setContentHeight] = useState(1122); // A4 height default
   const [tooltip, setTooltip] = useState<{
     text: string;
     x: number;
@@ -46,6 +50,11 @@ export function HighlightedResumePreview({
   } | null>(null);
 
   const A4_WIDTH = 794;
+  const finalScale = baseScale * zoom;
+
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.1, 2));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.1, 0.5));
+  const handleResetZoom = () => setZoom(1);
 
   // Auto-scale based on container width
   useEffect(() => {
@@ -56,6 +65,16 @@ export function HighlightedResumePreview({
       setBaseScale(Math.min(availableWidth / A4_WIDTH, 1));
     });
     observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Track content height to adjust scrollable area
+  useEffect(() => {
+    if (!resumeRef.current) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setContentHeight(entry.contentRect.height);
+    });
+    observer.observe(resumeRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -197,33 +216,74 @@ export function HighlightedResumePreview({
 
   return (
     <div ref={containerRef} className="relative flex h-full flex-col">
-      {/* Legend */}
-      <div className="border-border flex shrink-0 items-center gap-3 border-b px-4 py-2">
-        <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
-          Highlight:
-        </span>
-        {legendItems.map((item) => (
-          <div key={item.type} className="flex items-center gap-1">
-            <span className={`h-3 w-3 ${item.color}`} />
-            <span className="text-muted-foreground text-[9px]">
-              {item.label}
-            </span>
+      {/* Toolbar: Legend + Zoom Controls */}
+      <div className="border-border flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2">
+        {/* Legend */}
+        <div className="flex items-center gap-3 overflow-x-auto">
+          <span className="text-muted-foreground shrink-0 text-[10px] font-bold tracking-wider uppercase">
+            Highlight:
+          </span>
+          {legendItems.map((item) => (
+            <div key={item.type} className="flex shrink-0 items-center gap-1">
+              <span className={`h-3 w-3 ${item.color}`} />
+              <span className="text-muted-foreground text-[9px]">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Zoom Controls */}
+        <div className="bg-muted/50 border-border/50 flex shrink-0 items-center rounded-lg border p-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleZoomOut}
+            title="Zoom Out"
+          >
+            <ZoomOut className="h-3.5 w-3.5" />
+          </Button>
+          <div className="min-w-[45px] text-center text-[11px] font-bold text-slate-500">
+            {Math.round(finalScale * 100)}%
           </div>
-        ))}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleZoomIn}
+            title="Zoom In"
+          >
+            <ZoomIn className="h-3.5 w-3.5" />
+          </Button>
+          <div className="bg-border/50 mx-1 h-4 w-[1px]" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={handleResetZoom}
+            title="Reset Zoom"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </Button>
+        </div>
       </div>
 
       {/* Resume Preview */}
-      <div className="custom-scrollbar flex-1 overflow-auto bg-slate-100 p-5">
+      <div className="custom-scrollbar bg-muted/30 border-border/50 relative flex-1 overflow-auto border shadow-sm">
         <div
-          className="mx-auto transition-all duration-300"
-          style={{ width: `${A4_WIDTH * baseScale}px` }}
+          className="mx-auto my-10 transition-all duration-300 ease-out"
+          style={{
+            width: `${A4_WIDTH * finalScale}px`,
+            height: `${contentHeight * finalScale}px`,
+          }}
         >
           <div
             ref={resumeRef}
-            className="origin-top-left transition-transform duration-300"
+            className="origin-top-left transition-transform duration-300 ease-out"
             style={{
               width: A4_WIDTH,
-              transform: `scale(${baseScale})`,
+              transform: `scale(${finalScale})`,
             }}
           >
             <HtmlResume data={content} />

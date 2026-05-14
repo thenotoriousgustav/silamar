@@ -1,12 +1,12 @@
 // Components (public API)
-export { ResumeAnalysisClient } from "./components/resume-analysis-client";
-export { ResumeAnalysisResults } from "./components/resume-analysis-results";
-export { ResumeAnalyzerClient } from "./components/resume-analyzer-client";
+export * from "./components";
 
 // Actions (public API)
 export { analyzeResume } from "./actions/analyze-resume";
 export { analyzeResumeJobMatch } from "./actions/analyze-resume-job-match";
 export { analyzeComprehensive } from "./actions/analyze-comprehensive";
+export { getAnalysisHistory } from "./actions/get-analysis-history";
+export type { AnalysisHistoryItem } from "./actions/get-analysis-history";
 
 // Types (public API)
 export type {
@@ -20,11 +20,5 @@ export type {
 } from "./types/resume-analyzer-dto";
 
 // Schemas (public API)
-export {
-  analyzeResumeSchema,
-  analyzeResumeJobMatchSchema,
-} from "./schemas";
-export type {
-  AnalyzeResumeInput,
-  AnalyzeResumeJobMatchInput,
-} from "./schemas";
+export { analyzeResumeSchema, analyzeResumeJobMatchSchema } from "./schemas";
+export type { AnalyzeResumeInput, AnalyzeResumeJobMatchInput } from "./schemas";

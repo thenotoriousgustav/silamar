@@ -2,11 +2,11 @@
 
 import type { KeywordAnalysis } from "../types/resume-analyzer-dto";
 
-interface AnalyzerKeywordAnalysisProps {
+interface KeywordAnalysisProps {
   data: KeywordAnalysis;
 }
 
-export function AnalyzerKeywordAnalysis({ data }: AnalyzerKeywordAnalysisProps) {
+export function KeywordAnalysis({ data }: KeywordAnalysisProps) {
   return (
     <div className="border-border space-y-4 border p-5">
       <div className="flex items-center justify-between">
