@@ -7,3 +7,5 @@ export { deleteTracker as deleteTrackerAction } from "./delete-tracker";
 export { getJobsAction } from "./get-jobs-action";
 export { getTrackersAction } from "./get-trackers-action";
 export { getUserResumes as getUserResumesAction } from "./get-user-resumes";
+export { scrapeLinkedInJob as scrapeLinkedInJobAction } from "./scrape-linkedin-job";
+export type { LinkedInJobData } from "./scrape-linkedin-job";

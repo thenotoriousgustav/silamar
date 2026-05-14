@@ -73,11 +73,19 @@ export function CoverLetterPreviewDrawer({
 
           <div className="flex-1 overflow-hidden py-6">
             <CoverLetterPreview
-              content={
-                typeof coverLetter.content === "string"
-                  ? JSON.parse(coverLetter.content)
-                  : coverLetter.content
-              }
+              content={(() => {
+                if (typeof coverLetter.content !== "string") {
+                  return coverLetter.content;
+                }
+                if (!coverLetter.content.trim()) {
+                  return {};
+                }
+                try {
+                  return JSON.parse(coverLetter.content);
+                } catch {
+                  return {};
+                }
+              })()}
             />
           </div>
 

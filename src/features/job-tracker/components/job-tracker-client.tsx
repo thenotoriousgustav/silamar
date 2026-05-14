@@ -26,6 +26,7 @@ import { JobTrackerDialogs } from "./job-tracker-dialogs";
 import { JobTrackerHeader } from "./job-tracker-header";
 import { JobTrackerStats } from "./job-tracker-stats";
 import { JobTrackerKanban } from "./kanban/job-tracker-kanban";
+import { LinkedInImportDialog } from "./linkedin-import-dialog";
 
 interface JobTrackerClientProps {
   initialJobs: JobApplication[];
@@ -53,6 +54,7 @@ export function JobTrackerClient({
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<JobApplication | null>(null);
+  const [isLinkedInImportOpen, setIsLinkedInImportOpen] = useState(false);
   const [localJobs, setLocalJobs] = useState<JobApplication[]>(initialJobs);
 
   // Sync drawer with URL jobId
@@ -263,6 +265,7 @@ export function JobTrackerClient({
         view={view}
         onViewChange={handleViewChange}
         onAddClick={() => setIsAddOpen(true)}
+        onLinkedInImportClick={() => setIsLinkedInImportOpen(true)}
       />
 
       {view === "kanban" ? (
@@ -304,6 +307,12 @@ export function JobTrackerClient({
           queryClient.invalidateQueries({ queryKey: ["jobs"] });
         }}
         onConfirmDelete={(id) => deleteMutation.mutate(id)}
+        trackerId={currentQueryParams.trackerId}
+      />
+
+      <LinkedInImportDialog
+        open={isLinkedInImportOpen}
+        onOpenChange={setIsLinkedInImportOpen}
         trackerId={currentQueryParams.trackerId}
       />
     </div>

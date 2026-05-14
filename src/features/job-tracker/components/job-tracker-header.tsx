@@ -1,6 +1,6 @@
 "use client";
 
-import { Kanban as KanbanIcon, Plus, Table2 } from "lucide-react";
+import { Kanban as KanbanIcon, Link2, Plus, Table2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
@@ -10,12 +10,14 @@ interface JobTrackerHeaderProps {
   view: "kanban" | "table";
   onViewChange: (view: "kanban" | "table") => void;
   onAddClick: () => void;
+  onLinkedInImportClick: () => void;
 }
 
 export function JobTrackerHeader({
   view,
   onViewChange,
   onAddClick,
+  onLinkedInImportClick,
 }: JobTrackerHeaderProps) {
   return (
     <PageHeader
@@ -49,6 +51,14 @@ export function JobTrackerHeader({
             Kanban
           </button>
         </div>
+        <Button
+          onClick={onLinkedInImportClick}
+          variant="outline"
+          className="flex items-center gap-2 rounded-none px-4 py-5 text-sm font-semibold transition-all"
+        >
+          <Link2 className="h-4 w-4" />
+          Import LinkedIn
+        </Button>
         <Button
           onClick={onAddClick}
           className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-none px-4 py-5 text-sm font-semibold transition-all"

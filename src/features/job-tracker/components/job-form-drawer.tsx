@@ -12,6 +12,7 @@ import {
   FileText,
   Globe,
   Info,
+  Link2,
   Loader2,
   MapPin,
   Sparkles,
@@ -37,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   createJobAction,
   getUserResumesAction,
+  scrapeLinkedInJobAction,
   updateJobAction,
 } from "@/features/job-tracker/actions";
 import {
@@ -76,7 +78,47 @@ export function JobFormDrawer({
   const _queryClient = useQueryClient();
   const [isResumeSelectorOpen, setIsResumeSelectorOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("detail");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const isEdit = !!job;
+
+  const scrapeMutation = useMutation({
+    mutationFn: (url: string) => scrapeLinkedInJobAction(url),
+    onSuccess: (result) => {
+      if (result.success) {
+        const data = result.data;
+        form.setValue("position", data.position, { shouldDirty: true });
+        form.setValue("company", data.company, { shouldDirty: true });
+        if (data.description) form.setValue("description", data.description, { shouldDirty: true });
+        if (data.location) form.setValue("location", data.location, { shouldDirty: true });
+        if (data.salary) form.setValue("salary", data.salary, { shouldDirty: true });
+        if (data.jobUrl) form.setValue("jobUrl", data.jobUrl, { shouldDirty: true });
+
+        // Map LinkedIn type to our enum
+        if (data.type) {
+          const typeMap: Record<string, string> = {
+            "full-time": "full-time",
+            "part-time": "part-time",
+            internship: "internship",
+            contract: "contract",
+            freelance: "freelance",
+          };
+          const normalizedType = data.type.toLowerCase().replace(/\s+/g, "-");
+          const mappedType = typeMap[normalizedType];
+          if (mappedType) {
+            form.setValue("type", mappedType as any, { shouldDirty: true });
+          }
+        }
+
+        toast.success("Data berhasil diambil dari LinkedIn! 🎉");
+        setLinkedinUrl("");
+      } else {
+        toast.error(result.error);
+      }
+    },
+    onError: () => {
+      toast.error("Gagal mengambil data dari LinkedIn");
+    },
+  });
 
   const mutation = useMutation({
     mutationFn: (values: JobApplicationFormValues) => {
@@ -272,6 +314,48 @@ export function JobFormDrawer({
                 )}
 
                 <div className="space-y-4">
+                  {/* LinkedIn Import — only show for new jobs */}
+                  {!isEdit && (
+                    <div className="border-primary/20 bg-primary/5 space-y-3 border p-4">
+                      <div className="flex items-center gap-2">
+                        <Link2 className="text-primary h-4 w-4" />
+                        <p className="text-xs font-bold">Import dari LinkedIn</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          value={linkedinUrl}
+                          onChange={(e) => setLinkedinUrl(e.target.value)}
+                          placeholder="Paste LinkedIn job URL..."
+                          className="bg-background text-sm"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && linkedinUrl.trim()) {
+                              e.preventDefault();
+                              scrapeMutation.mutate(linkedinUrl.trim());
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="default"
+                          size="sm"
+                          className="shrink-0 gap-2 px-4"
+                          disabled={!linkedinUrl.trim() || scrapeMutation.isPending}
+                          onClick={() => scrapeMutation.mutate(linkedinUrl.trim())}
+                        >
+                          {scrapeMutation.isPending ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3.5 w-3.5" />
+                          )}
+                          {scrapeMutation.isPending ? "Scraping..." : "Import"}
+                        </Button>
+                      </div>
+                      <p className="text-muted-foreground text-[10px]">
+                        Contoh: https://www.linkedin.com/jobs/view/1234567890 atau URL dengan currentJobId
+                      </p>
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <FormFieldLabel
                       icon={<Building2 className="h-3.5 w-3.5" />}
