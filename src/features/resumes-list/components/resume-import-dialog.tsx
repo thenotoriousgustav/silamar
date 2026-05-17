@@ -32,7 +32,7 @@ export function ResumeImportDialog({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("pdf", file);
-      const response = await fetch("/api/resume/analyze", {
+      const response = await fetch("/api/resume/extract", {
         method: "POST",
         body: formData,
       });

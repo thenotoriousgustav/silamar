@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
+import { EB_Garamond, Geist, Inter, JetBrains_Mono, Lato, Roboto } from "next/font/google";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
@@ -17,6 +17,34 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+
+// Resume preview fonts — exposed as CSS variables so the HTML preview can
+// switch between them based on the user's selected font.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-resume-inter",
+  display: "swap",
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-resume-roboto",
+  display: "swap",
+});
+
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-resume-lato",
+  display: "swap",
+});
+
+const garamond = EB_Garamond({
+  subsets: ["latin"],
+  variable: "--font-resume-garamond",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -59,7 +87,15 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={cn(geist.variable, "font-mono", jetbrainsMono.variable)}
+      className={cn(
+        geist.variable,
+        "font-mono",
+        jetbrainsMono.variable,
+        inter.variable,
+        roboto.variable,
+        lato.variable,
+        garamond.variable,
+      )}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

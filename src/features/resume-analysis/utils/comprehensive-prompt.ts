@@ -1,21 +1,21 @@
 /**
- * Builds the AI prompt for comprehensive resume analysis.
- * Returns a structured JSON response matching ComprehensiveAnalysisDTO.
+ * Builds the AI prompt for comprehensive (general) resume analysis.
+ *
+ * Scope: evaluates the resume on its own merits — ATS compatibility,
+ * writing quality (typos/grammar), bullet/action-verb quality,
+ * section completeness, formatting, length, and red flags.
+ *
+ * NOTE: This prompt is INTENTIONALLY job-agnostic. To analyze fit against
+ * a specific job, use {@link buildJobFitPrompt} instead.
  */
-export function buildComprehensiveAnalysisPrompt(
-  resumeContent: string,
-  jobDescription?: string,
-): string {
-  const jobContext = jobDescription
-    ? `\n## Target Job Description:\n${jobDescription}\n\nUse the job description above as additional context to assess the relevance of keywords, skills, and experience in the analysis result (using the same language as the resume).`
-    : "";
-
+export function buildComprehensiveAnalysisPrompt(resumeContent: string): string {
   return `
 You are an international AI expert in resume/CV analysis. Your task is to provide a highly comprehensive and in-depth resume analysis.
 
+This analysis is JOB-AGNOSTIC: evaluate the resume on its own merits — writing quality, ATS readability, formatting, completeness, typos, action verbs, and red flags. Do NOT speculate about a target job; do NOT score keyword relevance against any specific position. If you reference keywords, score them based on industry norms for the candidate's apparent profession only.
+
 ## Resume to Analyze:
 ${resumeContent}
-${jobContext}
 
 ## Instructions:
 - Detect the language used in the resume (primarily English or Indonesian).
@@ -63,7 +63,7 @@ ${jobContext}
       "examples": {
         "before": "<weak example>",
         "after": "<improved version>"
-      } // or null if no relevant example
+      }
     },
     "actionVerbs": {
       "score": <0-100>,
@@ -91,7 +91,7 @@ ${jobContext}
       { "keyword": "<keyword>", "count": <frequency>, "relevance": "<high|medium|low>" }
     ],
     "suggested": [
-      { "keyword": "<keyword>", "priority": "<high|medium|low>", "reason": "<reason>" }
+      { "keyword": "<keyword>", "priority": "<high|medium|low>", "reason": "<reason — based on the candidate's apparent profession, NOT a target job>" }
     ],
     "overused": [
       { "keyword": "<keyword>", "reason": "<reason>" }
@@ -133,8 +133,10 @@ ${jobContext}
 ## Important:
 - ALL fields in the JSON above MUST be filled (none may be omitted).
 - If a field has no data or is not relevant, use an empty string "", empty array [], or null (for object examples).
+- For "examples" inside bulletPoints: provide a real before/after pair from the resume if possible. If you cannot find one, return an object with empty strings — DO NOT return null.
 - Enter text EXACTLY as written in the resume (case-sensitive) for highlights.
 - Provide a minimum of 5-10 highlights.
+- Pay special attention to typos, grammar errors, weak action verbs, vague statements, and missing metrics — these are the highest-value findings for this analysis.
 
 Return only valid JSON, no other text.
 `;

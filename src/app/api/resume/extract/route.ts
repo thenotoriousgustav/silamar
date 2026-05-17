@@ -158,10 +158,10 @@ export async function POST(request: Request) {
 
     return Response.json(ResumeContentSchema.parse(resumeData));
   } catch (error) {
-    console.error("Analysis error:", error);
+    console.error("Extraction error:", error);
     return Response.json(
       {
-        error: "Failed to analyze resume",
+        error: "Failed to extract resume data",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },

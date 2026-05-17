@@ -16,13 +16,17 @@ import type { ComprehensiveAnalysisDTO } from "../types/resume-analyzer-dto";
 import { buildComprehensiveAnalysisPrompt } from "../utils/comprehensive-prompt";
 
 /**
- * Server action to perform comprehensive resume analysis.
- * Fetches resume content from DB, calls AI, logs usage, returns DTO.
- * Costs 1 credit using gpt-4o-mini.
+ * Server action to perform a general (job-agnostic) comprehensive resume analysis.
+ *
+ * Evaluates the resume on its own merits: ATS compatibility, writing quality,
+ * typos/grammar, formatting, completeness, action verbs, red flags.
+ *
+ * For job-fit analysis (resume vs a specific job), use `analyzeJobFit` instead.
+ *
+ * Costs 1 credit.
  */
 export async function analyzeComprehensive(input: {
   resumeId: string;
-  jobDescription?: string;
 }): Promise<ActionResult<ComprehensiveAnalysisDTO>> {
   const user = await getSessionUser();
   if (!user) {
@@ -30,7 +34,6 @@ export async function analyzeComprehensive(input: {
   }
 
   try {
-    // Fetch user info
     const [dbUser] = await db
       .select({ credits: users.credits, plan: users.plan })
       .from(users)
@@ -48,7 +51,6 @@ export async function analyzeComprehensive(input: {
       };
     }
 
-    // Fetch resume content
     const [resume] = await db
       .select({ content: resumes.content })
       .from(resumes)
@@ -64,7 +66,6 @@ export async function analyzeComprehensive(input: {
         ? resume.content
         : JSON.stringify(resume.content);
 
-    // Deduct credit
     if (!isPro) {
       await db
         .update(users)
@@ -72,11 +73,7 @@ export async function analyzeComprehensive(input: {
         .where(eq(users.id, user.id));
     }
 
-    // Call AI
-    const prompt = buildComprehensiveAnalysisPrompt(
-      resumeContent,
-      input.jobDescription,
-    );
+    const prompt = buildComprehensiveAnalysisPrompt(resumeContent);
 
     const { output: result } = await generateText({
       model: openai("gpt-4.1-mini"),
@@ -84,7 +81,6 @@ export async function analyzeComprehensive(input: {
       prompt,
     });
 
-    // Log usage and save to history
     await db.insert(aiUsageLogs).values({
       id: randomUUID(),
       userId: user.id,

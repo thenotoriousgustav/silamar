@@ -1,5 +1,6 @@
 import {
   Briefcase,
+  Crosshair,
   Files,
   FileUser,
   Flame,
@@ -51,6 +52,11 @@ export const sidebarData = {
     },
   ],
   navSecondary: [
+    {
+      title: "Job Fit",
+      url: "/job-fit-analysis",
+      icon: Crosshair,
+    },
     {
       title: "Skill Gap",
       url: "/skill-gap",

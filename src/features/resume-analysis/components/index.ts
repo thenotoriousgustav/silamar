@@ -10,3 +10,4 @@ export * from "./highlighted-resume-preview";
 export * from "./resume-analysis-client";
 export * from "./resume-analysis-results";
 export * from "./resume-analyzer-client";
+export { JobFitClient } from "./job-fit/job-fit-client";

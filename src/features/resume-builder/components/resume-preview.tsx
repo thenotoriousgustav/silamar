@@ -19,16 +19,13 @@ import { Button } from "@/components/ui/button";
 import type { ResumeContent } from "@/types/resume";
 
 
-import { HtmlResume } from "./html-resume";
+import { HtmlResume, PAGE_DIMENSIONS } from "./html-resume";
 import { ResumeTemplate } from "./resume-template";
 
 interface ResumePreviewProps {
   content: ResumeContent;
   onJumpToSection?: (sectionId: string) => void;
 }
-
-const A4_WIDTH = 794;
-const A4_HEIGHT = 1123;
 
 export function ResumePreview({
   content,
@@ -38,7 +35,10 @@ export function ResumePreview({
   const contentRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale] = useState(1);
   const [zoom, setZoom] = useState(1);
-  const [contentHeight, setContentHeight] = useState(A4_HEIGHT);
+  const paperSize = content.style?.paperSize || "A4";
+  const pageWidth: number = PAGE_DIMENSIONS[paperSize].width;
+  const pageHeight: number = PAGE_DIMENSIONS[paperSize].height;
+  const [contentHeight, setContentHeight] = useState<number>(pageHeight);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showJson, setShowJson] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -80,12 +80,12 @@ export function ResumePreview({
     const observer = new ResizeObserver(([entry]) => {
       const containerWidth = entry.contentRect.width;
       const availableWidth = containerWidth - 40;
-      setBaseScale(Math.min(availableWidth / A4_WIDTH, 1));
+      setBaseScale(Math.min(availableWidth / pageWidth, 1));
     });
 
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [pageWidth]);
 
   // Track content height to adjust scrollable area
   useEffect(() => {
@@ -238,7 +238,7 @@ export function ResumePreview({
           <div
             className="mx-auto my-10 transition-all duration-300 ease-out"
             style={{
-              width: `${A4_WIDTH * finalScale}px`,
+              width: `${pageWidth * finalScale}px`,
               height: `${contentHeight * finalScale}px`,
             }}
           >
@@ -246,7 +246,7 @@ export function ResumePreview({
               ref={contentRef}
               className="origin-top-left transition-transform duration-300 ease-out"
               style={{
-                width: A4_WIDTH,
+                width: pageWidth,
                 transform: `scale(${finalScale})`,
               }}
             >

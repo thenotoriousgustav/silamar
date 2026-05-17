@@ -103,6 +103,9 @@ export const ResumeCustomSectionItemSchema = z.object({
   title: z.string(),
   subtitle: z.string().optional(),
   date: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  isCurrent: z.boolean().optional(),
   description: z.union([z.string(), z.array(DescriptionItemSchema)]).optional(),
   link: z.string().optional(),
 });

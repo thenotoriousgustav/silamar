@@ -38,11 +38,12 @@ const DEFAULT_RESUME: ResumeContent = {
   projects: [],
   customSections: [],
   style: {
-    fontFamily: "Helvetica",
+    fontFamily: "Inter",
     fontSize: "text-[11px]",
     lineHeight: "relaxed",
     templateId: "classic",
     language: "en",
+    paperSize: "A4",
   },
   sectionOrder: ["experience", "education", "skills", "projects", "custom"],
 };

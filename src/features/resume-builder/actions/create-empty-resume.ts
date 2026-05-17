@@ -42,11 +42,12 @@ export async function createEmptyResumeAction(
         skills: [],
         projects: [],
         style: {
-          fontFamily: "Helvetica",
+          fontFamily: "Inter",
           fontSize: "text-[11px]",
           lineHeight: "relaxed",
           language: "en",
           templateId: parsed.data.templateId,
+          paperSize: "A4",
         },
       },
     });

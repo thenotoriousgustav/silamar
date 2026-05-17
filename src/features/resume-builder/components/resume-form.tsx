@@ -25,6 +25,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ResumeContent } from "@/types/resume";
 
 import type { ResumeFormHandlers } from "../types/resume-form-handlers";
@@ -38,7 +39,7 @@ import { ItemsListSection } from "./form-sections/items-list-section";
 import { PersonalInfoSection } from "./form-sections/personal-info-section";
 import { ProjectSection } from "./form-sections/project-section";
 import { SkillsSection } from "./form-sections/skills-section";
-import { VisualSettingsSection } from "./form-sections/visual-settings-section";
+import { VisualSettingsPanel } from "./form-sections/visual-settings-panel";
 
 interface ResumeFormProps {
   content: ResumeContent;
@@ -88,6 +89,7 @@ export function ResumeForm({
     updateSectionOrder,
   } = handlers;
   const [expandedItems, setExpandedItems] = useState<string[]>(["personal"]);
+  const [activeTab, setActiveTab] = useState<"content" | "settings">("content");
   const [atsResult, setAtsResult] = useState<{
     score: number;
     feedback: string;
@@ -158,6 +160,21 @@ export function ResumeForm({
               behavior: "smooth",
               block: "start",
             });
+            // Add highlight effect to section too
+            sectionElement.classList.add(
+              "ring-2",
+              "ring-primary",
+              "ring-offset-2",
+              "jump-highlight",
+            );
+            setTimeout(() => {
+              sectionElement.classList.remove(
+                "ring-2",
+                "ring-primary",
+                "ring-offset-2",
+                "jump-highlight",
+              );
+            }, 2000);
           }
         }
         onJumpEnd?.();
@@ -254,19 +271,50 @@ export function ResumeForm({
   return (
     <div
       ref={scrollContainerRef}
-      className="custom-scrollbar flex h-full flex-col gap-6 overflow-y-auto p-6"
+      className="custom-scrollbar flex h-full flex-col overflow-y-auto"
     >
-      {/* ATS & Completeness Dashboard */}
-      <ATSDashboard
-        content={content}
-        atsResult={atsResult}
-        isAnalyzing={analyzeMutation.isPending}
-        onRunAnalysis={handleRunATSAnalysis}
-        setAtsResult={setAtsResult}
-      />
+      {/* Tab navigation — sticky at the top of the form panel so users can
+          jump between editing content and tweaking visual settings without
+          scrolling away from their work. */}
+      <div className="bg-background sticky top-0 z-20 border-b px-6 pt-4 pb-3">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as "content" | "settings")}
+        >
+          <TabsList className="bg-muted h-9">
+            <TabsTrigger
+              value="content"
+              className="data-[state=active]:bg-background px-4 text-xs font-bold"
+            >
+              Konten
+            </TabsTrigger>
+            <TabsTrigger
+              value="settings"
+              className="data-[state=active]:bg-background px-4 text-xs font-bold"
+            >
+              Pengaturan
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
-      <Accordion
-        value={expandedItems}
+      {activeTab === "settings" ? (
+        <div className="p-6">
+          <VisualSettingsPanel content={content} updateStyle={updateStyle} />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-6 p-6">
+          {/* ATS & Completeness Dashboard */}
+          <ATSDashboard
+            content={content}
+            atsResult={atsResult}
+            isAnalyzing={analyzeMutation.isPending}
+            onRunAnalysis={handleRunATSAnalysis}
+            setAtsResult={setAtsResult}
+          />
+
+          <Accordion
+            value={expandedItems}
         onValueChange={setExpandedItems}
         type="multiple"
         className="w-full space-y-4 border-none"
@@ -437,8 +485,6 @@ export function ResumeForm({
           </SortableContent>
         </Sortable>
 
-        <VisualSettingsSection content={content} updateStyle={updateStyle} />
-
         <div className="pt-4 pb-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -486,6 +532,8 @@ export function ResumeForm({
           </DropdownMenu>
         </div>
       </Accordion>
+        </div>
+      )}
     </div>
   );
 }

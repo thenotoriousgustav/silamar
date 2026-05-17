@@ -105,11 +105,21 @@ export function Editor({
       const html = initialDescription;
       return (editor: LexicalEditor) => {
         const parser = new DOMParser();
-        const dom = parser.parseFromString(html, "text/html");
+        // Wrap plain text in <p> so DOMParser produces block-level elements
+        // that Lexical can accept as root children.
+        const wrappedHtml = html.includes("<") ? html : `<p>${html}</p>`;
+        const dom = parser.parseFromString(wrappedHtml, "text/html");
         const nodes = $generateNodesFromDOM(editor, dom);
         const root = $getRoot();
         root.clear();
-        root.append(...nodes);
+        // Filter: only append element or decorator nodes (Lexical root
+        // rejects raw text nodes).
+        const validNodes = nodes.filter(
+          (node) => node.getType() !== "text" && node.getType() !== "linebreak",
+        );
+        if (validNodes.length > 0) {
+          root.append(...validNodes);
+        }
       };
     }
 

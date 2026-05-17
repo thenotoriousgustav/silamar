@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MonthPicker } from "@/components/ui/monthpicker";
@@ -128,7 +129,9 @@ export function EducationSection({
                             <div className="flex items-center gap-2">
                               <div className="text-muted-foreground text-[10px] font-medium uppercase">
                                 {formatResumeDate(edu.startYear) || "Mulai"} —{" "}
-                                {formatResumeDate(edu.endYear) || "Selesai"}
+                                {edu.isCurrentlyStudying
+                                  ? "Present"
+                                  : formatResumeDate(edu.endYear) || "Selesai"}
                               </div>
                               <div
                                 role="button"
@@ -277,7 +280,12 @@ export function EducationSection({
                             </Label>
                             <div className="relative">
                               <Input
-                                value={formatResumeDate(edu.endYear) || ""}
+                                value={
+                                  edu.isCurrentlyStudying
+                                    ? "Present"
+                                    : formatResumeDate(edu.endYear) || ""
+                                }
+                                disabled={edu.isCurrentlyStudying}
                                 onChange={(e) =>
                                   updateEducation(edu.id, {
                                     endYear: e.target.value,
@@ -291,6 +299,7 @@ export function EducationSection({
                                   <Button
                                     variant="ghost"
                                     size="icon"
+                                    disabled={edu.isCurrentlyStudying}
                                     className="text-muted-foreground hover:text-primary absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2 rounded-none"
                                   >
                                     <CalendarIcon className="h-4 w-4" />
@@ -333,6 +342,25 @@ export function EducationSection({
                                 </PopoverContent>
                               </Popover>
                             </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2 py-1 md:col-span-2">
+                            <Checkbox
+                              id={`current-edu-${edu.id}`}
+                              checked={edu.isCurrentlyStudying}
+                              onCheckedChange={(checked) =>
+                                updateEducation(edu.id, {
+                                  isCurrentlyStudying: !!checked,
+                                  endYear: checked ? "" : edu.endYear,
+                                })
+                              }
+                            />
+                            <Label
+                              htmlFor={`current-edu-${edu.id}`}
+                              className="text-xs leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Masih sekolah/kuliah disini
+                            </Label>
                           </div>
 
                           <div className="space-y-4 md:col-span-2">

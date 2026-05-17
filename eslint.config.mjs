@@ -292,6 +292,16 @@ const config = typescriptEslint.config(
       "max-depth": "off",
     },
   },
+  // Resume template engine — pagination engines, font registration and the
+  // base style sheet are inherently large declarative blocks; per-template
+  // PDF/HTML render components also benefit from being read top-to-bottom.
+  {
+    files: ["src/features/resume-builder/templates/**/*.{ts,tsx}"],
+    rules: {
+      "max-lines-per-function": "off",
+      "max-depth": "off",
+    },
+  },
   // Disable max-depth for complex UI components that use nested conditionals (kanban, sidebar)
   {
     files: [
