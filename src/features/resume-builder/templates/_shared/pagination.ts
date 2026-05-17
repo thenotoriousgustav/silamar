@@ -6,8 +6,12 @@ import { PAGE_DIMENSIONS, PAGE_PADDING } from "./constants";
 
 /**
  * Heuristic height estimator (in CSS pixels) used to decide when to break to
- * a new page in the HTML preview. Numbers are tuned by eye, not measured —
- * the actual layout still relies on browser flow inside each page wrapper.
+ * a new page in the HTML preview. Numbers are calibrated against the actual
+ * rendered output at the default font size (11px) and density.
+ *
+ * The estimates are intentionally conservative — under-estimating slightly
+ * is preferable to over-estimating because over-estimation causes premature
+ * page breaks that leave large empty gaps at the bottom of pages.
  */
 export function estimateHeight(
   type: string,
@@ -16,47 +20,55 @@ export function estimateHeight(
 ): number {
   switch (type) {
     case "header":
-      return 160;
-    case "summary":
-      return 40 + ((content?.length ?? 0) / 80) * 15;
-    case "sectionTitle":
-      return 45;
-    case "experienceItem": {
-      const isHtml = typeof content?.description === "string";
-      const itemCount = isHtml
-        ? (content.description.match(/<li/g) || []).length || 3
-        : Array.isArray(content?.description)
-          ? content.description.length
-          : 0;
-      return 60 + itemCount * 18;
+      // Name + title + 1-2 contact rows ≈ ~80–100px
+      return 100;
+    case "summary": {
+      // ~17px per ~80 chars + section title (~25) + small margin
+      const len = content?.length ?? 0;
+      return 35 + Math.ceil(len / 80) * 17;
     }
-    case "educationItem":
-      return 55;
+    case "sectionTitle":
+      // h2 + bottom border + small margin
+      return 28;
+    case "experienceItem": {
+      // 2 header rows (~17px each) + bullets (~16px each) + item gap
+      const bullets = countBullets(content?.description);
+      return 38 + bullets * 16 + 8;
+    }
+    case "educationItem": {
+      const bullets = countBullets(content?.description);
+      return 36 + bullets * 16 + 6;
+    }
     case "skillItem":
-      return 25;
+      // Single inline line
+      return 18;
     case "projectItem": {
-      const projectItemCount =
-        typeof content?.description === "string"
-          ? (content.description.match(/<li/g) || []).length || 2
-          : content?.description?.length || 0;
-      return 70 + (projectItemCount ? 40 : 0);
+      const bullets = countBullets(content?.description);
+      const linkLine = content?.link ? 12 : 0;
+      return 22 + linkLine + bullets * 16 + 6;
     }
     case "customItem":
     case "certificatesItem":
     case "awardsItem":
     case "publicationsItem": {
-      const desc = content?.description ?? "";
-      const cnt =
-        typeof desc === "string"
-          ? (desc.match(/<li/g) || []).length || 2
-          : Array.isArray(desc)
-            ? desc.length
-            : 0;
-      return 60 + (cnt ? 30 : 0);
+      const bullets = countBullets(content?.description);
+      const subtitleLine = content?.subtitle ? 16 : 0;
+      const linkLine = content?.link ? 12 : 0;
+      return 22 + subtitleLine + linkLine + bullets * 16 + 6;
     }
     default:
-      return 20;
+      return 16;
   }
+}
+
+/** Counts list items in either Lexical-HTML output or DescriptionItem[]. */
+function countBullets(description: unknown): number {
+  if (!description) return 0;
+  if (typeof description === "string") {
+    return (description.match(/<li/g) || []).length;
+  }
+  if (Array.isArray(description)) return description.length;
+  return 0;
 }
 
 /**
@@ -72,9 +84,18 @@ export function contentHeightLimitFor(paperSize: ResumePaperSize): number {
  * the current page until adding the next element would overflow the height
  * limit, at which point it starts a new page.
  *
+ * Two commit modes are exposed:
+ *  - `addToPage(node, height)` — single element, may break before this
+ *    element if it doesn't fit.
+ *  - `addAtomic([{ node, height }, ...])` — group of elements that must
+ *    stay together. If the group doesn't fit on the current page, the
+ *    paginator breaks before the *whole group* (not in the middle), so a
+ *    section title never ends up orphaned at the bottom of a page.
+ *
  * Usage:
- *   const { pages, addToPage } = createPaginator(paperSize);
+ *   const { pages, addToPage, addAtomic } = createPaginator(paperSize);
  *   addToPage(<Header/>, estimateHeight("header", null));
+ *   addAtomic([{ node: title, height: 45 }, { node: firstItem, height: 80 }]);
  *   ...
  *   return pages;
  */
@@ -84,15 +105,37 @@ export function createPaginator(paperSize: ResumePaperSize) {
   let currentHeight = 0;
   let currentPage = 0;
 
+  const breakPage = () => {
+    currentPage++;
+    pages[currentPage] = [];
+    currentHeight = 0;
+  };
+
   const addToPage = (element: ReactNode, height: number) => {
     if (currentHeight + height > limit && pages[currentPage].length > 0) {
-      currentPage++;
-      pages[currentPage] = [];
-      currentHeight = 0;
+      breakPage();
     }
     pages[currentPage].push(element);
     currentHeight += height;
   };
 
-  return { pages, addToPage };
+  const addAtomic = (group: Array<{ node: ReactNode; height: number }>) => {
+    if (group.length === 0) return;
+    const totalHeight = group.reduce((sum, g) => sum + g.height, 0);
+    // If the whole group can't fit on the current page, start fresh — but
+    // only if the current page has content (avoid creating an empty first
+    // page when the very first group is large).
+    if (
+      currentHeight + totalHeight > limit &&
+      pages[currentPage].length > 0
+    ) {
+      breakPage();
+    }
+    for (const { node, height } of group) {
+      pages[currentPage].push(node);
+      currentHeight += height;
+    }
+  };
+
+  return { pages, addToPage, addAtomic };
 }

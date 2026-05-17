@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import type { ResumeContent } from "@/types/resume";
 
 import {
+  type RenderContext,
+  type RenderedSection,
   renderCustomSections,
   renderEducationSection,
   renderExperienceSection,
@@ -13,8 +15,27 @@ import {
   renderSkillsSection,
 } from "./html-render-helpers";
 import { HtmlSummary } from "./html-summary";
-import { contentHeightLimitFor, estimateHeight } from "./pagination";
+import { createPaginator, estimateHeight } from "./pagination";
 import type { ResumeTranslations } from "./translations";
+
+/** Section keys handled by the default engine. */
+type SectionId =
+  | "experience"
+  | "education"
+  | "skills"
+  | "projects"
+  | "certificates"
+  | "awards"
+  | "publications"
+  | "custom";
+
+const DEFAULT_SECTION_ORDER: SectionId[] = [
+  "experience",
+  "education",
+  "projects",
+  "skills",
+  "custom",
+];
 
 export interface HtmlEngineConfig {
   data: ResumeContent;
@@ -25,7 +46,10 @@ export interface HtmlEngineConfig {
   sectionTitleClass: string;
   /** Density-driven item margin class (e.g. "mb-3"). */
   itemGapClass: string;
-  /** Optional class applied to experience position titles (e.g. accent color). */
+  /**
+   * Optional accent color class applied to item titles (experience position,
+   * project name, etc.). Templates use this to highlight primary headings.
+   */
   experienceTitleColorClass?: string;
   /** Custom-rendered header element supplied by the template. */
   headerElement: ReactNode;
@@ -39,161 +63,160 @@ export interface HtmlEngineConfig {
  *  2. Provide a `sectionTitleClass` that captures their visual identity.
  *  3. Feed both into this engine.
  *
- * The pagination heuristics, section ordering, summary, and body rendering
- * are all shared so behavior stays consistent across templates.
+ * The engine guarantees:
+ *  - Section titles are never orphaned at the bottom of a page (titles are
+ *    paginated atomically with their first item).
+ *  - Empty sections (and empty custom subsections) never produce a stray
+ *    title.
+ *  - Pagination & section ordering stay consistent across every template.
  */
 export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
   const {
     data,
-    translations,
-    bodyTextClass,
-    headingTextClass,
-    sectionTitleClass,
-    experienceTitleColorClass,
     headerElement,
     onJumpToSection,
+    experienceTitleColorClass,
   } = config;
 
   const paperSize = data.style?.paperSize || "A4";
-  const limit = contentHeightLimitFor(paperSize);
+  const { pages, addToPage, addAtomic } = createPaginator(paperSize);
 
-  const pages: ReactNode[][] = [[]];
-  let currentHeight = 0;
-  let currentPage = 0;
-
-  const addToPage = (element: ReactNode, height: number) => {
-    if (currentHeight + height > limit && pages[currentPage].length > 0) {
-      currentPage++;
-      pages[currentPage] = [];
-      currentHeight = 0;
-    }
-    pages[currentPage].push(element);
-    currentHeight += height;
+  const ctx: RenderContext = {
+    translations: config.translations,
+    bodyTextClass: config.bodyTextClass,
+    headingTextClass: config.headingTextClass,
+    sectionTitleClass: config.sectionTitleClass,
+    itemGapClass: config.itemGapClass,
+    titleColorClass: experienceTitleColorClass,
+    onJumpToSection,
   };
 
-  // Header
+  // ─── Header ────────────────────────────────────────────────────────────
   addToPage(headerElement, estimateHeight("header", null));
 
-  // Summary
+  // ─── Summary ───────────────────────────────────────────────────────────
   if (data.personalInfo.summary) {
     addToPage(
       <HtmlSummary
         summary={data.personalInfo.summary}
-        bodyTextClass={bodyTextClass}
-        sectionTitleClass={sectionTitleClass}
-        translations={translations}
+        bodyTextClass={config.bodyTextClass}
+        sectionTitleClass={config.sectionTitleClass}
+        translations={config.translations}
         onJumpToSection={onJumpToSection}
       />,
       estimateHeight("summary", data.personalInfo.summary),
     );
   }
 
-  const renderCtx = {
-    translations,
-    bodyTextClass,
-    headingTextClass,
-    sectionTitleClass,
-    itemGapClass: config.itemGapClass,
-    onJumpToSection,
-  };
+  // ─── Body sections ─────────────────────────────────────────────────────
+  const sectionOrder = (data.sectionOrder ??
+    DEFAULT_SECTION_ORDER) as SectionId[];
 
-  const sectionOrder = data.sectionOrder || [
-    "experience",
-    "education",
-    "projects",
-    "skills",
-    "custom",
-  ];
-
-  for (const sectionId of sectionOrder) {
-    if (sectionId === "experience" && data.experience.length > 0) {
-      const { title, items } = renderExperienceSection(
-        data.experience,
-        renderCtx,
-        { titleColorClass: experienceTitleColorClass },
-      );
-      addToPage(title, estimateHeight("sectionTitle", null));
-      data.experience.forEach((exp, i) => {
-        addToPage(items[i], estimateHeight("experienceItem", exp));
-      });
-    } else if (sectionId === "education" && data.education.length > 0) {
-      const { title, items } = renderEducationSection(
-        data.education,
-        renderCtx,
-      );
-      addToPage(title, estimateHeight("sectionTitle", null));
-      data.education.forEach((edu, i) => {
-        addToPage(items[i], estimateHeight("educationItem", edu));
-      });
-    } else if (sectionId === "skills" && data.skills.length > 0) {
-      const { title, items } = renderSkillsSection(data.skills, renderCtx);
-      addToPage(title, estimateHeight("sectionTitle", null));
-      data.skills.forEach((skill, i) => {
-        addToPage(items[i], estimateHeight("skillItem", skill));
-      });
-    } else if (sectionId === "projects" && data.projects.length > 0) {
-      const { title, items } = renderProjectsSection(data.projects, renderCtx);
-      addToPage(title, estimateHeight("sectionTitle", null));
-      data.projects.forEach((project, i) => {
-        addToPage(items[i], estimateHeight("projectItem", project));
-      });
-    } else if (
-      sectionId === "certificates" &&
-      data.certificates &&
-      data.certificates.length > 0
-    ) {
-      const { title, items } = renderItemsListSection(
-        "certificates",
-        data.certificates,
-        renderCtx,
-      );
-      if (title) addToPage(title, estimateHeight("sectionTitle", null));
-      data.certificates.forEach((item, i) => {
-        addToPage(items[i], estimateHeight("certificatesItem", item));
-      });
-    } else if (
-      sectionId === "awards" &&
-      data.awards &&
-      data.awards.length > 0
-    ) {
-      const { title, items } = renderItemsListSection(
-        "awards",
-        data.awards,
-        renderCtx,
-      );
-      if (title) addToPage(title, estimateHeight("sectionTitle", null));
-      data.awards.forEach((item, i) => {
-        addToPage(items[i], estimateHeight("awardsItem", item));
-      });
-    } else if (
-      sectionId === "publications" &&
-      data.publications &&
-      data.publications.length > 0
-    ) {
-      const { title, items } = renderItemsListSection(
-        "publications",
-        data.publications,
-        renderCtx,
-      );
-      if (title) addToPage(title, estimateHeight("sectionTitle", null));
-      data.publications.forEach((item, i) => {
-        addToPage(items[i], estimateHeight("publicationsItem", item));
-      });
-    } else if (
-      sectionId === "custom" &&
-      data.customSections &&
-      data.customSections.length > 0
-    ) {
-      const sections = renderCustomSections(data.customSections, renderCtx);
-      sections.forEach((section, sIdx) => {
-        addToPage(section.title, estimateHeight("sectionTitle", null));
-        section.items.forEach((itemEl, iIdx) => {
-          const item = data.customSections![sIdx].items[iIdx];
-          addToPage(itemEl, estimateHeight("customItem", item));
-        });
-      });
-    }
+  for (const id of sectionOrder) {
+    renderSection(id, data, ctx, addAtomic);
   }
 
   return pages;
+}
+
+// ─── Section dispatch ─────────────────────────────────────────────────────
+
+type AddAtomic = ReturnType<typeof createPaginator>["addAtomic"];
+
+/**
+ * Resolves a section id to its rendered output, then commits it through the
+ * paginator. Empty sections are no-ops so the engine never produces an
+ * orphan title.
+ */
+function renderSection(
+  id: SectionId,
+  data: ResumeContent,
+  ctx: RenderContext,
+  addAtomic: AddAtomic,
+): void {
+  switch (id) {
+    case "experience":
+      if (data.experience.length === 0) return;
+      commitSection(
+        renderExperienceSection(data.experience, ctx),
+        "experienceItem",
+        addAtomic,
+      );
+      return;
+
+    case "education":
+      if (data.education.length === 0) return;
+      commitSection(
+        renderEducationSection(data.education, ctx),
+        "educationItem",
+        addAtomic,
+      );
+      return;
+
+    case "skills":
+      if (data.skills.length === 0) return;
+      commitSection(
+        renderSkillsSection(data.skills, ctx),
+        "skillItem",
+        addAtomic,
+      );
+      return;
+
+    case "projects":
+      if (data.projects.length === 0) return;
+      commitSection(
+        renderProjectsSection(data.projects, ctx),
+        "projectItem",
+        addAtomic,
+      );
+      return;
+
+    case "certificates":
+    case "awards":
+    case "publications": {
+      const list = data[id];
+      if (!list || list.length === 0) return;
+      commitSection(
+        renderItemsListSection(id, list, ctx),
+        `${id}Item`,
+        addAtomic,
+      );
+      return;
+    }
+
+    case "custom": {
+      const sections = renderCustomSections(data.customSections, ctx);
+      for (const section of sections) {
+        commitSection(section, "customItem", addAtomic);
+      }
+      return;
+    }
+  }
+}
+
+/**
+ * Sends a `RenderedSection` (title + items) through the paginator, keeping
+ * the title attached to its first item so titles never end up alone at the
+ * bottom of a page.
+ */
+function commitSection<T>(
+  section: RenderedSection<T> | { title: ReactNode | null; items: [] },
+  itemKind: string,
+  addAtomic: AddAtomic,
+): void {
+  if (!section.title || section.items.length === 0) return;
+
+  const titleHeight = estimateHeight("sectionTitle", null);
+  const [first, ...rest] = section.items;
+
+  // Title + first item are an atomic block: they always start on the same
+  // page, even if it means breaking a new page early.
+  addAtomic([
+    { node: section.title, height: titleHeight },
+    { node: first.node, height: estimateHeight(itemKind, first.raw) },
+  ]);
+
+  for (const item of rest) {
+    addAtomic([{ node: item.node, height: estimateHeight(itemKind, item.raw) }]);
+  }
 }
