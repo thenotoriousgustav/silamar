@@ -1,8 +1,10 @@
 import type { ResumeTemplateId } from "@/types/resume";
 
 import { classicTemplate } from "./classic";
+import { harvardTemplate } from "./harvard";
 import { minimalTemplate } from "./minimal";
 import { modernTemplate } from "./modern";
+import { oxfordTemplate } from "./oxford";
 import type { TemplateDefinition } from "./types";
 
 /**
@@ -17,6 +19,8 @@ export const TEMPLATES: Record<string, TemplateDefinition> = {
   classic: classicTemplate,
   modern: modernTemplate,
   minimal: minimalTemplate,
+  harvard: harvardTemplate,
+  oxford: oxfordTemplate,
 };
 
 /** Ordered list — drives the visual settings panel order. */
@@ -24,6 +28,8 @@ export const TEMPLATE_LIST: TemplateDefinition[] = [
   classicTemplate,
   modernTemplate,
   minimalTemplate,
+  harvardTemplate,
+  oxfordTemplate,
 ];
 
 /**

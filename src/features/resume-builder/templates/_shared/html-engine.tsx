@@ -23,6 +23,8 @@ export interface HtmlEngineConfig {
   headingTextClass: string;
   /** Per-template section title className (varies between templates). */
   sectionTitleClass: string;
+  /** Density-driven item margin class (e.g. "mb-3"). */
+  itemGapClass: string;
   /** Optional class applied to experience position titles (e.g. accent color). */
   experienceTitleColorClass?: string;
   /** Custom-rendered header element supplied by the template. */
@@ -91,6 +93,7 @@ export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
     bodyTextClass,
     headingTextClass,
     sectionTitleClass,
+    itemGapClass: config.itemGapClass,
     onJumpToSection,
   };
 

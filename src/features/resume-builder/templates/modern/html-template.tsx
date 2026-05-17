@@ -19,14 +19,15 @@ export function ModernHtmlTemplate({
   onJumpToSection,
 }: HtmlTemplateProps) {
   const { personalInfo } = data;
-  const { fontClass, bodyTextClass, headingTextClass } = resolveHtmlStyle(
+  const { fontClass, bodyTextClass, headingTextClass, densityClasses } = resolveHtmlStyle(
     data.style,
   );
   const translations = resolveTranslations(data.style?.language);
   const uppercaseHeaders = data.style?.uppercaseHeaders ?? true;
 
   const sectionTitleClass = cn(
-    "hover:text-primary mb-3 mt-5 cursor-pointer pb-1 text-xs font-bold transition-colors rounded-sm bg-blue-50 px-3 py-1.5 tracking-widest text-blue-600",
+    "hover:text-primary mb-3 cursor-pointer pb-1 text-xs font-bold transition-colors rounded-sm bg-blue-50 px-3 py-1.5 tracking-widest text-blue-600",
+    densityClasses.sectionMt,
     uppercaseHeaders && "uppercase",
   );
 
@@ -113,6 +114,7 @@ export function ModernHtmlTemplate({
     bodyTextClass,
     headingTextClass,
     sectionTitleClass,
+    itemGapClass: densityClasses.itemGap,
     experienceTitleColorClass: "text-blue-600",
     headerElement: header,
     onJumpToSection,

@@ -49,6 +49,7 @@ export function VisualSettingsPanel({
   const currentPaper = (content.style?.paperSize ?? "A4") as ResumePaperSize;
   const currentSize = content.style?.fontSize ?? "text-[11px]";
   const currentLineHeight = content.style?.lineHeight ?? "relaxed";
+  const currentDensity = content.style?.density ?? "normal";
   const currentLanguage = content.style?.language ?? "id";
   const uppercaseHeaders = content.style?.uppercaseHeaders ?? (currentTemplate !== "minimal");
 
@@ -176,8 +177,8 @@ export function VisualSettingsPanel({
         )}
       </section>
 
-      {/* Font size + Line height */}
-      <section className="grid gap-6 md:grid-cols-2">
+      {/* Font size + Line height + Density */}
+      <section className="grid gap-6 md:grid-cols-3">
         <div className="space-y-3">
           <Label className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
             Ukuran Font
@@ -216,6 +217,27 @@ export function VisualSettingsPanel({
                 onClick={() => updateStyle({ lineHeight: line.id })}
               >
                 {line.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
+            Kepadatan
+          </Label>
+          <div className="flex gap-2">
+            {[
+              { id: "compact", label: "Padat" },
+              { id: "normal", label: "Normal" },
+              { id: "comfortable", label: "Longgar" },
+            ].map((d) => (
+              <Button
+                key={d.id}
+                variant={currentDensity === d.id ? "default" : "outline"}
+                className="h-9 flex-1 transition-all"
+                onClick={() => updateStyle({ density: d.id as any })}
+              >
+                {d.label}
               </Button>
             ))}
           </div>

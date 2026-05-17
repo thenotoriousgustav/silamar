@@ -92,10 +92,15 @@ export interface ResumeStyle {
   paperSize?: ResumePaperSize;
   /** Whether section headers are rendered in uppercase. Defaults to true for classic/modern. */
   uppercaseHeaders?: boolean;
+  /** Content density — controls spacing between sections and items. Defaults to "normal". */
+  density?: ResumeDensity;
 }
 
 export const RESUME_PAPER_SIZES = ["A4", "letter"] as const;
 export type ResumePaperSize = (typeof RESUME_PAPER_SIZES)[number];
+
+export const RESUME_DENSITIES = ["compact", "normal", "comfortable"] as const;
+export type ResumeDensity = (typeof RESUME_DENSITIES)[number];
 
 export const RESUME_FONT_FAMILIES = [
   "Inter",
@@ -147,5 +152,7 @@ export const RESUME_TEMPLATE_IDS = [
   "modern",
   "minimal",
   "creative",
+  "harvard",
+  "oxford",
 ] as const;
 export type ResumeTemplateId = (typeof RESUME_TEMPLATE_IDS)[number];

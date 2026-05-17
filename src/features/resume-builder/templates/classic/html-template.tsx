@@ -20,14 +20,15 @@ export function ClassicHtmlTemplate({
   onJumpToSection,
 }: HtmlTemplateProps) {
   const { personalInfo } = data;
-  const { fontClass, bodyTextClass, headingTextClass } = resolveHtmlStyle(
+  const { fontClass, bodyTextClass, headingTextClass, densityClasses } = resolveHtmlStyle(
     data.style,
   );
   const translations = resolveTranslations(data.style?.language);
   const uppercaseHeaders = data.style?.uppercaseHeaders ?? true;
 
   const sectionTitleClass = cn(
-    "hover:text-primary mb-2 mt-5 cursor-pointer pb-1 text-xs font-bold transition-colors border-b-2 border-double border-slate-900 tracking-[0.2em] text-slate-900",
+    "hover:text-primary mb-2 cursor-pointer pb-1 text-xs font-bold transition-colors border-b border-slate-900 tracking-[0.2em] text-slate-900",
+    densityClasses.sectionMt,
     uppercaseHeaders && "uppercase",
   );
 
@@ -119,6 +120,7 @@ export function ClassicHtmlTemplate({
     bodyTextClass,
     headingTextClass,
     sectionTitleClass,
+    itemGapClass: densityClasses.itemGap,
     headerElement: header,
     onJumpToSection,
   });

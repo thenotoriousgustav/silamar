@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import type { ResumeStyle } from "@/types/resume";
+import type { ResumeDensity, ResumeStyle } from "@/types/resume";
 
-import { FONT_CLASS_MAP, LINE_HEIGHT_CLASS_MAP } from "./constants";
+import { DENSITY_CLASSES, FONT_CLASS_MAP, LINE_HEIGHT_CLASS_MAP } from "./constants";
 
 /**
  * Resolves a `ResumeStyle` into the Tailwind class strings that the HTML
@@ -12,6 +12,7 @@ export function resolveHtmlStyle(style: ResumeStyle | undefined) {
   const fontFamily = style?.fontFamily ?? "Inter";
   const fontSize = style?.fontSize ?? "text-[11px]";
   const lineHeightKey = style?.lineHeight ?? "relaxed";
+  const density: ResumeDensity = style?.density ?? "normal";
 
   const fontClass = FONT_CLASS_MAP[fontFamily] ?? "font-resume-inter";
   const lineHeightClass =
@@ -19,6 +20,7 @@ export function resolveHtmlStyle(style: ResumeStyle | undefined) {
 
   const bodyTextClass = cn(fontSize, lineHeightClass, "text-slate-700");
   const headingTextClass = cn(fontSize, "font-bold");
+  const densityClasses = DENSITY_CLASSES[density];
 
   return {
     fontClass,
@@ -26,5 +28,6 @@ export function resolveHtmlStyle(style: ResumeStyle | undefined) {
     lineHeightClass,
     bodyTextClass,
     headingTextClass,
+    densityClasses,
   };
 }

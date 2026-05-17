@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createResumeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   title: z.string().min(1, "Title is required").max(200),
   content: z.record(z.string(), z.unknown()).default({}),
 });

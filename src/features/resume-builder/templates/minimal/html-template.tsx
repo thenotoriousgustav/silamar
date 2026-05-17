@@ -19,14 +19,15 @@ export function MinimalHtmlTemplate({
   onJumpToSection,
 }: HtmlTemplateProps) {
   const { personalInfo } = data;
-  const { fontClass, bodyTextClass, headingTextClass } = resolveHtmlStyle(
+  const { fontClass, bodyTextClass, headingTextClass, densityClasses } = resolveHtmlStyle(
     data.style,
   );
   const translations = resolveTranslations(data.style?.language);
   const uppercaseHeaders = data.style?.uppercaseHeaders ?? false;
 
   const sectionTitleClass = cn(
-    "hover:text-primary mb-3 mt-5 cursor-pointer pb-1 transition-colors border-l-[3px] border-slate-300 pl-3 text-[13px] font-medium tracking-wide text-slate-700",
+    "hover:text-primary mb-3 cursor-pointer pb-1 transition-colors border-l-[3px] border-slate-300 pl-3 text-[13px] font-medium tracking-wide text-slate-700",
+    densityClasses.sectionMt,
     uppercaseHeaders ? "uppercase" : "normal-case",
   );
 
@@ -118,6 +119,7 @@ export function MinimalHtmlTemplate({
     bodyTextClass,
     headingTextClass,
     sectionTitleClass,
+    itemGapClass: densityClasses.itemGap,
     headerElement: header,
     onJumpToSection,
   });

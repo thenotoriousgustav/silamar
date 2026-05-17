@@ -1,4 +1,4 @@
-import type { ResumeFontFamily, ResumePaperSize } from "@/types/resume";
+import type { ResumeDensity, ResumeFontFamily, ResumePaperSize } from "@/types/resume";
 
 /**
  * Page geometry expressed in CSS pixels at 96 DPI for the HTML preview.
@@ -22,11 +22,6 @@ export const FONT_CLASS_MAP: Record<ResumeFontFamily | string, string> = {
   Roboto: "font-resume-roboto",
   Lato: "font-resume-lato",
   Garamond: "font-resume-garamond",
-  // Backward compatibility for resumes saved with old font names.
-  Helvetica: "font-resume-inter",
-  Calibri: "font-resume-inter",
-  Georgia: "font-resume-garamond",
-  "Times New Roman": "font-resume-garamond",
 };
 
 /**
@@ -68,6 +63,19 @@ export const LINE_HEIGHT_NUMERIC: Record<string, number> = {
   tight: 1.15,
   normal: 1.35,
   relaxed: 1.55,
+};
+
+/**
+ * Density → Tailwind spacing classes for section gaps and item margins.
+ * Applied by templates to control how "packed" the resume feels.
+ */
+export const DENSITY_CLASSES: Record<
+  ResumeDensity,
+  { sectionGap: string; itemGap: string; sectionMt: string }
+> = {
+  compact: { sectionGap: "mb-2", itemGap: "mb-1.5", sectionMt: "mt-3" },
+  normal: { sectionGap: "mb-4", itemGap: "mb-3", sectionMt: "mt-5" },
+  comfortable: { sectionGap: "mb-6", itemGap: "mb-4", sectionMt: "mt-7" },
 };
 
 /** Strips http(s)://, www. and trailing slash for compact URL display. */

@@ -20,6 +20,8 @@ interface RenderContext {
   headingTextClass: string;
   /** Per-template section heading className (varies between templates). */
   sectionTitleClass: string;
+  /** Density-driven item margin class (e.g. "mb-3"). */
+  itemGapClass: string;
   onJumpToSection?: (sectionId: string) => void;
 }
 
@@ -36,7 +38,7 @@ export function renderExperienceSection(
   const items = experience.map((exp, i) => (
     <div
       key={`exp-${i}`}
-      className={cn("mb-4", CLICKABLE_CLASS)}
+      className={cn(ctx.itemGapClass, CLICKABLE_CLASS)}
       onClick={() => ctx.onJumpToSection?.(`experience-${exp.id}`)}
     >
       <div className="mb-0.5 flex items-baseline justify-between">
@@ -84,7 +86,7 @@ export function renderEducationSection(
   const items = education.map((edu, i) => (
     <div
       key={`edu-${i}`}
-      className={cn("mb-3", CLICKABLE_CLASS)}
+      className={cn(ctx.itemGapClass, CLICKABLE_CLASS)}
       onClick={() => ctx.onJumpToSection?.(`education-${edu.id}`)}
     >
       <div className="mb-0.5 flex items-baseline justify-between">
@@ -140,7 +142,7 @@ export function renderSkillsSection(
   const items = skills.map((skill, i) => (
     <div
       key={`skill-${i}`}
-      className={cn("mb-1", ctx.bodyTextClass, CLICKABLE_CLASS)}
+      className={cn(ctx.itemGapClass, ctx.bodyTextClass, CLICKABLE_CLASS)}
       onClick={() => ctx.onJumpToSection?.(`skills-${skill.id}`)}
     >
       <span className="font-bold">{skill.category}: </span>
@@ -169,7 +171,7 @@ export function renderProjectsSection(
   const items = projects.map((project, i) => (
     <div
       key={`proj-${i}`}
-      className={cn("mb-3", CLICKABLE_CLASS)}
+      className={cn(ctx.itemGapClass, CLICKABLE_CLASS)}
       onClick={() => ctx.onJumpToSection?.(`projects-${project.id}`)}
     >
       <div className="mb-0.5 flex items-baseline justify-between">
@@ -236,7 +238,7 @@ export function renderItemsListSection(
   const items = list.map((item, i) => (
     <div
       key={`${kind}-${i}`}
-      className={cn("mb-3", CLICKABLE_CLASS)}
+      className={cn(ctx.itemGapClass, CLICKABLE_CLASS)}
       onClick={() => ctx.onJumpToSection?.(`${kind}-${item.id}`)}
     >
       <div className="mb-0.5 flex items-baseline justify-between">
@@ -290,7 +292,7 @@ export function renderCustomSections(
       items.push(
         <div
           key={`custom-${section.id}-${item.id}`}
-          className={cn("mb-3", CLICKABLE_CLASS)}
+          className={cn(ctx.itemGapClass, CLICKABLE_CLASS)}
           onClick={() =>
             ctx.onJumpToSection?.(`custom-${section.id}-${item.id}`)
           }
