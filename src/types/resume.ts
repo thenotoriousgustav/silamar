@@ -42,6 +42,7 @@ export interface ResumeEducation {
   endYear?: string;
   isCurrentlyStudying: boolean;
   gpa?: string;
+  location?: string;
   description: string | DescriptionItem[];
 }
 

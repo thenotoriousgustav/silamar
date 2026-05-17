@@ -99,7 +99,12 @@ export function renderEducationSection(
             : edu.endYear || ""}
         </span>
       </div>
-      <div className={ctx.bodyTextClass}>{edu.institution}</div>
+      <div className="flex items-baseline justify-between">
+        <div className={ctx.bodyTextClass}>{edu.institution}</div>
+        {edu.location && (
+          <span className="text-[10px] text-slate-500">{edu.location}</span>
+        )}
+      </div>
       {edu.gpa && (
         <div className="text-[10px] text-slate-500">
           {ctx.translations.gpa}: {edu.gpa}

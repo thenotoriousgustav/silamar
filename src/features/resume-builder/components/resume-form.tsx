@@ -31,7 +31,6 @@ import type { ResumeContent } from "@/types/resume";
 import type { ResumeFormHandlers } from "../types/resume-form-handlers";
 
 // Import Modular Sections
-import { ATSDashboard } from "./form-sections/ats-dashboard";
 import { CustomSection } from "./form-sections/custom-section";
 import { EducationSection } from "./form-sections/education-section";
 import { ExperienceSection } from "./form-sections/experience-section";
@@ -90,13 +89,6 @@ export function ResumeForm({
   } = handlers;
   const [expandedItems, setExpandedItems] = useState<string[]>(["personal"]);
   const [activeTab, setActiveTab] = useState<"content" | "settings">("content");
-  const [atsResult, setAtsResult] = useState<{
-    score: number;
-    feedback: string;
-    criticalIssues: string[];
-    missingKeywords: string[];
-    readabilityScore: number;
-  } | null>(null);
   const [optimizingId, setOptimizingId] = useState<string | null>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -229,26 +221,6 @@ export function ResumeForm({
     },
   });
 
-  const analyzeMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/resume/analyze-full", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      return data;
-    },
-    onSuccess: (data) => {
-      setAtsResult(data);
-    },
-    onError: (error) => {
-      console.error("ATS Error:", error);
-      toast.error("Gagal menjalankan analisis ATS");
-    },
-  });
-
   const handleOptimize = (
     expId: string,
     idx: number,
@@ -262,10 +234,6 @@ export function ResumeForm({
     const loadingId = `${expId}-${idx}`;
     setOptimizingId(loadingId);
     optimizeMutation.mutate({ expId, idx, text, type });
-  };
-
-  const handleRunATSAnalysis = () => {
-    analyzeMutation.mutate();
   };
 
   return (
@@ -304,15 +272,6 @@ export function ResumeForm({
         </div>
       ) : (
         <div className="flex flex-col gap-6 p-6">
-          {/* ATS & Completeness Dashboard */}
-          <ATSDashboard
-            content={content}
-            atsResult={atsResult}
-            isAnalyzing={analyzeMutation.isPending}
-            onRunAnalysis={handleRunATSAnalysis}
-            setAtsResult={setAtsResult}
-          />
-
           <Accordion
             value={expandedItems}
         onValueChange={setExpandedItems}

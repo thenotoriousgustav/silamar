@@ -209,6 +209,21 @@ export function EducationSection({
                               placeholder="3.8/4.0"
                             />
                           </div>
+                          <div className="space-y-2">
+                            <Label className="text-muted-foreground text-xs font-medium uppercase">
+                              Lokasi (Opsional)
+                            </Label>
+                            <Input
+                              value={edu.location || ""}
+                              onChange={(e) =>
+                                updateEducation(edu.id, {
+                                  location: e.target.value,
+                                })
+                              }
+                              className="bg-background border-border"
+                              placeholder="Jakarta, Indonesia"
+                            />
+                          </div>
 
                           <div className="space-y-2">
                             <Label className="text-muted-foreground text-xs font-medium uppercase">

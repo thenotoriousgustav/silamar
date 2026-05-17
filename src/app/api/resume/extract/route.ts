@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 const ExtractionSchema = z.object({
   personalInfo: z.object({
     fullName: z.string(),
+    title: z.string().describe("Job title or professional headline, e.g. 'Senior Frontend Developer'"),
     email: z.string(),
     phone: z.string(),
     location: z.string(),
@@ -27,6 +28,7 @@ const ExtractionSchema = z.object({
       isCurrentJob: z.boolean(),
       description: z.array(z.string()),
       location: z.string(),
+      employmentType: z.string().describe("Employment type if mentioned: full-time, part-time, internship, contract, freelance. Empty string if not specified."),
     }),
   ),
   education: z.array(
@@ -38,6 +40,7 @@ const ExtractionSchema = z.object({
       endYear: z.string(),
       isCurrentlyStudying: z.boolean(),
       gpa: z.string(),
+      location: z.string().describe("City/location of the institution, or empty string if not mentioned."),
       description: z.array(z.string()),
     }),
   ),
@@ -129,7 +132,14 @@ export async function POST(request: Request) {
         {
           role: "system",
           content: `You are a precise resume parser. Extract information EXACTLY as written.
-          CRITICAL: Every skill category in the CV must be a SEPARATE object. Never merge categories.`,
+CRITICAL RULES:
+- Every skill category in the CV must be a SEPARATE object. Never merge categories.
+- For personalInfo.title: extract the professional headline/job title if present (e.g. "Senior Frontend Developer", "Fresh Graduate"). If not explicitly stated, infer from the most recent position or leave empty string.
+- For dates: use format "MMM yyyy" (e.g. "Jan 2023", "Dec 2021"). If only year is available, use just the year.
+- For location: extract city/country if mentioned, otherwise empty string.
+- For employmentType: extract if mentioned (full-time, part-time, internship, contract, freelance), otherwise empty string.
+- If a field is not found in the CV, return an empty string "" (never null or undefined).
+- Extract ALL sections including certificates, awards, publications if present.`,
         },
         {
           role: "user",
@@ -147,10 +157,19 @@ export async function POST(request: Request) {
         linkedin: { label: "", url: rawData.personalInfo.linkedin },
         website: { label: "", url: rawData.personalInfo.website },
       },
-      experience: mapWithIds(rawData.experience),
-      education: mapWithIds(rawData.education),
+      experience: rawData.experience.map((exp) => ({
+        ...addId(exp),
+        description: exp.description?.map((text: string) => addId({ text })),
+      })),
+      education: rawData.education.map((edu) => ({
+        ...addId(edu),
+        description: edu.description?.map((text: string) => addId({ text })),
+      })),
       skills: rawData.skills.map(addId),
-      projects: mapWithIds(rawData.projects),
+      projects: rawData.projects.map((proj) => ({
+        ...addId(proj),
+        description: proj.description?.map((text: string) => addId({ text })),
+      })),
       certificates: mapWithIds(rawData.certificates || []),
       awards: mapWithIds(rawData.awards || []),
       publications: mapWithIds(rawData.publications || []),

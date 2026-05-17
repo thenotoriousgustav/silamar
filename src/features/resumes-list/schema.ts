@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const ResumePersonalInfoSchema = z.object({
   fullName: z.string().describe("Full name of the person"),
+  title: z.string().optional().describe("Job title or professional headline"),
   email: z.string().describe("Email address"),
   phone: z.string().describe("Phone number"),
   location: z.string().describe("City and country of residence"),
@@ -46,6 +47,10 @@ export const ResumeExperienceSchema = z.object({
   location: z
     .string()
     .describe("City and country of the company or empty string"),
+  employmentType: z
+    .string()
+    .optional()
+    .describe("Employment type: full-time, part-time, internship, contract, freelance, or empty string"),
 });
 
 export const ResumeEducationSchema = z.object({
@@ -63,6 +68,10 @@ export const ResumeEducationSchema = z.object({
   gpa: z
     .string()
     .describe("Grade Point Average (e.g., '3.8/4.0') or empty string"),
+  location: z
+    .string()
+    .optional()
+    .describe("City/location of the institution or empty string"),
   description: z
     .array(DescriptionItemSchema)
     .describe("Relevant coursework, honors, or activities as bullet points"),

@@ -36,7 +36,7 @@ export function ClassicHtmlTemplate({
       key="header"
       onClick={() => onJumpToSection?.("personal")}
       className={cn(
-        "mb-6 flex flex-col items-center gap-4 border-b-2 border-double border-slate-900 pb-3 text-center",
+        "mb-4 flex flex-col items-center text-center",
         CLICKABLE_CLASS,
       )}
     >
