@@ -13,15 +13,14 @@ import { resolveTranslations } from "../_shared/translations";
 import type { HtmlTemplateProps } from "../types";
 
 /**
- * Oxford template — inspired by the University of Oxford careers CV format:
- *  - Name centered, in blue/teal accent color, larger font
- *  - Contact info centered on one line, pipe-separated
- *  - Full-width rule below the contact line
- *  - Section titles ALL CAPS, bold, left-aligned, with full-width bottom border
- *  - Experience/Education items: all key info on ONE bold line
- *    e.g. "Company, Position Title; Month Year – Month Year"
- *  - Bullet points indented below
- *  - Skills: "Category: value" inline with bold label
+ * Oxford template — University of Oxford careers CV format:
+ *  - Name centered, larger font, black
+ *  - Contact info centered, pipe-separated
+ *  - Full-width rule below contact
+ *  - Section titles: BOLD UPPERCASE, left-aligned, rule ABOVE (not below)
+ *  - Experience: "Position, Company" (bold) + date right; second line for dept
+ *  - Education: "Degree, Institution" (bold) + date right; detail below
+ *  - Skills: bullet list directly under section title
  */
 export function OxfordHtmlTemplate({
   data,
@@ -31,15 +30,15 @@ export function OxfordHtmlTemplate({
   const { fontClass, bodyTextClass, headingTextClass, densityClasses } =
     resolveHtmlStyle(data.style);
   const translations = resolveTranslations(data.style?.language);
+  // Oxford default: uppercase (sesuai format Oxford OCS)
+  const uppercaseHeaders = data.style?.uppercaseHeaders ?? true;
 
-  // Oxford accent — deep blue matching the reference
-  const accentColor = "text-[#1a4a8a]";
-
-  // Section title: ALL CAPS, bold, left-aligned, bottom border
+  // Section title: bold, uppercase, left-aligned, border TOP
   const sectionTitleClass = cn(
-    "hover:text-primary cursor-pointer font-bold uppercase tracking-wide text-slate-900 transition-colors border-b border-slate-900 pb-0.5 text-[11px]",
+    "hover:text-primary cursor-pointer font-bold text-black transition-colors border-t border-black pt-1 text-[11px]",
     densityClasses.sectionMt,
     "mb-2",
+    uppercaseHeaders ? "uppercase" : "normal-case",
   );
 
   // ── Header ──────────────────────────────────────────────────────────────
@@ -49,38 +48,38 @@ export function OxfordHtmlTemplate({
       onClick={() => onJumpToSection?.("personal")}
       className={cn("mb-3 flex flex-col items-center text-center", CLICKABLE_CLASS)}
     >
-      {/* Name — accent color, larger, bold */}
-      <h1 className={cn("text-[18px] font-bold", accentColor)}>
+      {/* Name — larger, bold, black */}
+      <h1 className="text-[18px] font-bold text-black">
         {personalInfo.fullName || "Full Name"}
       </h1>
 
       {/* Contact line — pipe-separated, centered */}
-      <div className="mt-0.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10px] text-slate-700">
+      <div className="mt-0.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10px] text-black">
         {personalInfo.email && (
-          <a href={`mailto:${personalInfo.email}`} className="hover:underline">
+          <a href={`mailto:${personalInfo.email}`} className="text-blue-600 hover:underline">
             {personalInfo.email}
           </a>
         )}
         {personalInfo.phone && (
           <>
-            <span className="text-slate-400">|</span>
-            <a href={`tel:${personalInfo.phone}`} className="hover:underline">
+            <span>|</span>
+            <a href={`tel:${personalInfo.phone}`} className="text-blue-600 hover:underline">
               {personalInfo.phone}
             </a>
           </>
         )}
         {personalInfo.location && (
           <>
-            <span className="text-slate-400">|</span>
+            <span>|</span>
             <span>{personalInfo.location}</span>
           </>
         )}
         {personalInfo.linkedin?.url && (
           <>
-            <span className="text-slate-400">|</span>
+            <span>|</span>
             <a
               href={personalInfo.linkedin.url}
-              className="hover:underline"
+              className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -91,10 +90,10 @@ export function OxfordHtmlTemplate({
         )}
         {personalInfo.website?.url && (
           <>
-            <span className="text-slate-400">|</span>
+            <span>|</span>
             <a
               href={personalInfo.website.url}
-              className="hover:underline"
+              className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -106,7 +105,6 @@ export function OxfordHtmlTemplate({
       </div>
 
       {/* Full-width rule below contact */}
-      <div className="mt-1.5 h-[1px] w-full bg-slate-900" />
     </header>
   );
 
@@ -131,80 +129,16 @@ export function OxfordHtmlTemplate({
   }
 
   const sectionOrder = data.sectionOrder || [
-    "education",
     "experience",
+    "education",
     "projects",
     "skills",
     "custom",
   ];
 
   for (const sectionId of sectionOrder) {
-    // ── Education ──────────────────────────────────────────────────────
-    if (sectionId === "education" && data.education.length > 0) {
-      addToPage(
-        <h2
-          key="edu-title"
-          onClick={() => onJumpToSection?.("education")}
-          className={sectionTitleClass}
-        >
-          {translations.education}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
-
-      data.education.forEach((edu, i) => {
-        // Build the single bold headline:
-        // "Degree Major, Institution; StartYear – EndYear"
-        const dateRange = edu.startYear
-          ? `${edu.startYear} – ${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}`
-          : edu.endYear || "";
-
-        const headline = [
-          [edu.degree, edu.major].filter(Boolean).join(" "),
-          edu.institution,
-        ]
-          .filter(Boolean)
-          .join(", ");
-
-        addToPage(
-          <div
-            key={`edu-${i}`}
-            className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-            onClick={() => onJumpToSection?.(`education-${edu.id}`)}
-          >
-            {/* Single bold line: Degree + Institution; Date */}
-            <div className="flex items-baseline justify-between gap-2">
-              <span className={cn(headingTextClass, "text-slate-900 flex-1")}>
-                {headline}
-                {dateRange && (
-                  <span className="font-bold">; {dateRange}</span>
-                )}
-              </span>
-              {edu.location && (
-                <span className="shrink-0 text-[10px] text-slate-600">
-                  {edu.location}
-                </span>
-              )}
-            </div>
-            {edu.gpa && (
-              <div className={cn(bodyTextClass, "mt-0.5")}>
-                {translations.gpa}: {edu.gpa}
-              </div>
-            )}
-            {edu.description && (
-              <HtmlBulletList
-                items={edu.description}
-                bodyTextClass={bodyTextClass}
-              />
-            )}
-          </div>,
-          estimateHeight("educationItem", edu),
-        );
-      });
-    }
-
     // ── Experience ─────────────────────────────────────────────────────
-    else if (sectionId === "experience" && data.experience.length > 0) {
+    if (sectionId === "experience" && data.experience.length > 0) {
       addToPage(
         <h2
           key="exp-title"
@@ -217,14 +151,9 @@ export function OxfordHtmlTemplate({
       );
 
       data.experience.forEach((exp, i) => {
-        // Single bold headline: "Company, Position; Date"
         const dateRange = exp.startDate
           ? `${formatResumeDate(exp.startDate)} – ${exp.isCurrentJob ? translations.present : exp.endDate ? formatResumeDate(exp.endDate) : ""}`
           : "";
-
-        const headline = [exp.company, exp.position]
-          .filter(Boolean)
-          .join(", ");
 
         addToPage(
           <div
@@ -232,19 +161,24 @@ export function OxfordHtmlTemplate({
             className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
             onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
           >
-            {/* Single bold line: Company, Position; Date */}
-            <div className="flex items-baseline justify-between gap-2">
-              <span className={cn(headingTextClass, "text-slate-900 flex-1")}>
-                {headline}
-                {dateRange && (
-                  <span className="font-bold">; {dateRange}</span>
-                )}
+            {/* Row 1: Position, Company — Date + Location */}
+            <div className="flex items-start justify-between gap-2">
+              <span className={cn(headingTextClass, "text-black")}>
+                {exp.position}
+                {exp.company && `, ${exp.company}`}
               </span>
-              {exp.location && (
-                <span className="shrink-0 text-[10px] text-slate-600">
-                  {exp.location}
-                </span>
-              )}
+              <div className="shrink-0 text-right">
+                {dateRange && (
+                  <div className="text-[10px] font-bold text-black">
+                    {dateRange}
+                  </div>
+                )}
+                {exp.location && (
+                  <div className="text-[10px] text-black">
+                    {exp.location}
+                  </div>
+                )}
+              </div>
             </div>
             <HtmlBulletList
               items={exp.description}
@@ -252,6 +186,67 @@ export function OxfordHtmlTemplate({
             />
           </div>,
           estimateHeight("experienceItem", exp),
+        );
+      });
+    }
+
+    // ── Education ──────────────────────────────────────────────────────
+    else if (sectionId === "education" && data.education.length > 0) {
+      addToPage(
+        <h2
+          key="edu-title"
+          onClick={() => onJumpToSection?.("education")}
+          className={sectionTitleClass}
+        >
+          {translations.education}
+        </h2>,
+        estimateHeight("sectionTitle", null),
+      );
+
+      data.education.forEach((edu, i) => {
+        const dateRange = edu.startYear
+          ? `${edu.startYear}–${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}`
+          : edu.endYear || "";
+
+        addToPage(
+          <div
+            key={`edu-${i}`}
+            className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+            onClick={() => onJumpToSection?.(`education-${edu.id}`)}
+          >
+            {/* Row 1: Degree, Institution — Date + Location */}
+            <div className="flex items-start justify-between gap-2">
+              <span className={cn(headingTextClass, "text-black")}>
+                {[edu.degree, edu.major].filter(Boolean).join(" ")}
+                {edu.institution && `, ${edu.institution}`}
+              </span>
+              <div className="shrink-0 text-right">
+                {dateRange && (
+                  <div className="text-[10px] font-bold text-black">
+                    {dateRange}
+                  </div>
+                )}
+                {edu.location && (
+                  <div className="text-[10px] text-black">
+                    {edu.location}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Row 2: GPA or additional info */}
+            {edu.gpa && (
+              <div className={bodyTextClass}>
+                {translations.gpa}: {edu.gpa}
+              </div>
+            )}
+            {edu.description && (
+              <HtmlBulletList
+                items={edu.description}
+                bodyTextClass={bodyTextClass}
+              />
+            )}
+          </div>,
+          estimateHeight("educationItem", edu),
         );
       });
     }
@@ -309,13 +304,17 @@ export function OxfordHtmlTemplate({
             onClick={() => onJumpToSection?.(`projects-${project.id}`)}
           >
             <div className="flex items-baseline justify-between gap-2">
-              <span className={cn(headingTextClass, "text-slate-900 flex-1")}>
+              <span className={cn(headingTextClass, "text-black")}>
                 {project.name}
-                {dateRange && <span className="font-bold">; {dateRange}</span>}
               </span>
+              {dateRange && (
+                <span className="shrink-0 text-[10px] font-bold text-black">
+                  {dateRange}
+                </span>
+              )}
             </div>
             {project.link && (
-              <div className="text-[9px] text-slate-500">
+              <div className="text-[9px] text-blue-600">
                 {cleanUrl(project.link)}
               </div>
             )}
@@ -368,16 +367,18 @@ export function OxfordHtmlTemplate({
               onClick={() => onJumpToSection?.(`${sectionId}-${item.id}`)}
             >
               <div className="flex items-baseline justify-between gap-2">
-                <span className={cn(headingTextClass, "text-slate-900 flex-1")}>
+                <span className={cn(headingTextClass, "text-black")}>
                   {item.title}
-                  {item.subtitle && <span className="font-bold">, {item.subtitle}</span>}
-                  {item.date && (
-                    <span className="font-bold">; {formatResumeDate(item.date)}</span>
-                  )}
+                  {item.subtitle && `, ${item.subtitle}`}
                 </span>
+                {item.date && (
+                  <span className="shrink-0 text-[10px] font-bold text-black">
+                    {formatResumeDate(item.date)}
+                  </span>
+                )}
               </div>
               {item.link && (
-                <div className="text-[9px] text-slate-500">
+                <div className="text-[9px] text-blue-600">
                   {cleanUrl(item.link)}
                 </div>
               )}
@@ -395,6 +396,8 @@ export function OxfordHtmlTemplate({
     // ── Custom sections ────────────────────────────────────────────────
     else if (sectionId === "custom" && data.customSections?.length) {
       for (const section of data.customSections) {
+        if (section.items.length === 0) continue;
+
         addToPage(
           <h2
             key={`custom-title-${section.id}`}
@@ -428,16 +431,18 @@ export function OxfordHtmlTemplate({
               }
             >
               <div className="flex items-baseline justify-between gap-2">
-                <span className={cn(headingTextClass, "text-slate-900 flex-1")}>
+                <span className={cn(headingTextClass, "text-black")}>
                   {item.title}
-                  {item.subtitle && (
-                    <span className="font-bold">, {item.subtitle}</span>
-                  )}
-                  {period && <span className="font-bold">; {period}</span>}
+                  {item.subtitle && `, ${item.subtitle}`}
                 </span>
+                {period && (
+                  <span className="shrink-0 text-[10px] font-bold text-black">
+                    {period}
+                  </span>
+                )}
               </div>
               {item.link && (
-                <div className="text-[9px] text-slate-500">
+                <div className="text-[9px] text-blue-600">
                   {cleanUrl(item.link)}
                 </div>
               )}

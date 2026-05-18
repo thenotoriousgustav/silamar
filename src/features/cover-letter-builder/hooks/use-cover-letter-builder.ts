@@ -67,6 +67,20 @@ export function useCoverLetterBuilder(
     [],
   );
 
+  const updateStyle = useCallback(
+    (styleUpdate: Partial<CoverLetterBuilderData["style"]>) => {
+      setContent((prev) => ({
+        ...prev,
+        style: {
+          ...prev.style,
+          ...styleUpdate,
+        } as CoverLetterBuilderData["style"],
+      }));
+      setIsDirty(true);
+    },
+    [],
+  );
+
   const save = useCallback(
     async (idToSave?: string, title?: string) => {
       const activeId = idToSave || id;
@@ -105,6 +119,7 @@ export function useCoverLetterBuilder(
     isSaving,
     isDirty,
     updateContent,
+    updateStyle,
     save,
     setContent,
     setIsDirty,

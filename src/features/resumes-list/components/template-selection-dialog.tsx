@@ -34,18 +34,18 @@ const templates: {
     previewClass: "bg-white border-gray-300",
   },
   {
-    id: "modern",
-    name: "Modern Clean",
+    id: "harvard",
+    name: "Harvard",
     description:
-      "Tampilan bersih dengan sentuhan modern pada header. Tetap mempertahankan format satu kolom agar mudah dibaca mesin.",
-    previewClass: "bg-slate-50 border-slate-300",
+      "Format akademis Harvard OCS. Nama bold dengan underline, section title centered, layout dua baris per item.",
+    previewClass: "bg-white border-gray-300",
   },
   {
-    id: "minimal",
-    name: "Minimalist",
+    id: "oxford",
+    name: "Oxford",
     description:
-      "Desain lega dengan banyak whitespace. Cocok untuk industri kreatif atau startup.",
-    previewClass: "bg-zinc-50 border-zinc-200",
+      "Gaya University of Oxford. Nama biru terpusat, section title uppercase bergaris bawah, info item dalam satu baris bold.",
+    previewClass: "bg-slate-50 border-slate-300",
   },
 ];
 
@@ -84,18 +84,19 @@ export function TemplateSelectionDialog({
               >
                 {/* Visual representation of the template */}
                 <div className="flex h-full w-full flex-col gap-2 opacity-50">
-                  {template.id === "modern" ? (
-                    <div className="mb-2 flex items-end justify-between border-b-2 border-black pb-2">
-                      <div className="h-6 w-1/2 rounded-sm bg-black" />
-                      <div className="h-3 w-1/4 rounded-sm bg-gray-500" />
+                  {template.id === "harvard" ? (
+                    <div className="mb-2 flex flex-col items-center gap-1 border-b border-black pb-2">
+                      <div className="h-5 w-2/3 rounded-sm bg-black" />
+                      <div className="h-2 w-1/2 rounded-sm bg-gray-500" />
                     </div>
-                  ) : template.id === "minimal" ? (
-                    <div className="mb-4 flex flex-col items-center gap-1">
-                      <div className="h-5 w-1/2 rounded-sm bg-zinc-800" />
-                      <div className="h-2 w-1/3 rounded-sm bg-zinc-400" />
+                  ) : template.id === "oxford" ? (
+                    <div className="mb-2 flex flex-col items-center gap-1">
+                      <div className="h-6 w-2/3 rounded-sm bg-blue-800" />
+                      <div className="h-2 w-1/2 rounded-sm bg-gray-400" />
+                      <div className="mt-1 h-[1px] w-full bg-black" />
                     </div>
                   ) : (
-                    <div className="mb-2 flex flex-col items-center gap-1 border-b border-black pb-2">
+                    <div className="mb-2 flex flex-col items-center gap-1 border-y border-black py-2">
                       <div className="h-6 w-2/3 rounded-sm bg-black" />
                       <div className="h-2 w-1/2 rounded-sm bg-gray-600" />
                     </div>

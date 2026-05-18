@@ -1,13 +1,11 @@
 "use client";
 
-import { pdf } from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Download, Loader2, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
-
 
 import { CoverLetterTemplate } from "./cover-letter-template";
 import { HtmlCoverLetter } from "./html-cover-letter";
@@ -24,34 +22,13 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [baseScale, setBaseScale] = useState(1);
   const [zoom, setZoom] = useState(1);
-  const [contentHeight, setContentHeight] = useState(A4_HEIGHT);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [contentHeight, setContentHeight] = useState<number>(A4_HEIGHT);
 
   const finalScale = baseScale * zoom;
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      const blob = await pdf(<CoverLetterTemplate data={content} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      const fileName = `${content.fullName?.replace(/\s+/g, "_") || "surat"}_lamaran.pdf`;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("Surat lamaran berhasil diunduh");
-    } catch (error) {
-      console.error("Failed to generate PDF:", error);
-      toast.error("Gagal membuat PDF. Silakan coba lagi.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+  const pdfFileName = `${content.fullName?.replace(/\s+/g, "_") || "surat"}_lamaran.pdf`;
 
-  // Auto-scale based on container width
+  // Auto-scale based on container width — mirrors resume-preview behavior
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -65,7 +42,7 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Track content height to adjust scrollable area
+  // Track actual rendered content height (may span multiple A4 pages)
   useEffect(() => {
     if (!contentRef.current) return;
 
@@ -83,6 +60,7 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
 
   return (
     <div className="flex h-full w-full flex-col gap-4">
+      {/* ── Toolbar ── */}
       <div className="flex items-center justify-between px-2">
         <h2 className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
           Cover Letter Preview (Live)
@@ -100,7 +78,7 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
             >
               <ZoomOut className="h-3.5 w-3.5" />
             </Button>
-            <div className="min-w-11.25 text-center text-[11px] font-bold text-slate-500">
+            <div className="min-w-[45px] text-center text-[11px] font-bold text-slate-500">
               {Math.round(finalScale * 100)}%
             </div>
             <Button
@@ -112,7 +90,7 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
             >
               <ZoomIn className="h-3.5 w-3.5" />
             </Button>
-            <div className="bg-border/50 mx-1 h-4 w-px" />
+            <div className="bg-border/50 mx-1 h-4 w-[1px]" />
             <Button
               variant="ghost"
               size="icon"
@@ -124,28 +102,38 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
             </Button>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="h-8 gap-2"
+          <PDFDownloadLink
+            document={<CoverLetterTemplate data={content} />}
+            fileName={pdfFileName}
+            className="inline-flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
           >
-            {isDownloading ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Download className="h-3.5 w-3.5" />
-            )}
-            <span className="text-xs">Download PDF</span>
-          </Button>
+            {({ loading }) =>
+              loading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span className="text-xs">Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="text-xs">Download PDF</span>
+                </>
+              )
+            }
+          </PDFDownloadLink>
         </div>
       </div>
 
+      {/* ── Scrollable preview area ── */}
       <div
         ref={containerRef}
         className="bg-muted/30 border-border/50 relative flex-1 overflow-auto border shadow-sm"
       >
-        {/* Wrapper that matches the visual scaled size */}
+        {/*
+          Outer div: sized to the scaled dimensions so the scrollable area
+          knows exactly how much space the content takes — same pattern as
+          resume-preview.tsx.
+        */}
         <div
           className="mx-auto my-10 transition-all duration-300 ease-out"
           style={{
@@ -153,6 +141,11 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
             height: `${contentHeight * finalScale}px`,
           }}
         >
+          {/*
+            Inner div: always A4_WIDTH wide, scaled via transform.
+            origin-top-left ensures scaling anchors to the top-left corner
+            of the outer wrapper, which is already centered by mx-auto.
+          */}
           <div
             ref={contentRef}
             className="origin-top-left transition-transform duration-300 ease-out"

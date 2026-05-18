@@ -27,7 +27,7 @@ export function ClassicHtmlTemplate({
   const uppercaseHeaders = data.style?.uppercaseHeaders ?? true;
 
   const sectionTitleClass = cn(
-    "hover:text-primary mb-2 cursor-pointer pb-1 text-xs font-bold transition-colors border-b border-slate-900 tracking-[0.2em] text-slate-900",
+    "hover:text-primary mb-2 cursor-pointer pb-1 text-xs font-bold transition-colors border-b border-black tracking-[0.2em] text-black",
     densityClasses.sectionMt,
     uppercaseHeaders && "uppercase",
   );
@@ -55,11 +55,11 @@ export function ClassicHtmlTemplate({
           />
         )}
         <div className={cn("min-w-0", personalInfo.photoUrl && "flex-1")}>
-          <h1 className="mb-1 min-w-0 break-words text-2xl font-bold tracking-[0.2em] text-slate-900 uppercase">
+          <h1 className="mb-1 min-w-0 break-words text-2xl font-bold tracking-[0.2em] text-black uppercase">
             {personalInfo.fullName || "NAMA LENGKAP"}
           </h1>
           {personalInfo.title && (
-            <p className="text-sm font-medium tracking-wide text-slate-600">
+            <p className="text-sm font-medium tracking-wide text-black">
               {personalInfo.title}
             </p>
           )}
@@ -67,18 +67,18 @@ export function ClassicHtmlTemplate({
       </div>
 
       <div className="mt-2 flex flex-col items-center text-center">
-        <div className="text-[10px] text-slate-500">
+        <div className="text-[10px] text-black">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
             <span>{personalInfo.email}</span>
             {personalInfo.phone && (
               <>
-                <span className="text-slate-300">•</span>
+                <span className="text-black">•</span>
                 <span>{personalInfo.phone}</span>
               </>
             )}
             {personalInfo.location && (
               <>
-                <span className="text-slate-300">•</span>
+                <span className="text-black">•</span>
                 <span>{personalInfo.location}</span>
               </>
             )}
@@ -88,7 +88,7 @@ export function ClassicHtmlTemplate({
               {personalInfo.website?.url && (
                 <a
                   href={personalInfo.website.url}
-                  className="hover:underline"
+                  className="text-blue-600 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -99,7 +99,7 @@ export function ClassicHtmlTemplate({
               {personalInfo.linkedin?.url && (
                 <a
                   href={personalInfo.linkedin.url}
-                  className="hover:underline"
+                  className="text-blue-600 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

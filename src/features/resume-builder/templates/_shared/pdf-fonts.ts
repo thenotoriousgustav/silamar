@@ -3,69 +3,123 @@
 import { Font } from "@react-pdf/renderer";
 
 /**
- * Registers all selectable resume fonts with @react-pdf/renderer.
- * Called once at module load. Idempotent — re-registering the same family
- * is safe.
+ * Registers all resume fonts with @react-pdf/renderer using locally bundled
+ * font files from /public/fonts/. This avoids CDN fetch failures at PDF
+ * generation time.
  *
- * Fonts are pulled from Google Fonts CDN at PDF generation time. Backward-
- * compatible aliases are also registered for legacy resumes that still
- * reference Helvetica/Calibri/Georgia/Times New Roman.
+ * Variable fonts are used where available — @react-pdf/renderer supports
+ * variable fonts via the standard TTF format.
+ *
+ * Lato is not available locally, so it falls back to Inter (same sans-serif
+ * character). Legacy aliases (Helvetica, Calibri, etc.) are also mapped.
  */
 function registerResumeFonts() {
-  // Inter — modern sans-serif (default).
+  // ── Inter ────────────────────────────────────────────────────────────
   Font.register({
     family: "Inter",
     fonts: [
       {
-        src: "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf",
+        src: "/fonts/Inter-VariableFont_opsz,wght.ttf",
         fontWeight: 400,
       },
       {
-        src: "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuI6fMZhrib2Bg-4.ttf",
+        src: "/fonts/Inter-VariableFont_opsz,wght.ttf",
         fontWeight: 700,
+      },
+      {
+        src: "/fonts/Inter-Italic-VariableFont_opsz,wght.ttf",
+        fontWeight: 400,
+        fontStyle: "italic",
+      },
+      {
+        src: "/fonts/Inter-Italic-VariableFont_opsz,wght.ttf",
+        fontWeight: 700,
+        fontStyle: "italic",
       },
     ],
   });
 
+  // ── Roboto ───────────────────────────────────────────────────────────
   Font.register({
     family: "Roboto",
     fonts: [
       {
-        src: "https://fonts.gstatic.com/s/roboto/v32/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.ttf",
+        src: "/fonts/Roboto-VariableFont_wdth,wght.ttf",
         fontWeight: 400,
       },
       {
-        src: "https://fonts.gstatic.com/s/roboto/v32/KFOlCnqEu92Fr1MmWUlfBBc4AMP6lQ.ttf",
+        src: "/fonts/Roboto-VariableFont_wdth,wght.ttf",
         fontWeight: 700,
+      },
+      {
+        src: "/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf",
+        fontWeight: 400,
+        fontStyle: "italic",
+      },
+      {
+        src: "/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf",
+        fontWeight: 700,
+        fontStyle: "italic",
       },
     ],
   });
 
-  Font.register({
-    family: "Lato",
-    fonts: [
-      {
-        src: "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wWw.ttf",
-        fontWeight: 400,
-      },
-      {
-        src: "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPHA.ttf",
-        fontWeight: 700,
-      },
-    ],
-  });
-
+  // ── EB Garamond ──────────────────────────────────────────────────────
   Font.register({
     family: "Garamond",
     fonts: [
       {
-        src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-6_RUAw.ttf",
+        src: "/fonts/EBGaramond-VariableFont_wght.ttf",
         fontWeight: 400,
       },
       {
-        src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-DPNUAw.ttf",
+        src: "/fonts/EBGaramond-VariableFont_wght.ttf",
         fontWeight: 700,
       },
+      {
+        src: "/fonts/EBGaramond-Italic-VariableFont_wght.ttf",
+        fontWeight: 400,
+        fontStyle: "italic",
+      },
+      {
+        src: "/fonts/EBGaramond-Italic-VariableFont_wght.ttf",
+        fontWeight: 700,
+        fontStyle: "italic",
+      },
+    ],
+  });
+
+  // ── Legacy aliases ───────────────────────────────────────────────────
+  // Old resumes may reference these names — map to the closest available font.
+  Font.register({
+    family: "Helvetica",
+    fonts: [
+      { src: "/fonts/Inter-VariableFont_opsz,wght.ttf", fontWeight: 400 },
+      { src: "/fonts/Inter-VariableFont_opsz,wght.ttf", fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: "Calibri",
+    fonts: [
+      { src: "/fonts/Inter-VariableFont_opsz,wght.ttf", fontWeight: 400 },
+      { src: "/fonts/Inter-VariableFont_opsz,wght.ttf", fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: "Times New Roman",
+    fonts: [
+      { src: "/fonts/EBGaramond-VariableFont_wght.ttf", fontWeight: 400 },
+      { src: "/fonts/EBGaramond-VariableFont_wght.ttf", fontWeight: 700 },
+    ],
+  });
+
+  Font.register({
+    family: "Georgia",
+    fonts: [
+      { src: "/fonts/EBGaramond-VariableFont_wght.ttf", fontWeight: 400 },
+      { src: "/fonts/EBGaramond-VariableFont_wght.ttf", fontWeight: 700 },
     ],
   });
 }

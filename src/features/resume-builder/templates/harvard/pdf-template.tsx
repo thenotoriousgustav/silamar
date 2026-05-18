@@ -18,6 +18,7 @@ import {
   PDF_BASE_COLORS,
 } from "../_shared/pdf-base-styles";
 import { PdfBulletList } from "../_shared/pdf-bullet-list";
+import { PdfSummary } from "../_shared/pdf-summary";
 import { resolveTranslations } from "../_shared/translations";
 import type { PdfTemplateProps } from "../types";
 
@@ -33,6 +34,7 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
   const { personalInfo, style } = data;
   const translations = resolveTranslations(style?.language);
   const paperSize = style?.paperSize || "A4";
+  const uppercaseHeaders = style?.uppercaseHeaders ?? false;
 
   const baseStyles = buildBasePdfStyles(style);
   const baseFontSize = (baseStyles.page.fontSize as number) ?? 11;
@@ -72,13 +74,14 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
     },
     contactSep: {
       marginHorizontal: 3,
-      color: PDF_BASE_COLORS.muted,
+      color: PDF_BASE_COLORS.primary,
     },
     // Section title: bold, centered, no border
     sectionTitle: {
       fontSize: baseFontSize,
       fontWeight: 700,
       textAlign: "center",
+      textTransform: uppercaseHeaders ? "uppercase" : "none",
       marginTop: 10,
       marginBottom: 4,
       color: PDF_BASE_COLORS.primary,
@@ -202,7 +205,7 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
                 {item.href ? (
                   <Link
                     src={item.href}
-                    style={{ color: PDF_BASE_COLORS.secondary, fontSize: baseFontSize - 2 }}
+                    style={{ color: PDF_BASE_COLORS.link, fontSize: baseFontSize - 2 }}
                   >
                     {item.label}
                   </Link>
@@ -215,14 +218,15 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
         </View>
 
         {/* ── Summary ── */}
-        {personalInfo.summary && (
-          <View style={{ marginBottom: 8 }}>
-            <Text style={styles.sectionTitle}>
-              {translations.professionalSummary}
-            </Text>
-            <Text style={styles.itemBody}>{personalInfo.summary}</Text>
-          </View>
-        )}
+        <PdfSummary
+          summary={personalInfo.summary}
+          translations={translations}
+          styles={{
+            ...styles,
+            section: { marginBottom: 8 },
+            summary: { ...styles.itemBody, textAlign: "justify" },
+          }}
+        />
 
         {/* ── Sections ── */}
         {order.map((sectionId) => {
@@ -341,7 +345,7 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
                     {project.link && (
                       <Link
                         src={project.link}
-                        style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.muted }}
+                        style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}
                       >
                         {cleanUrl(project.link)}
                       </Link>
@@ -389,7 +393,7 @@ export function HarvardPdfTemplate({ data }: PdfTemplateProps) {
                     {item.link && (
                       <Link
                         src={item.link}
-                        style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.muted }}
+                        style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}
                       >
                         {cleanUrl(item.link)}
                       </Link>

@@ -52,6 +52,7 @@ export function CoverLetterBuilderClient({
     isSaving,
     isDirty,
     updateContent,
+    updateStyle,
     save,
     setContent,
     setIsDirty,
@@ -277,7 +278,11 @@ export function CoverLetterBuilderClient({
     <SplitViewLayout
       viewMode={viewMode}
       formPanel={
-        <CoverLetterForm content={content} updateContent={updateContent} />
+        <CoverLetterForm
+          content={content}
+          updateContent={updateContent}
+          updateStyle={updateStyle}
+        />
       }
       previewPanel={<CoverLetterPreview content={content} />}
     />

@@ -105,7 +105,6 @@ export type ResumeDensity = (typeof RESUME_DENSITIES)[number];
 export const RESUME_FONT_FAMILIES = [
   "Inter",
   "Roboto",
-  "Lato",
   "Garamond",
 ] as const;
 export type ResumeFontFamily = (typeof RESUME_FONT_FAMILIES)[number];
@@ -149,8 +148,6 @@ export interface JdMatchResult {
 
 export const RESUME_TEMPLATE_IDS = [
   "classic",
-  "modern",
-  "minimal",
   "creative",
   "harvard",
   "oxford",

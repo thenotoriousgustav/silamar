@@ -18,8 +18,8 @@ export function resolveHtmlStyle(style: ResumeStyle | undefined) {
   const lineHeightClass =
     LINE_HEIGHT_CLASS_MAP[lineHeightKey] ?? "leading-relaxed";
 
-  const bodyTextClass = cn(fontSize, lineHeightClass, "text-slate-700");
-  const headingTextClass = cn(fontSize, "font-bold");
+  const bodyTextClass = cn(fontSize, lineHeightClass, "text-black");
+  const headingTextClass = cn(fontSize, "font-bold text-black");
   const densityClasses = DENSITY_CLASSES[density];
 
   return {

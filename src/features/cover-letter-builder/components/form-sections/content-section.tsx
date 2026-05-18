@@ -2,6 +2,7 @@
 
 import { AlignLeft } from "lucide-react";
 
+import { DynamicEditor as Editor } from "@/components/editor/dynamic-editor";
 import {
   AccordionContent,
   AccordionItem,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import type { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
 interface ContentSectionProps {
@@ -41,6 +41,7 @@ export function ContentSection({
       </AccordionTrigger>
       <AccordionContent className="px-5 pt-2 pb-6">
         <div className="grid grid-cols-1 gap-5">
+          {/* Subject */}
           <div className="space-y-2">
             <Label
               htmlFor="cl-subject"
@@ -56,20 +57,17 @@ export function ContentSection({
               className="bg-background border-border focus:border-primary focus:ring-primary transition-all focus:ring-1"
             />
           </div>
+
+          {/* Message body — Lexical rich text editor */}
           <div className="space-y-2">
-            <Label
-              htmlFor="cl-content"
-              className="text-muted-foreground text-xs font-medium tracking-wider uppercase"
-            >
+            <Label className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
               Pesan
             </Label>
-            <Textarea
-              id="cl-content"
-              value={content.content || ""}
-              onChange={(e) => updateContent({ content: e.target.value })}
-              placeholder="Tulis isi surat lamaran Anda di sini..."
-              rows={14}
-              className="bg-background border-border focus:border-primary focus:ring-primary custom-scrollbar min-h-[200px] resize-none font-mono text-[12px] leading-relaxed transition-all focus:ring-1"
+            <Editor
+              initialDescription={content.content || ""}
+              onSerializedChange={(serialized) =>
+                updateContent({ content: JSON.stringify(serialized) })
+              }
             />
           </div>
         </div>

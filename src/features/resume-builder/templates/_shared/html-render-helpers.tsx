@@ -64,7 +64,7 @@ function TitleDateRow({
     <div className="mb-0.5 flex items-baseline justify-between">
       <h3 className={cn(headingTextClass, titleColorClass)}>{title}</h3>
       {date && (
-        <span className="text-[10px] font-medium text-slate-500">{date}</span>
+        <span className="text-[10px] font-medium text-black">{date}</span>
       )}
     </div>
   );
@@ -87,7 +87,7 @@ function SubtitleLocationRow({
     <div className="mb-1 flex items-baseline justify-between">
       <div className={bodyTextClass}>{subtitle}</div>
       {location && (
-        <span className="text-[10px] text-slate-500">{location}</span>
+        <span className="text-[10px] text-black">{location}</span>
       )}
     </div>
   );
@@ -96,7 +96,7 @@ function SubtitleLocationRow({
 /** Compact link line shown under project / certificate / publication items. */
 function LinkLine({ href }: { href: string }) {
   return (
-    <div className="font-mono text-[9px] tracking-tight text-slate-500">
+    <div className="font-mono text-[9px] tracking-tight text-blue-600">
       {cleanUrl(href)}
     </div>
   );
@@ -235,7 +235,7 @@ export function renderEducationSection(
           location={edu.location}
         />
         {edu.gpa && (
-          <div className="text-[10px] text-slate-500">
+          <div className="text-[10px] text-black">
             {ctx.translations.gpa}: {edu.gpa}
           </div>
         )}
@@ -273,7 +273,7 @@ export function renderSkillsSection(
         onClick={() => ctx.onJumpToSection?.(`skills-${skill.id}`)}
       >
         <span className="font-bold">{skill.category}: </span>
-        <span className="text-slate-700">{(skill.items || []).join(", ")}</span>
+        <span className="text-black">{(skill.items || []).join(", ")}</span>
       </div>
     ),
   }));

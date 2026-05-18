@@ -31,12 +31,15 @@ export function HarvardHtmlTemplate({
   const { fontClass, bodyTextClass, headingTextClass, densityClasses } =
     resolveHtmlStyle(data.style);
   const translations = resolveTranslations(data.style?.language);
+  // Harvard default: tidak uppercase (centered bold saja)
+  const uppercaseHeaders = data.style?.uppercaseHeaders ?? false;
 
   // Section title: bold, centered, no border — pure Harvard style
   const sectionTitleClass = cn(
-    "hover:text-primary cursor-pointer font-bold text-center text-slate-900 transition-colors text-[11px]",
+    "hover:text-primary cursor-pointer font-bold text-center text-black transition-colors text-[11px]",
     densityClasses.sectionMt,
     densityClasses.sectionGap,
+    uppercaseHeaders ? "uppercase tracking-wide" : "normal-case",
   );
 
   // ── Header ──────────────────────────────────────────────────────────────
@@ -47,7 +50,7 @@ export function HarvardHtmlTemplate({
       className={cn("mb-3 flex flex-col items-center text-center", CLICKABLE_CLASS)}
     >
       {/* Name — bold, underlined, not uppercase */}
-      <h1 className="text-[14px] font-bold underline decoration-slate-900 underline-offset-2 text-slate-900">
+      <h1 className="text-[14px] font-bold underline decoration-slate-900 underline-offset-2 text-black">
         {personalInfo.fullName || "Firstname Lastname"}
       </h1>
 
@@ -55,30 +58,30 @@ export function HarvardHtmlTemplate({
       <div className="mt-1 h-[1px] w-full bg-slate-900" />
 
       {/* Contact line — centered, bullet-separated */}
-      <div className="mt-1 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 text-[10px] text-slate-700">
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 text-[10px] text-black">
         {personalInfo.location && <span>{personalInfo.location}</span>}
         {personalInfo.location && personalInfo.email && (
-          <span className="text-slate-500">•</span>
+          <span className="text-black">•</span>
         )}
         {personalInfo.email && (
-          <a href={`mailto:${personalInfo.email}`} className="hover:underline">
+          <a href={`mailto:${personalInfo.email}`} className="text-blue-600 hover:underline">
             {personalInfo.email}
           </a>
         )}
         {personalInfo.phone && (
           <>
-            <span className="text-slate-500">•</span>
-            <a href={`tel:${personalInfo.phone}`} className="hover:underline">
+            <span className="text-black">•</span>
+            <a href={`tel:${personalInfo.phone}`} className="text-blue-600 hover:underline">
               {personalInfo.phone}
             </a>
           </>
         )}
         {personalInfo.linkedin?.url && (
           <>
-            <span className="text-slate-500">•</span>
+            <span className="text-black">•</span>
             <a
               href={personalInfo.linkedin.url}
-              className="hover:underline"
+              className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -89,10 +92,10 @@ export function HarvardHtmlTemplate({
         )}
         {personalInfo.website?.url && (
           <>
-            <span className="text-slate-500">•</span>
+            <span className="text-black">•</span>
             <a
               href={personalInfo.website.url}
-              className="hover:underline"
+              className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -169,20 +172,20 @@ export function HarvardHtmlTemplate({
           >
             {/* Row 1: Organization (bold) — Location */}
             <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-slate-900")}>
+              <span className={cn(headingTextClass, "text-black")}>
                 {exp.company}
               </span>
               {exp.location && (
-                <span className="text-[10px] text-slate-700">{exp.location}</span>
+                <span className="text-[10px] text-black">{exp.location}</span>
               )}
             </div>
             {/* Row 2: Position Title (bold) — Date range */}
             <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-slate-900")}>
+              <span className={cn(headingTextClass, "text-black")}>
                 {exp.position}
                 {exp.employmentType && `, ${exp.employmentType}`}
               </span>
-              <span className="text-[10px] text-slate-700">
+              <span className="text-[10px] text-black">
                 {formatResumeDate(exp.startDate)} —{" "}
                 {exp.isCurrentJob
                   ? translations.present
@@ -223,20 +226,20 @@ export function HarvardHtmlTemplate({
           >
             {/* Row 1: Institution (bold) — Location */}
             <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-slate-900")}>
+              <span className={cn(headingTextClass, "text-black")}>
                 {edu.institution}
               </span>
               {edu.location && (
-                <span className="text-[10px] text-slate-700">{edu.location}</span>
+                <span className="text-[10px] text-black">{edu.location}</span>
               )}
             </div>
             {/* Row 2: Degree + Major — Date range */}
             <div className="flex items-baseline justify-between">
-              <span className={cn(bodyTextClass, "text-slate-900")}>
+              <span className={cn(bodyTextClass, "text-black")}>
                 {edu.degree}
                 {edu.major && `, ${edu.major}`}
               </span>
-              <span className="text-[10px] text-slate-700">
+              <span className="text-[10px] text-black">
                 {edu.startYear} —{" "}
                 {edu.isCurrentlyStudying
                   ? translations.present
@@ -309,11 +312,11 @@ export function HarvardHtmlTemplate({
             onClick={() => onJumpToSection?.(`projects-${project.id}`)}
           >
             <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-slate-900")}>
+              <span className={cn(headingTextClass, "text-black")}>
                 {project.name}
               </span>
               {(project.startDate || project.endDate) && (
-                <span className="text-[10px] text-slate-700">
+                <span className="text-[10px] text-black">
                   {formatResumeDate(project.startDate)}{" "}
                   {project.endDate
                     ? `— ${formatResumeDate(project.endDate)}`
@@ -322,7 +325,7 @@ export function HarvardHtmlTemplate({
               )}
             </div>
             {project.link && (
-              <div className="text-[9px] text-slate-500">
+              <div className="text-[9px] text-black">
                 {cleanUrl(project.link)}
               </div>
             )}
@@ -375,11 +378,11 @@ export function HarvardHtmlTemplate({
               onClick={() => onJumpToSection?.(`${sectionId}-${item.id}`)}
             >
               <div className="flex items-baseline justify-between">
-                <span className={cn(headingTextClass, "text-slate-900")}>
+                <span className={cn(headingTextClass, "text-black")}>
                   {item.title}
                 </span>
                 {item.date && (
-                  <span className="text-[10px] text-slate-700">
+                  <span className="text-[10px] text-black">
                     {formatResumeDate(item.date)}
                   </span>
                 )}
@@ -388,7 +391,7 @@ export function HarvardHtmlTemplate({
                 <div className={bodyTextClass}>{item.subtitle}</div>
               )}
               {item.link && (
-                <div className="text-[9px] text-slate-500">
+                <div className="text-[9px] text-black">
                   {cleanUrl(item.link)}
                 </div>
               )}
@@ -439,18 +442,18 @@ export function HarvardHtmlTemplate({
               }
             >
               <div className="flex items-baseline justify-between">
-                <span className={cn(headingTextClass, "text-slate-900")}>
+                <span className={cn(headingTextClass, "text-black")}>
                   {item.title}
                 </span>
                 {period && (
-                  <span className="text-[10px] text-slate-700">{period}</span>
+                  <span className="text-[10px] text-black">{period}</span>
                 )}
               </div>
               {item.subtitle && (
                 <div className={bodyTextClass}>{item.subtitle}</div>
               )}
               {item.link && (
-                <div className="text-[9px] text-slate-500">
+                <div className="text-[9px] text-black">
                   {cleanUrl(item.link)}
                 </div>
               )}

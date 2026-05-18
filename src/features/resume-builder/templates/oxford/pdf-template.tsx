@@ -17,25 +17,25 @@ import {
   PDF_BASE_COLORS,
 } from "../_shared/pdf-base-styles";
 import { PdfBulletList } from "../_shared/pdf-bullet-list";
+import { PdfSummary } from "../_shared/pdf-summary";
 import { resolveTranslations } from "../_shared/translations";
 import type { PdfTemplateProps } from "../types";
 
-// Oxford accent blue
-const OXFORD_BLUE = "#1a4a8a";
-
 /**
  * Oxford PDF template — University of Oxford careers CV style:
- *  - Name centered in Oxford blue, larger font
+ *  - Name centered, larger font, black
  *  - Contact info centered, pipe-separated
  *  - Full-width rule below contact
- *  - Section titles ALL CAPS, bold, left-aligned, bottom border
- *  - Items: all key info on ONE bold line "Company, Position; Date"
- *  - Bullet points below
+ *  - Section titles: BOLD UPPERCASE, left-aligned, rule ABOVE (border-top)
+ *  - Experience: "Position, Company" (bold) + date right; location on row 2
+ *  - Education: "Degree, Institution" (bold) + date right; detail below
+ *  - Skills: "Category: items" inline
  */
 export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
   const { personalInfo, style } = data;
   const translations = resolveTranslations(style?.language);
   const paperSize = style?.paperSize || "A4";
+  const uppercaseHeaders = style?.uppercaseHeaders ?? true;
 
   const baseStyles = buildBasePdfStyles(style);
   const baseFontSize = (baseStyles.page.fontSize as number) ?? 11;
@@ -47,15 +47,14 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
       paddingHorizontal: 50,
       paddingVertical: 45,
     },
-    // Header
     header: {
       alignItems: "center",
       marginBottom: 8,
     },
     name: {
-      fontSize: baseFontSize + 6,
+      fontSize: baseFontSize + 7,
       fontWeight: 700,
-      color: OXFORD_BLUE,
+      color: PDF_BASE_COLORS.primary,
       marginBottom: 3,
     },
     contactRow: {
@@ -64,49 +63,55 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
       justifyContent: "center",
       alignItems: "center",
       fontSize: baseFontSize - 2,
-      color: PDF_BASE_COLORS.secondary,
+      color: PDF_BASE_COLORS.primary,
       marginBottom: 4,
     },
     contactSep: {
       marginHorizontal: 4,
-      color: PDF_BASE_COLORS.muted,
+      color: PDF_BASE_COLORS.primary,
     },
     headerRule: {
-      borderBottomWidth: 1,
-      borderBottomColor: PDF_BASE_COLORS.primary,
       width: "100%",
     },
-    // Section title: ALL CAPS, bold, left-aligned, bottom border
+    // Section title: BOLD UPPERCASE, left-aligned, border TOP
     sectionTitle: {
       fontSize: baseFontSize,
       fontWeight: 700,
-      textTransform: "uppercase",
-      letterSpacing: 0.5,
-      borderBottomWidth: 1,
-      borderBottomColor: PDF_BASE_COLORS.primary,
-      paddingBottom: 2,
+      textTransform: uppercaseHeaders ? "uppercase" : "none",
+      borderTopWidth: 1,
+      borderTopColor: PDF_BASE_COLORS.primary,
+      paddingTop: 3,
+      marginTop: 14,
       marginBottom: 5,
       color: PDF_BASE_COLORS.primary,
     },
-    // Item headline row
-    itemHeadlineRow: {
+    // Item rows
+    itemRow: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-start",
+      gap: 8,
     },
     itemHeadline: {
       fontSize: baseFontSize - 1,
       fontWeight: 700,
       color: PDF_BASE_COLORS.primary,
-      flex: 1,
+      flexGrow: 1,
+      flexShrink: 1,
     },
-    itemLocation: {
+    itemDate: {
       fontSize: baseFontSize - 2,
-      color: PDF_BASE_COLORS.secondary,
+      fontWeight: 700,
+      color: PDF_BASE_COLORS.primary,
     },
     itemBody: {
       fontSize: baseFontSize - 2,
-      color: PDF_BASE_COLORS.secondary,
+      color: PDF_BASE_COLORS.primary,
+    },
+    itemSubline: {
+      fontSize: baseFontSize - 1,
+      fontWeight: 700,
+      color: PDF_BASE_COLORS.primary,
     },
     experienceItem: {
       marginBottom: 7,
@@ -114,7 +119,7 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
     skillRow: {
       marginBottom: 2,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- @react-pdf StyleSheet.create has narrow inferred types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
 
   const pdfPageSize = paperSize === "letter" ? "LETTER" : "A4";
@@ -151,8 +156,8 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
     });
 
   const order = data.sectionOrder || [
-    "education",
     "experience",
+    "education",
     "skills",
     "projects",
     "custom",
@@ -176,10 +181,7 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                 {item.href ? (
                   <Link
                     src={item.href}
-                    style={{
-                      color: PDF_BASE_COLORS.secondary,
-                      fontSize: baseFontSize - 2,
-                    }}
+                    style={{ color: PDF_BASE_COLORS.link, fontSize: baseFontSize - 2 }}
                   >
                     {item.label}
                   </Link>
@@ -195,17 +197,54 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
         </View>
 
         {/* ── Summary ── */}
-        {personalInfo.summary && (
-          <View style={{ marginBottom: 8 }}>
-            <Text style={styles.sectionTitle}>
-              {translations.professionalSummary}
-            </Text>
-            <Text style={styles.itemBody}>{personalInfo.summary}</Text>
-          </View>
-        )}
+        <PdfSummary
+          summary={personalInfo.summary}
+          translations={translations}
+          styles={{
+            ...styles,
+            section: { marginBottom: 8 },
+            summary: { ...styles.itemBody, textAlign: "justify" },
+          }}
+        />
 
         {/* ── Sections ── */}
         {order.map((sectionId) => {
+          // ── Experience ──
+          if (sectionId === "experience" && data.experience.length > 0) {
+            return (
+              <View key="experience">
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {translations.workExperience}
+                </Text>
+                {data.experience.map((exp, idx) => {
+                  const dateRange = exp.startDate
+                    ? `${exp.startDate}–${exp.isCurrentJob ? translations.present : exp.endDate || ""}`
+                    : "";
+                  return (
+                    <View key={idx} style={styles.experienceItem}>
+                      {/* Row 1: Position, Company — Date + Location */}
+                      <View style={styles.itemRow}>
+                        <Text style={styles.itemHeadline}>
+                          {exp.position}
+                          {exp.company ? `, ${exp.company}` : ""}
+                        </Text>
+                        <View style={{ alignItems: "flex-end" }}>
+                          {dateRange ? (
+                            <Text style={styles.itemDate}>{dateRange}</Text>
+                          ) : null}
+                          {exp.location && (
+                            <Text style={styles.itemBody}>{exp.location}</Text>
+                          )}
+                        </View>
+                      </View>
+                      <PdfBulletList items={exp.description} styles={styles} />
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          }
+
           // ── Education ──
           if (sectionId === "education" && data.education.length > 0) {
             return (
@@ -215,7 +254,7 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                 </Text>
                 {data.education.map((edu, idx) => {
                   const dateRange = edu.startYear
-                    ? `${edu.startYear} – ${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}`
+                    ? `${edu.startYear}–${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}`
                     : edu.endYear || "";
                   const headline = [
                     [edu.degree, edu.major].filter(Boolean).join(" "),
@@ -226,16 +265,16 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
 
                   return (
                     <View key={idx} style={styles.experienceItem}>
-                      <View style={styles.itemHeadlineRow}>
-                        <Text style={styles.itemHeadline}>
-                          {headline}
-                          {dateRange ? `; ${dateRange}` : ""}
-                        </Text>
-                        {edu.location && (
-                          <Text style={styles.itemLocation}>
-                            {edu.location}
-                          </Text>
-                        )}
+                      <View style={styles.itemRow}>
+                        <Text style={styles.itemHeadline}>{headline}</Text>
+                        <View style={{ alignItems: "flex-end" }}>
+                          {dateRange ? (
+                            <Text style={styles.itemDate}>{dateRange}</Text>
+                          ) : null}
+                          {edu.location && (
+                            <Text style={styles.itemBody}>{edu.location}</Text>
+                          )}
+                        </View>
                       </View>
                       {edu.gpa && (
                         <Text style={styles.itemBody}>
@@ -255,42 +294,6 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
             );
           }
 
-          // ── Experience ──
-          if (sectionId === "experience" && data.experience.length > 0) {
-            return (
-              <View key="experience">
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>
-                  {translations.workExperience}
-                </Text>
-                {data.experience.map((exp, idx) => {
-                  const dateRange = exp.startDate
-                    ? `${exp.startDate} – ${exp.isCurrentJob ? translations.present : exp.endDate || ""}`
-                    : "";
-                  const headline = [exp.company, exp.position]
-                    .filter(Boolean)
-                    .join(", ");
-
-                  return (
-                    <View key={idx} style={styles.experienceItem}>
-                      <View style={styles.itemHeadlineRow}>
-                        <Text style={styles.itemHeadline}>
-                          {headline}
-                          {dateRange ? `; ${dateRange}` : ""}
-                        </Text>
-                        {exp.location && (
-                          <Text style={styles.itemLocation}>
-                            {exp.location}
-                          </Text>
-                        )}
-                      </View>
-                      <PdfBulletList items={exp.description} styles={styles} />
-                    </View>
-                  );
-                })}
-              </View>
-            );
-          }
-
           // ── Skills ──
           if (sectionId === "skills" && data.skills.length > 0) {
             return (
@@ -301,7 +304,9 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                 {data.skills.map((skill, idx) => (
                   <View key={idx} style={styles.skillRow}>
                     <Text style={styles.itemBody}>
-                      <Text style={{ fontWeight: 700 }}>{skill.category}: </Text>
+                      <Text style={{ fontWeight: 700 }}>
+                        {skill.category}:{" "}
+                      </Text>
                       {skill.items.join(", ")}
                     </Text>
                   </View>
@@ -319,21 +324,20 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                 </Text>
                 {data.projects.map((project, idx) => {
                   const dateRange = project.startDate
-                    ? `${project.startDate}${project.endDate ? ` – ${project.endDate}` : ""}`
+                    ? `${project.startDate}${project.endDate ? `–${project.endDate}` : ""}`
                     : "";
                   return (
                     <View key={idx} style={styles.experienceItem}>
-                      <Text style={styles.itemHeadline}>
-                        {project.name}
-                        {dateRange ? `; ${dateRange}` : ""}
-                      </Text>
+                      <View style={styles.itemRow}>
+                        <Text style={styles.itemHeadline}>{project.name}</Text>
+                        {dateRange ? (
+                          <Text style={styles.itemDate}>{dateRange}</Text>
+                        ) : null}
+                      </View>
                       {project.link && (
                         <Link
                           src={project.link}
-                          style={{
-                            fontSize: baseFontSize - 3,
-                            color: PDF_BASE_COLORS.muted,
-                          }}
+                          style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}
                         >
                           {cleanUrl(project.link)}
                         </Link>
@@ -374,18 +378,19 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                 </Text>
                 {itemList.map((item, idx) => (
                   <View key={idx} style={styles.experienceItem}>
-                    <Text style={styles.itemHeadline}>
-                      {item.title}
-                      {item.subtitle ? `, ${item.subtitle}` : ""}
-                      {item.date ? `; ${item.date}` : ""}
-                    </Text>
+                    <View style={styles.itemRow}>
+                      <Text style={styles.itemHeadline}>
+                        {item.title}
+                        {item.subtitle ? `, ${item.subtitle}` : ""}
+                      </Text>
+                      {item.date ? (
+                        <Text style={styles.itemDate}>{item.date}</Text>
+                      ) : null}
+                    </View>
                     {item.link && (
                       <Link
                         src={item.link}
-                        style={{
-                          fontSize: baseFontSize - 3,
-                          color: PDF_BASE_COLORS.muted,
-                        }}
+                        style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}
                       >
                         {cleanUrl(item.link)}
                       </Link>
@@ -408,42 +413,48 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
           ) {
             return (
               <View key="custom">
-                {data.customSections.map((section, sIdx) => (
-                  <View key={sIdx} style={{ marginBottom: 8 }}>
-                    <Text style={styles.sectionTitle} minPresenceAhead={20}>
-                      {section.title}
-                    </Text>
-                    {section.items.map((item, iIdx) => {
-                      const period = item.startDate
-                        ? `${item.startDate} – ${item.isCurrent ? translations.present : item.endDate || ""}`
-                        : item.date || "";
-                      return (
-                        <View key={iIdx} style={styles.experienceItem}>
-                          <Text style={styles.itemHeadline}>
-                            {item.title}
-                            {item.subtitle ? `, ${item.subtitle}` : ""}
-                            {period ? `; ${period}` : ""}
-                          </Text>
-                          {item.link && (
-                            <Link
-                              src={item.link}
-                              style={{
-                                fontSize: baseFontSize - 3,
-                                color: PDF_BASE_COLORS.muted,
-                              }}
-                            >
-                              {cleanUrl(item.link)}
-                            </Link>
-                          )}
-                          <PdfBulletList
-                            items={item.description || []}
-                            styles={styles}
-                          />
-                        </View>
-                      );
-                    })}
-                  </View>
-                ))}
+                {data.customSections
+                  .filter((s) => s.items.length > 0)
+                  .map((section, sIdx) => (
+                    <View key={sIdx} style={{ marginBottom: 8 }}>
+                      <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                        {section.title}
+                      </Text>
+                      {section.items.map((item, iIdx) => {
+                        const period = item.startDate
+                          ? `${item.startDate}–${item.isCurrent ? translations.present : item.endDate || ""}`
+                          : item.date || "";
+                        return (
+                          <View key={iIdx} style={styles.experienceItem}>
+                            <View style={styles.itemRow}>
+                              <Text style={styles.itemHeadline}>
+                                {item.title}
+                                {item.subtitle ? `, ${item.subtitle}` : ""}
+                              </Text>
+                              {period ? (
+                                <Text style={styles.itemDate}>{period}</Text>
+                              ) : null}
+                            </View>
+                            {item.link && (
+                              <Link
+                                src={item.link}
+                                style={{
+                                  fontSize: baseFontSize - 3,
+                                  color: PDF_BASE_COLORS.link,
+                                }}
+                              >
+                                {cleanUrl(item.link)}
+                              </Link>
+                            )}
+                            <PdfBulletList
+                              items={item.description || []}
+                              styles={styles}
+                            />
+                          </View>
+                        );
+                      })}
+                    </View>
+                  ))}
               </View>
             );
           }

@@ -8,10 +8,11 @@ import { LINE_HEIGHT_NUMERIC, parseFontSize, resolvePdfFont } from "./constants"
  */
 export const PDF_BASE_COLORS = {
   primary: "#000000",
-  secondary: "#333333",
-  muted: "#555555",
+  secondary: "#000000",
+  muted: "#000000",
   border: "#000000",
   accent: "#2563eb",
+  link: "#2563eb",
 };
 
 export type PdfStyleSheet = Record<string, Record<string, unknown>>;
@@ -62,7 +63,7 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
     },
     contactInfo: {
       fontSize: baseFontSize - 2,
-      color: colors.secondary,
+      color: colors.link,
       marginBottom: 2,
     },
     contactSeparator: { marginHorizontal: 6 },
@@ -71,11 +72,12 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       fontSize: baseFontSize,
       fontFamily: boldFont,
       fontWeight: 700,
+      marginTop: 14,
       marginBottom: 6,
     },
     summary: {
       fontSize: baseFontSize - 1,
-      color: colors.secondary,
+      color: colors.primary,
       lineHeight,
       textAlign: "justify",
     },
@@ -120,6 +122,7 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       flex: 1,
       fontSize: baseFontSize - 2,
       lineHeight,
+      textAlign: "justify",
     },
     educationItem: { marginBottom: 8 },
     educationDegree: {
@@ -149,7 +152,7 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       fontFamily: boldFont,
       fontWeight: 700,
     },
-    projectUrl: { fontSize: baseFontSize - 3, color: colors.muted },
+    projectUrl: { fontSize: baseFontSize - 3, color: colors.link },
     projectDescription: {
       fontSize: baseFontSize - 2,
       color: colors.secondary,

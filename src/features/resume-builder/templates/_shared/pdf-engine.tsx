@@ -7,6 +7,7 @@ import type { ResumeContent } from "@/types/resume";
 import { cleanUrl } from "./constants";
 import type { PdfStyleSheet } from "./pdf-base-styles";
 import { PdfBulletList } from "./pdf-bullet-list";
+import { PdfSummary } from "./pdf-summary";
 import type { ResumeTranslations } from "./translations";
 
 export interface PdfEngineConfig {
@@ -264,11 +265,11 @@ export function renderPdfSummary(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   styles: any,
 ) {
-  if (!summary) return null;
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{translations.professionalSummary}</Text>
-      <Text style={styles.summary}>{summary}</Text>
-    </View>
+    <PdfSummary
+      summary={summary}
+      translations={translations}
+      styles={styles}
+    />
   );
 }

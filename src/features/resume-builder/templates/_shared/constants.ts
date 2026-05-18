@@ -20,7 +20,6 @@ export const PAGE_PADDING = 100;
 export const FONT_CLASS_MAP: Record<ResumeFontFamily | string, string> = {
   Inter: "font-resume-inter",
   Roboto: "font-resume-roboto",
-  Lato: "font-resume-lato",
   Garamond: "font-resume-garamond",
 };
 
@@ -39,7 +38,6 @@ const PDF_FONT_ALIASES: Record<string, ResumeFontFamily> = {
 const VALID_PDF_FONTS: ResumeFontFamily[] = [
   "Inter",
   "Roboto",
-  "Lato",
   "Garamond",
 ];
 

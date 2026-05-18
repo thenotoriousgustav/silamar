@@ -53,11 +53,8 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
     sectionTitle: {
       ...baseStyles.sectionTitle,
       paddingBottom: 3,
-      paddingTop: 3,
       borderBottomWidth: 1,
       borderBottomColor: PDF_BASE_COLORS.border,
-      borderTopWidth: 1,
-      borderTopColor: PDF_BASE_COLORS.border,
       textTransform: "uppercase",
       letterSpacing: 1.5,
     },
@@ -103,37 +100,46 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
             </View>
           </View>
           <View style={styles.contactInfo}>
-            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
               <Link
                 src={`mailto:${personalInfo.email}`}
-                style={{ marginRight: 6 }}
               >
                 {personalInfo.email}
               </Link>
               {personalInfo.phone && (
-                <Link
-                  src={`tel:${personalInfo.phone}`}
-                  style={{ marginRight: 6 }}
-                >
-                  {personalInfo.phone}
-                </Link>
+                <>
+                  <Text style={{ marginHorizontal: 4 }}>•</Text>
+                  <Link src={`tel:${personalInfo.phone}`}>
+                    {personalInfo.phone}
+                  </Link>
+                </>
               )}
               {personalInfo.location && (
-                <Text style={{ marginRight: 6 }}>{personalInfo.location}</Text>
+                <>
+                  <Text style={{ marginHorizontal: 4 }}>•</Text>
+                  <Text>{personalInfo.location}</Text>
+                </>
               )}
+            </View>
+          </View>
+          {(personalInfo.website?.url || personalInfo.linkedin?.url) && (
+            <View style={{ ...styles.contactInfo, flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
               {personalInfo.website?.url && (
                 <Link src={personalInfo.website.url}>
                   {personalInfo.website.label ||
                     cleanUrl(personalInfo.website.url)}
                 </Link>
               )}
+              {personalInfo.website?.url && personalInfo.linkedin?.url && (
+                <Text style={{ marginHorizontal: 4 }}>•</Text>
+              )}
+              {personalInfo.linkedin?.url && (
+                <Link src={personalInfo.linkedin.url}>
+                  {personalInfo.linkedin.label ||
+                    cleanUrl(personalInfo.linkedin.url)}
+                </Link>
+              )}
             </View>
-          </View>
-          {personalInfo.linkedin?.url && (
-            <Link src={personalInfo.linkedin.url} style={styles.contactInfo}>
-              {personalInfo.linkedin.label ||
-                cleanUrl(personalInfo.linkedin.url)}
-            </Link>
           )}
         </View>
 

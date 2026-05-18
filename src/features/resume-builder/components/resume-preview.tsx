@@ -1,6 +1,6 @@
 "use client";
 
-import { pdf } from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import {
   Braces,
   Check,
@@ -39,32 +39,12 @@ export function ResumePreview({
   const pageWidth: number = PAGE_DIMENSIONS[paperSize].width;
   const pageHeight: number = PAGE_DIMENSIONS[paperSize].height;
   const [contentHeight, setContentHeight] = useState<number>(pageHeight);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [showJson, setShowJson] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const finalScale = baseScale * zoom;
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      const blob = await pdf(<ResumeTemplate data={content} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${content.personalInfo.fullName?.replace(/\s+/g, "_") || "resume"}_resume.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("Resume downloaded successfully");
-    } catch (error) {
-      console.error("Failed to generate PDF:", error);
-      toast.error("Failed to generate PDF. Please try again.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+  const pdfFileName = `${content.personalInfo.fullName?.replace(/\s+/g, "_") || "resume"}_resume.pdf`;
 
   const handleCopyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(content, null, 2));
@@ -186,20 +166,25 @@ export function ResumePreview({
                 </Button>
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="h-8 gap-2"
+              <PDFDownloadLink
+                document={<ResumeTemplate data={content} />}
+                fileName={pdfFileName}
+                className="inline-flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
               >
-                {isDownloading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Download className="h-3.5 w-3.5" />
-                )}
-                <span className="text-xs">Download PDF</span>
-              </Button>
+                {({ loading }) =>
+                  loading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span className="text-xs">Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-3.5 w-3.5" />
+                      <span className="text-xs">Download PDF</span>
+                    </>
+                  )
+                }
+              </PDFDownloadLink>
             </>
           )}
         </div>
