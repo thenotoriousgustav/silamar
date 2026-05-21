@@ -18,7 +18,7 @@ export const CLICKABLE_CLASS =
 
 /**
  * Context passed by the engine to every section renderer. Templates configure
- * this once when calling `renderHtmlPages` — the engine forwards it to each
+ * this once when calling `renderResumeBlocks` — the engine forwards it to each
  * helper so they don't need access to the `ResumeStyle` directly.
  */
 export interface RenderContext {

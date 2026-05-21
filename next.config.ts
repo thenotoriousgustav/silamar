@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  // react-pdf (wojtekmaj) ships ESM-only packages that need to be
+  // transpiled by Next.js so they work in the App Router.
+  transpilePackages: ["react-pdf", "pdfjs-dist"],
   images: {
     remotePatterns: [
       {

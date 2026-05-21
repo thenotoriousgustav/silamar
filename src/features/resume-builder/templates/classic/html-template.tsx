@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 
 import { cleanUrl } from "../_shared/constants";
-import { renderHtmlPages } from "../_shared/html-engine";
+import { renderResumeBlocks } from "../_shared/html-engine";
 import { HtmlPageWrapper } from "../_shared/html-page-wrapper";
 import { CLICKABLE_CLASS } from "../_shared/html-render-helpers";
 import { resolveHtmlStyle } from "../_shared/html-style-resolver";
@@ -114,7 +114,7 @@ export function ClassicHtmlTemplate({
     </header>
   );
 
-  const pages = renderHtmlPages({
+  const blocks = renderResumeBlocks({
     data,
     translations,
     bodyTextClass,
@@ -125,5 +125,11 @@ export function ClassicHtmlTemplate({
     onJumpToSection,
   });
 
-  return <HtmlPageWrapper pages={pages} containerClass={fontClass} />;
+  return (
+    <HtmlPageWrapper
+      blocks={blocks}
+      containerClass={fontClass}
+      paperSize={data.style?.paperSize || "A4"}
+    />
+  );
 }

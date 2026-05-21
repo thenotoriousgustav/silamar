@@ -4,12 +4,11 @@ import { cn, formatResumeDate } from "@/lib/utils";
 
 import { cleanUrl } from "../_shared/constants";
 import { HtmlBulletList } from "../_shared/html-bullet-list";
-import { renderHtmlPages } from "../_shared/html-engine";
 import { HtmlPageWrapper } from "../_shared/html-page-wrapper";
 import { CLICKABLE_CLASS } from "../_shared/html-render-helpers";
 import { resolveHtmlStyle } from "../_shared/html-style-resolver";
 import { HtmlSummary } from "../_shared/html-summary";
-import { contentHeightLimitFor, estimateHeight } from "../_shared/pagination";
+import type { ResumeBlock } from "../_shared/pagination";
 import { resolveTranslations } from "../_shared/translations";
 import type { HtmlTemplateProps } from "../types";
 
@@ -31,7 +30,7 @@ export function HarvardHtmlTemplate({
   const { fontClass, bodyTextClass, headingTextClass, densityClasses } =
     resolveHtmlStyle(data.style);
   const translations = resolveTranslations(data.style?.language);
-  // Harvard default: tidak uppercase (centered bold saja)
+  // Harvard default: not uppercase (centered bold only)
   const uppercaseHeaders = data.style?.uppercaseHeaders ?? false;
 
   // Section title: bold, centered, no border — pure Harvard style
@@ -47,10 +46,13 @@ export function HarvardHtmlTemplate({
     <header
       key="header"
       onClick={() => onJumpToSection?.("personal")}
-      className={cn("mb-3 flex flex-col items-center text-center", CLICKABLE_CLASS)}
+      className={cn(
+        "mb-3 flex flex-col items-center text-center",
+        CLICKABLE_CLASS,
+      )}
     >
       {/* Name — bold, underlined, not uppercase */}
-      <h1 className="text-[14px] font-bold underline decoration-slate-900 underline-offset-2 text-black">
+      <h1 className="text-[14px] font-bold text-black underline decoration-slate-900 underline-offset-2">
         {personalInfo.fullName || "Firstname Lastname"}
       </h1>
 
@@ -64,14 +66,20 @@ export function HarvardHtmlTemplate({
           <span className="text-black">•</span>
         )}
         {personalInfo.email && (
-          <a href={`mailto:${personalInfo.email}`} className="text-blue-600 hover:underline">
+          <a
+            href={`mailto:${personalInfo.email}`}
+            className="text-blue-600 hover:underline"
+          >
             {personalInfo.email}
           </a>
         )}
         {personalInfo.phone && (
           <>
             <span className="text-black">•</span>
-            <a href={`tel:${personalInfo.phone}`} className="text-blue-600 hover:underline">
+            <a
+              href={`tel:${personalInfo.phone}`}
+              className="text-blue-600 hover:underline"
+            >
               {personalInfo.phone}
             </a>
           </>
@@ -108,37 +116,22 @@ export function HarvardHtmlTemplate({
     </header>
   );
 
-  // ── Custom paginator (Harvard-specific item layout) ──────────────────────
-  const paperSize = data.style?.paperSize || "A4";
-  const limit = contentHeightLimitFor(paperSize);
-  const pages: React.ReactNode[][] = [[]];
-  let currentHeight = 0;
-  let currentPage = 0;
-
-  const addToPage = (element: React.ReactNode, height: number) => {
-    if (currentHeight + height > limit && pages[currentPage].length > 0) {
-      currentPage++;
-      pages[currentPage] = [];
-      currentHeight = 0;
-    }
-    pages[currentPage].push(element);
-    currentHeight += height;
-  };
-
-  addToPage(header, estimateHeight("header", null));
+  // ── Build flat blocks list ──────────────────────────────────────────────
+  const blocks: ResumeBlock[] = [{ id: "header", node: header }];
 
   if (personalInfo.summary) {
-    addToPage(
-      <HtmlSummary
-        key="summary"
-        summary={personalInfo.summary}
-        bodyTextClass={bodyTextClass}
-        sectionTitleClass={sectionTitleClass}
-        translations={translations}
-        onJumpToSection={onJumpToSection}
-      />,
-      estimateHeight("summary", personalInfo.summary),
-    );
+    blocks.push({
+      id: "summary",
+      node: (
+        <HtmlSummary
+          summary={personalInfo.summary}
+          bodyTextClass={bodyTextClass}
+          sectionTitleClass={sectionTitleClass}
+          translations={translations}
+          onJumpToSection={onJumpToSection}
+        />
+      ),
+    });
   }
 
   const sectionOrder = data.sectionOrder || [
@@ -149,193 +142,177 @@ export function HarvardHtmlTemplate({
     "custom",
   ];
 
+  /** Helper — pushes a section title that won't break away from its first item. */
+  const pushTitle = (id: string, label: string, jumpId: string) => {
+    blocks.push({
+      id,
+      keepWithNext: true,
+      node: (
+        <h2
+          onClick={() => onJumpToSection?.(jumpId)}
+          className={sectionTitleClass}
+        >
+          {label}
+        </h2>
+      ),
+    });
+  };
+
   for (const sectionId of sectionOrder) {
     // ── Experience ──────────────────────────────────────────────────────
     if (sectionId === "experience" && data.experience.length > 0) {
-      addToPage(
-        <h2
-          key="exp-title"
-          onClick={() => onJumpToSection?.("experience")}
-          className={sectionTitleClass}
-        >
-          {translations.workExperience}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+      pushTitle("exp-title", translations.workExperience, "experience");
 
       data.experience.forEach((exp, i) => {
-        addToPage(
-          <div
-            key={`exp-${i}`}
-            className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-            onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
-          >
-            {/* Row 1: Organization (bold) — Location */}
-            <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-black")}>
-                {exp.company}
-              </span>
-              {exp.location && (
-                <span className="text-[10px] text-black">{exp.location}</span>
-              )}
+        blocks.push({
+          id: `exp-${i}`,
+          node: (
+            <div
+              className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+              onClick={() => onJumpToSection?.(`experience-${exp.id}`)}
+            >
+              {/* Row 1: Organization (bold) — Location */}
+              <div className="flex items-baseline justify-between">
+                <span className={cn(headingTextClass, "text-black")}>
+                  {exp.company}
+                </span>
+                {exp.location && (
+                  <span className="text-[10px] text-black">{exp.location}</span>
+                )}
+              </div>
+              {/* Row 2: Position Title (bold) — Date range */}
+              <div className="flex items-baseline justify-between">
+                <span className={cn(headingTextClass, "text-black")}>
+                  {exp.position}
+                  {exp.employmentType && `, ${exp.employmentType}`}
+                </span>
+                <span className="text-[10px] text-black">
+                  {formatResumeDate(exp.startDate)} —{" "}
+                  {exp.isCurrentJob
+                    ? translations.present
+                    : exp.endDate
+                      ? formatResumeDate(exp.endDate)
+                      : ""}
+                </span>
+              </div>
+              <HtmlBulletList
+                items={exp.description}
+                bodyTextClass={bodyTextClass}
+              />
             </div>
-            {/* Row 2: Position Title (bold) — Date range */}
-            <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-black")}>
-                {exp.position}
-                {exp.employmentType && `, ${exp.employmentType}`}
-              </span>
-              <span className="text-[10px] text-black">
-                {formatResumeDate(exp.startDate)} —{" "}
-                {exp.isCurrentJob
-                  ? translations.present
-                  : exp.endDate
-                    ? formatResumeDate(exp.endDate)
-                    : ""}
-              </span>
-            </div>
-            <HtmlBulletList
-              items={exp.description}
-              bodyTextClass={bodyTextClass}
-            />
-          </div>,
-          estimateHeight("experienceItem", exp),
-        );
+          ),
+        });
       });
     }
 
     // ── Education ───────────────────────────────────────────────────────
     else if (sectionId === "education" && data.education.length > 0) {
-      addToPage(
-        <h2
-          key="edu-title"
-          onClick={() => onJumpToSection?.("education")}
-          className={sectionTitleClass}
-        >
-          {translations.education}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+      pushTitle("edu-title", translations.education, "education");
 
       data.education.forEach((edu, i) => {
-        addToPage(
-          <div
-            key={`edu-${i}`}
-            className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-            onClick={() => onJumpToSection?.(`education-${edu.id}`)}
-          >
-            {/* Row 1: Institution (bold) — Location */}
-            <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-black")}>
-                {edu.institution}
-              </span>
-              {edu.location && (
-                <span className="text-[10px] text-black">{edu.location}</span>
+        blocks.push({
+          id: `edu-${i}`,
+          node: (
+            <div
+              className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+              onClick={() => onJumpToSection?.(`education-${edu.id}`)}
+            >
+              {/* Row 1: Institution (bold) — Location */}
+              <div className="flex items-baseline justify-between">
+                <span className={cn(headingTextClass, "text-black")}>
+                  {edu.institution}
+                </span>
+                {edu.location && (
+                  <span className="text-[10px] text-black">{edu.location}</span>
+                )}
+              </div>
+              {/* Row 2: Degree + Major — Date range */}
+              <div className="flex items-baseline justify-between">
+                <span className={cn(bodyTextClass, "text-black")}>
+                  {edu.degree}
+                  {edu.major && `, ${edu.major}`}
+                </span>
+                <span className="text-[10px] text-black">
+                  {edu.startYear} —{" "}
+                  {edu.isCurrentlyStudying
+                    ? translations.present
+                    : edu.endYear || ""}
+                </span>
+              </div>
+              {edu.gpa && (
+                <div className={bodyTextClass}>
+                  {translations.gpa}: {edu.gpa}
+                </div>
+              )}
+              {edu.description && (
+                <HtmlBulletList
+                  items={edu.description}
+                  bodyTextClass={bodyTextClass}
+                />
               )}
             </div>
-            {/* Row 2: Degree + Major — Date range */}
-            <div className="flex items-baseline justify-between">
-              <span className={cn(bodyTextClass, "text-black")}>
-                {edu.degree}
-                {edu.major && `, ${edu.major}`}
-              </span>
-              <span className="text-[10px] text-black">
-                {edu.startYear} —{" "}
-                {edu.isCurrentlyStudying
-                  ? translations.present
-                  : edu.endYear || ""}
-              </span>
-            </div>
-            {edu.gpa && (
-              <div className={bodyTextClass}>
-                {translations.gpa}: {edu.gpa}
-              </div>
-            )}
-            {edu.description && (
-              <HtmlBulletList
-                items={edu.description}
-                bodyTextClass={bodyTextClass}
-              />
-            )}
-          </div>,
-          estimateHeight("educationItem", edu),
-        );
+          ),
+        });
       });
     }
 
     // ── Skills ──────────────────────────────────────────────────────────
     else if (sectionId === "skills" && data.skills.length > 0) {
-      addToPage(
-        <h2
-          key="skills-title"
-          onClick={() => onJumpToSection?.("skills")}
-          className={sectionTitleClass}
-        >
-          {translations.skills}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+      pushTitle("skills-title", translations.skills, "skills");
 
       data.skills.forEach((skill, i) => {
-        addToPage(
-          <div
-            key={`skill-${i}`}
-            className={cn(bodyTextClass, CLICKABLE_CLASS)}
-            onClick={() => onJumpToSection?.(`skills-${skill.id}`)}
-          >
-            <span className="font-bold">{skill.category}: </span>
-            <span>{(skill.items || []).join(", ")}</span>
-          </div>,
-          estimateHeight("skillItem", skill),
-        );
+        blocks.push({
+          id: `skill-${i}`,
+          node: (
+            <div
+              className={cn(bodyTextClass, CLICKABLE_CLASS)}
+              onClick={() => onJumpToSection?.(`skills-${skill.id}`)}
+            >
+              <span className="font-bold">{skill.category}: </span>
+              <span>{(skill.items || []).join(", ")}</span>
+            </div>
+          ),
+        });
       });
     }
 
     // ── Projects ────────────────────────────────────────────────────────
     else if (sectionId === "projects" && data.projects.length > 0) {
-      addToPage(
-        <h2
-          key="proj-title"
-          onClick={() => onJumpToSection?.("projects")}
-          className={sectionTitleClass}
-        >
-          {translations.projects}
-        </h2>,
-        estimateHeight("sectionTitle", null),
-      );
+      pushTitle("proj-title", translations.projects, "projects");
 
       data.projects.forEach((project, i) => {
-        addToPage(
-          <div
-            key={`proj-${i}`}
-            className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-            onClick={() => onJumpToSection?.(`projects-${project.id}`)}
-          >
-            <div className="flex items-baseline justify-between">
-              <span className={cn(headingTextClass, "text-black")}>
-                {project.name}
-              </span>
-              {(project.startDate || project.endDate) && (
-                <span className="text-[10px] text-black">
-                  {formatResumeDate(project.startDate)}{" "}
-                  {project.endDate
-                    ? `— ${formatResumeDate(project.endDate)}`
-                    : ""}
+        blocks.push({
+          id: `proj-${i}`,
+          node: (
+            <div
+              className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+              onClick={() => onJumpToSection?.(`projects-${project.id}`)}
+            >
+              <div className="flex items-baseline justify-between">
+                <span className={cn(headingTextClass, "text-black")}>
+                  {project.name}
                 </span>
-              )}
-            </div>
-            {project.link && (
-              <div className="text-[9px] text-black">
-                {cleanUrl(project.link)}
+                {(project.startDate || project.endDate) && (
+                  <span className="text-[10px] text-black">
+                    {formatResumeDate(project.startDate)}{" "}
+                    {project.endDate
+                      ? `— ${formatResumeDate(project.endDate)}`
+                      : ""}
+                  </span>
+                )}
               </div>
-            )}
-            <HtmlBulletList
-              items={project.description}
-              bodyTextClass={bodyTextClass}
-            />
-          </div>,
-          estimateHeight("projectItem", project),
-        );
+              {project.link && (
+                <div className="text-[9px] text-black">
+                  {cleanUrl(project.link)}
+                </div>
+              )}
+              <HtmlBulletList
+                items={project.description}
+                bodyTextClass={bodyTextClass}
+              />
+            </div>
+          ),
+        });
       });
     }
 
@@ -359,49 +336,41 @@ export function HarvardHtmlTemplate({
             : translations.publications;
 
       if (list && list.length > 0) {
-        addToPage(
-          <h2
-            key={`${sectionId}-title`}
-            onClick={() => onJumpToSection?.(sectionId)}
-            className={sectionTitleClass}
-          >
-            {titleText}
-          </h2>,
-          estimateHeight("sectionTitle", null),
-        );
+        pushTitle(`${sectionId}-title`, titleText, sectionId);
 
         list.forEach((item, i) => {
-          addToPage(
-            <div
-              key={`${sectionId}-${i}`}
-              className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-              onClick={() => onJumpToSection?.(`${sectionId}-${item.id}`)}
-            >
-              <div className="flex items-baseline justify-between">
-                <span className={cn(headingTextClass, "text-black")}>
-                  {item.title}
-                </span>
-                {item.date && (
-                  <span className="text-[10px] text-black">
-                    {formatResumeDate(item.date)}
+          blocks.push({
+            id: `${sectionId}-${i}`,
+            node: (
+              <div
+                className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+                onClick={() => onJumpToSection?.(`${sectionId}-${item.id}`)}
+              >
+                <div className="flex items-baseline justify-between">
+                  <span className={cn(headingTextClass, "text-black")}>
+                    {item.title}
                   </span>
-                )}
-              </div>
-              {item.subtitle && (
-                <div className={bodyTextClass}>{item.subtitle}</div>
-              )}
-              {item.link && (
-                <div className="text-[9px] text-black">
-                  {cleanUrl(item.link)}
+                  {item.date && (
+                    <span className="text-[10px] text-black">
+                      {formatResumeDate(item.date)}
+                    </span>
+                  )}
                 </div>
-              )}
-              <HtmlBulletList
-                items={item.description}
-                bodyTextClass={bodyTextClass}
-              />
-            </div>,
-            estimateHeight("certificatesItem", item),
-          );
+                {item.subtitle && (
+                  <div className={bodyTextClass}>{item.subtitle}</div>
+                )}
+                {item.link && (
+                  <div className="text-[9px] text-black">
+                    {cleanUrl(item.link)}
+                  </div>
+                )}
+                <HtmlBulletList
+                  items={item.description}
+                  bodyTextClass={bodyTextClass}
+                />
+              </div>
+            ),
+          });
         });
       }
     }
@@ -409,18 +378,15 @@ export function HarvardHtmlTemplate({
     // ── Custom sections ─────────────────────────────────────────────────
     else if (sectionId === "custom" && data.customSections?.length) {
       for (const section of data.customSections) {
-        addToPage(
-          <h2
-            key={`custom-title-${section.id}`}
-            onClick={() => onJumpToSection?.(`custom-${section.id}`)}
-            className={sectionTitleClass}
-          >
-            {section.title}
-          </h2>,
-          estimateHeight("sectionTitle", null),
+        if (section.items.length === 0) continue;
+
+        pushTitle(
+          `custom-title-${section.id}`,
+          section.title,
+          `custom-${section.id}`,
         );
 
-        section.items.forEach((item, iIdx) => {
+        section.items.forEach((item) => {
           const period = item.startDate
             ? `${formatResumeDate(item.startDate)} — ${
                 item.isCurrent
@@ -433,41 +399,49 @@ export function HarvardHtmlTemplate({
               ? formatResumeDate(item.date)
               : "";
 
-          addToPage(
-            <div
-              key={`custom-${section.id}-${item.id}`}
-              className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
-              onClick={() =>
-                onJumpToSection?.(`custom-${section.id}-${item.id}`)
-              }
-            >
-              <div className="flex items-baseline justify-between">
-                <span className={cn(headingTextClass, "text-black")}>
-                  {item.title}
-                </span>
-                {period && (
-                  <span className="text-[10px] text-black">{period}</span>
-                )}
-              </div>
-              {item.subtitle && (
-                <div className={bodyTextClass}>{item.subtitle}</div>
-              )}
-              {item.link && (
-                <div className="text-[9px] text-black">
-                  {cleanUrl(item.link)}
+          blocks.push({
+            id: `custom-${section.id}-${item.id}`,
+            node: (
+              <div
+                className={cn(densityClasses.itemGap, CLICKABLE_CLASS)}
+                onClick={() =>
+                  onJumpToSection?.(`custom-${section.id}-${item.id}`)
+                }
+              >
+                <div className="flex items-baseline justify-between">
+                  <span className={cn(headingTextClass, "text-black")}>
+                    {item.title}
+                  </span>
+                  {period && (
+                    <span className="text-[10px] text-black">{period}</span>
+                  )}
                 </div>
-              )}
-              <HtmlBulletList
-                items={item.description || []}
-                bodyTextClass={bodyTextClass}
-              />
-            </div>,
-            estimateHeight("customItem", item),
-          );
+                {item.subtitle && (
+                  <div className={bodyTextClass}>{item.subtitle}</div>
+                )}
+                {item.link && (
+                  <div className="text-[9px] text-black">
+                    {cleanUrl(item.link)}
+                  </div>
+                )}
+                <HtmlBulletList
+                  items={item.description || []}
+                  bodyTextClass={bodyTextClass}
+                />
+              </div>
+            ),
+          });
         });
       }
     }
   }
 
-  return <HtmlPageWrapper pages={pages} containerClass={fontClass} />;
+  return (
+    <HtmlPageWrapper
+      blocks={blocks}
+      containerClass={fontClass}
+      paperSize={data.style?.paperSize || "A4"}
+      padding={{ horizontal: 50, vertical: 45 }}
+    />
+  );
 }

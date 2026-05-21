@@ -1,20 +1,55 @@
 import type { ResumeDensity, ResumeFontFamily, ResumePaperSize } from "@/types/resume";
 
 /**
- * Page geometry expressed in CSS pixels at 96 DPI for the HTML preview.
- *  - A4: 210mm × 297mm
- *  - US Letter: 8.5" × 11"
+ * Page geometry — TWO coordinate systems matter:
+ *
+ *  1. PT (point) dimensions — what react-pdf uses internally to lay out the
+ *     PDF. The HTML preview content layer is rendered at these dimensions in
+ *     CSS pixels (so 1px-in-content == 1pt-in-PDF) and then visually scaled
+ *     up by `PT_TO_PX` so the on-screen page shows at the proper A4 size.
+ *     This is the trick that makes text reflow & spacing identical between
+ *     the preview and the downloaded PDF.
+ *
+ *  2. PX (visual) dimensions — what the user sees on screen. A4 at 96 DPI
+ *     is 794×1123 px (= PT × 4/3).
+ */
+
+/** Conversion factor from PDF points to CSS pixels at 96 DPI. */
+export const PT_TO_PX = 96 / 72; // 1.3333…
+
+/** Page dimensions in PDF points (= layout space inside the content layer). */
+export const PAGE_DIMENSIONS_PT: Record<
+  ResumePaperSize,
+  { width: number; height: number }
+> = {
+  A4: { width: 595, height: 842 },
+  letter: { width: 612, height: 792 },
+};
+
+/**
+ * Visual page dimensions in CSS pixels at 96 DPI. These are the size the
+ * page <div> takes on screen — derived from the PT dimensions × PT_TO_PX.
  */
 export const PAGE_DIMENSIONS: Record<
   ResumePaperSize,
   { width: number; height: number }
 > = {
-  A4: { width: 794, height: 1123 },
-  letter: { width: 816, height: 1056 },
+  A4: {
+    width: Math.round(PAGE_DIMENSIONS_PT.A4.width * PT_TO_PX),
+    height: Math.round(PAGE_DIMENSIONS_PT.A4.height * PT_TO_PX),
+  },
+  letter: {
+    width: Math.round(PAGE_DIMENSIONS_PT.letter.width * PT_TO_PX),
+    height: Math.round(PAGE_DIMENSIONS_PT.letter.height * PT_TO_PX),
+  },
 };
 
-/** Total vertical padding (top + bottom) reserved on each rendered page. */
-export const PAGE_PADDING = 100;
+/**
+ * Page padding (in PT, which equals px inside the content layer) — matches
+ * the `padding: 50` in `pdf-base-styles.ts`. Total reserved vertical space
+ * is `PAGE_PADDING_PT * 2`.
+ */
+export const PAGE_PADDING_PT = 50;
 
 /** Font label → Tailwind class for the HTML preview. */
 export const FONT_CLASS_MAP: Record<ResumeFontFamily | string, string> = {

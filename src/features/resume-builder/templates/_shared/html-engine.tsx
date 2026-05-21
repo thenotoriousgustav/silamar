@@ -6,8 +6,8 @@ import type { ResumeContent } from "@/types/resume";
 
 import {
   type RenderContext,
-  type RenderedSection,
   renderCustomSections,
+  type RenderedSection,
   renderEducationSection,
   renderExperienceSection,
   renderItemsListSection,
@@ -15,7 +15,7 @@ import {
   renderSkillsSection,
 } from "./html-render-helpers";
 import { HtmlSummary } from "./html-summary";
-import { createPaginator, estimateHeight } from "./pagination";
+import type { ResumeBlock } from "./pagination";
 import type { ResumeTranslations } from "./translations";
 
 /** Section keys handled by the default engine. */
@@ -57,20 +57,14 @@ export interface HtmlEngineConfig {
 }
 
 /**
- * Walks `data.sectionOrder` and emits the paginated array of nodes for the
- * HTML preview. Templates only have to:
- *  1. Build their own header element.
- *  2. Provide a `sectionTitleClass` that captures their visual identity.
- *  3. Feed both into this engine.
+ * Builds the flat array of `ResumeBlock`s the engine emits in document order.
+ * The wrapper (`HtmlPageWrapper`) measures and paginates them.
  *
- * The engine guarantees:
- *  - Section titles are never orphaned at the bottom of a page (titles are
- *    paginated atomically with their first item).
- *  - Empty sections (and empty custom subsections) never produce a stray
- *    title.
- *  - Pagination & section ordering stay consistent across every template.
+ * Section titles are flagged `keepWithNext: true` so they always paginate
+ * together with their first item — preventing orphan titles at the bottom
+ * of a page.
  */
-export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
+export function renderResumeBlocks(config: HtmlEngineConfig): ResumeBlock[] {
   const {
     data,
     headerElement,
@@ -78,8 +72,7 @@ export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
     experienceTitleColorClass,
   } = config;
 
-  const paperSize = data.style?.paperSize || "A4";
-  const { pages, addToPage, addAtomic } = createPaginator(paperSize);
+  const blocks: ResumeBlock[] = [];
 
   const ctx: RenderContext = {
     translations: config.translations,
@@ -92,20 +85,22 @@ export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
   };
 
   // ─── Header ────────────────────────────────────────────────────────────
-  addToPage(headerElement, estimateHeight("header", null));
+  blocks.push({ id: "header", node: headerElement });
 
   // ─── Summary ───────────────────────────────────────────────────────────
   if (data.personalInfo.summary) {
-    addToPage(
-      <HtmlSummary
-        summary={data.personalInfo.summary}
-        bodyTextClass={config.bodyTextClass}
-        sectionTitleClass={config.sectionTitleClass}
-        translations={config.translations}
-        onJumpToSection={onJumpToSection}
-      />,
-      estimateHeight("summary", data.personalInfo.summary),
-    );
+    blocks.push({
+      id: "summary",
+      node: (
+        <HtmlSummary
+          summary={data.personalInfo.summary}
+          bodyTextClass={config.bodyTextClass}
+          sectionTitleClass={config.sectionTitleClass}
+          translations={config.translations}
+          onJumpToSection={onJumpToSection}
+        />
+      ),
+    });
   }
 
   // ─── Body sections ─────────────────────────────────────────────────────
@@ -113,61 +108,54 @@ export function renderHtmlPages(config: HtmlEngineConfig): ReactNode[][] {
     DEFAULT_SECTION_ORDER) as SectionId[];
 
   for (const id of sectionOrder) {
-    renderSection(id, data, ctx, addAtomic);
+    pushSection(id, data, ctx, blocks);
   }
 
-  return pages;
+  return blocks;
 }
 
 // ─── Section dispatch ─────────────────────────────────────────────────────
 
-type AddAtomic = ReturnType<typeof createPaginator>["addAtomic"];
-
-/**
- * Resolves a section id to its rendered output, then commits it through the
- * paginator. Empty sections are no-ops so the engine never produces an
- * orphan title.
- */
-function renderSection(
+function pushSection(
   id: SectionId,
   data: ResumeContent,
   ctx: RenderContext,
-  addAtomic: AddAtomic,
+  blocks: ResumeBlock[],
 ): void {
   switch (id) {
     case "experience":
       if (data.experience.length === 0) return;
-      commitSection(
+      pushRenderedSection(
         renderExperienceSection(data.experience, ctx),
-        "experienceItem",
-        addAtomic,
+        `exp`,
+        blocks,
       );
       return;
 
     case "education":
       if (data.education.length === 0) return;
-      commitSection(
+      pushRenderedSection(
         renderEducationSection(data.education, ctx),
-        "educationItem",
-        addAtomic,
+        `edu`,
+        blocks,
       );
       return;
 
     case "skills":
       if (data.skills.length === 0) return;
-      commitSection(
+      pushRenderedSection(
         renderSkillsSection(data.skills, ctx),
-        "skillItem",
-        addAtomic,
+        `skill`,
+        blocks,
       );
       return;
 
     case "projects":
       if (data.projects.length === 0) return;
-      commitSection(
+      pushRenderedSection(
         renderProjectsSection(data.projects, ctx),
-        "projectItem",
-        addAtomic,
+        `proj`,
+        blocks,
       );
       return;
 
@@ -176,47 +164,43 @@ function renderSection(
     case "publications": {
       const list = data[id];
       if (!list || list.length === 0) return;
-      commitSection(
+      pushRenderedSection(
         renderItemsListSection(id, list, ctx),
-        `${id}Item`,
-        addAtomic,
+        id,
+        blocks,
       );
       return;
     }
 
     case "custom": {
       const sections = renderCustomSections(data.customSections, ctx);
-      for (const section of sections) {
-        commitSection(section, "customItem", addAtomic);
-      }
+      sections.forEach((section, sIdx) => {
+        pushRenderedSection(section, `custom-${sIdx}`, blocks);
+      });
       return;
     }
   }
 }
 
 /**
- * Sends a `RenderedSection` (title + items) through the paginator, keeping
- * the title attached to its first item so titles never end up alone at the
- * bottom of a page.
+ * Pushes a `RenderedSection` (title + items) into the blocks list.
+ * The title is flagged `keepWithNext` so it never separates from its first
+ * item across a page break.
  */
-function commitSection<T>(
+function pushRenderedSection<T>(
   section: RenderedSection<T> | { title: ReactNode | null; items: [] },
-  itemKind: string,
-  addAtomic: AddAtomic,
+  idPrefix: string,
+  blocks: ResumeBlock[],
 ): void {
   if (!section.title || section.items.length === 0) return;
 
-  const titleHeight = estimateHeight("sectionTitle", null);
-  const [first, ...rest] = section.items;
+  blocks.push({
+    id: `${idPrefix}-title`,
+    node: section.title,
+    keepWithNext: true,
+  });
 
-  // Title + first item are an atomic block: they always start on the same
-  // page, even if it means breaking a new page early.
-  addAtomic([
-    { node: section.title, height: titleHeight },
-    { node: first.node, height: estimateHeight(itemKind, first.raw) },
-  ]);
-
-  for (const item of rest) {
-    addAtomic([{ node: item.node, height: estimateHeight(itemKind, item.raw) }]);
-  }
+  section.items.forEach((item, idx) => {
+    blocks.push({ id: `${idPrefix}-${idx}`, node: item.node });
+  });
 }
