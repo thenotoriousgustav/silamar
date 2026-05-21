@@ -10,21 +10,17 @@ import {
   View,
 } from "@react-pdf/renderer";
 
-import "../_shared/pdf-fonts";
+import "./shared/pdf-fonts";
 
-import { cleanUrl } from "../_shared/constants";
-import {
-  buildBasePdfStyles,
-  PDF_BASE_COLORS,
-} from "../_shared/pdf-base-styles";
-import { renderPdfSections, renderPdfSummary } from "../_shared/pdf-engine";
-import { resolveTranslations } from "../_shared/translations";
-import type { PdfTemplateProps } from "../types";
+import { cleanUrl } from "./shared/constants";
+import { buildBasePdfStyles, PDF_BASE_COLORS } from "./shared/pdf-base-styles";
+import { renderPdfSections, renderPdfSummary } from "./shared/pdf-engine";
+import { resolveTranslations } from "./shared/translations";
+import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 /**
  * Classic PDF template — centered header inside a double border, uppercase
- * nameplate, section titles bordered top + bottom in uppercase. Mirrors the
- * Classic HTML preview.
+ * nameplate, section titles bordered top + bottom in uppercase.
  */
 export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
   const { personalInfo, style } = data;
@@ -58,7 +54,7 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
       textTransform: "uppercase",
       letterSpacing: 1.5,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- @react-pdf StyleSheet.create has narrow inferred types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
 
   const pdfPageSize = paperSize === "letter" ? "LETTER" : "A4";
@@ -66,52 +62,29 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
   return (
     <Document>
       <Page size={pdfPageSize} style={styles.page}>
-        {/* Header */}
         <View style={styles.header}>
           <View
             style={
               personalInfo.photoUrl
-                ? {
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 20,
-                    marginBottom: 10,
-                  }
+                ? { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 20, marginBottom: 10 }
                 : {}
             }
           >
             {personalInfo.photoUrl && (
               <Image src={personalInfo.photoUrl} style={styles.photo} />
             )}
-            <View
-              style={
-                personalInfo.photoUrl
-                  ? { alignItems: "flex-start", textAlign: "left" }
-                  : {}
-              }
-            >
-              <Text style={styles.name}>
-                {personalInfo.fullName || "NAMA LENGKAP"}
-              </Text>
-              {personalInfo.title && (
-                <Text style={styles.jobTitle}>{personalInfo.title}</Text>
-              )}
+            <View style={personalInfo.photoUrl ? { alignItems: "flex-start", textAlign: "left" } : {}}>
+              <Text style={styles.name}>{personalInfo.fullName || "NAMA LENGKAP"}</Text>
+              {personalInfo.title && <Text style={styles.jobTitle}>{personalInfo.title}</Text>}
             </View>
           </View>
           <View style={styles.contactInfo}>
             <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link
-                src={`mailto:${personalInfo.email}`}
-              >
-                {personalInfo.email}
-              </Link>
+              <Link src={`mailto:${personalInfo.email}`}>{personalInfo.email}</Link>
               {personalInfo.phone && (
                 <>
                   <Text style={{ marginHorizontal: 4 }}>•</Text>
-                  <Link src={`tel:${personalInfo.phone}`}>
-                    {personalInfo.phone}
-                  </Link>
+                  <Link src={`tel:${personalInfo.phone}`}>{personalInfo.phone}</Link>
                 </>
               )}
               {personalInfo.location && (
@@ -126,8 +99,7 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
             <View style={{ ...styles.contactInfo, flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
               {personalInfo.website?.url && (
                 <Link src={personalInfo.website.url}>
-                  {personalInfo.website.label ||
-                    cleanUrl(personalInfo.website.url)}
+                  {personalInfo.website.label || cleanUrl(personalInfo.website.url)}
                 </Link>
               )}
               {personalInfo.website?.url && personalInfo.linkedin?.url && (
@@ -135,17 +107,22 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
               )}
               {personalInfo.linkedin?.url && (
                 <Link src={personalInfo.linkedin.url}>
-                  {personalInfo.linkedin.label ||
-                    cleanUrl(personalInfo.linkedin.url)}
+                  {personalInfo.linkedin.label || cleanUrl(personalInfo.linkedin.url)}
                 </Link>
               )}
             </View>
           )}
         </View>
-
         {renderPdfSummary(personalInfo.summary, translations, styles)}
         {renderPdfSections({ data, translations, styles })}
       </Page>
     </Document>
   );
 }
+
+export const classicTemplate: TemplateDefinition = {
+  id: "classic",
+  label: "Classic",
+  description: "Header rapat dengan double border, judul section uppercase. Formal & tradisional.",
+  Pdf: ClassicPdfTemplate,
+};

@@ -95,7 +95,6 @@ export function ResumeBuilderClient({
   const [viewMode, setViewMode] = useState<"split" | "form" | "preview">(
     "split",
   );
-  const [jumpTarget, setJumpTarget] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
@@ -368,17 +367,13 @@ export function ResumeBuilderClient({
             updateStyle,
             updateSectionOrder,
           }}
-          jumpTarget={jumpTarget}
-          onJumpEnd={() => setJumpTarget(null)}
+          jumpTarget={null}
+          onJumpEnd={() => {}}
         />
       }
       previewPanel={
         <ResumePreview
           content={content}
-          onJumpToSection={(target) => {
-            if (viewMode === "preview") setViewMode("split");
-            setJumpTarget(target);
-          }}
         />
       }
     />

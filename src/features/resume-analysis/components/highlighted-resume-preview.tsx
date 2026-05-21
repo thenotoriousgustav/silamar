@@ -6,7 +6,7 @@ import { RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ResumeContent } from "@/types/resume";
 
-import { HtmlResume } from "@/features/resume-builder/components/html-resume";
+import { ResumeTextView } from "@/features/resume-builder/components/resume-text-view";
 
 import type { HighlightAnnotation } from "../types/resume-analyzer-dto";
 
@@ -286,7 +286,7 @@ export function HighlightedResumePreview({
               transform: `scale(${finalScale})`,
             }}
           >
-            <HtmlResume data={content} />
+            <ResumeTextView data={content} />
           </div>
         </div>
       </div>
