@@ -1,26 +1,19 @@
 "use client";
 
 /**
- * PdfPreview — 100% flicker-free PDF preview.
+ * PdfPreview — 100% flicker-free PDF preview showing ALL pages.
  *
  * Strategy: TWO PERSISTENT DOCUMENT SLOTS (A/B swap).
  *
- * The reason react-pdf flickers: when you change the `file` prop on a
- * <Document>, it unmounts the old pages and renders blank canvases while
- * the new PDF loads. No amount of off-screen pre-rendering avoids this
- * because the visible Document still receives the new URL.
- *
- * Solution: maintain TWO <Document> components permanently mounted.
- * - Slot A and Slot B each hold their own URL.
+ * - Slot A and Slot B each hold their own URL and render ALL pages.
  * - Only one slot is visible at a time (the other is hidden via CSS).
  * - When a new PDF blob is ready, feed it to the HIDDEN slot.
- * - Wait for `onRenderSuccess` on the hidden slot's <Page>.
+ * - Wait for ALL pages in the hidden slot to fire `onRenderSuccess`.
  * - Only then swap visibility: hidden becomes visible, visible becomes hidden.
- * - The previously-visible slot keeps its old canvas intact until it receives
- *   the next update — no blank frame ever appears.
+ * - Zero flicker — the visible slot never changes its `file` prop while shown.
  *
- * Memory: old blob URLs are revoked 1s after the swap (gives any in-flight
- * renders time to finish). On unmount, both are revoked via refs.
+ * Pages are rendered at `width={A4_W * finalScale}` directly (no CSS transform)
+ * so they flow naturally in a flex column and the container height is correct.
  */
 
 import { pdf } from "@react-pdf/renderer";
@@ -51,7 +44,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.vers
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const A4_W = 794;
-const A4_H = 1123;
 const DEBOUNCE_MS = 300;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -69,33 +61,77 @@ function useDebouncedContent(content: ResumeContent, delay: number) {
   return debounced;
 }
 
+// ─── Slot pages renderer ──────────────────────────────────────────────────────
+interface SlotPagesProps {
+  url: string;
+  numPages: number;
+  pageWidth: number;
+  isActive: boolean;
+  onDocumentLoad: (data: { numPages: number }) => void;
+  onPageRenderSuccess?: () => void;
+}
+
+function SlotPages({
+  url,
+  numPages,
+  pageWidth,
+  isActive,
+  onDocumentLoad,
+  onPageRenderSuccess,
+}: SlotPagesProps) {
+  return (
+    <Document
+      file={url}
+      loading={null}
+      error={null}
+      onLoadSuccess={onDocumentLoad}
+    >
+      <div className="flex flex-col" style={{ gap: 24 }}>
+        {Array.from({ length: numPages }, (_, i) => (
+          <div key={i} className="shadow-2xl">
+            <Page
+              pageNumber={i + 1}
+              width={pageWidth}
+              renderTextLayer={isActive}
+              renderAnnotationLayer={isActive}
+              onRenderSuccess={!isActive ? onPageRenderSuccess : undefined}
+              loading={null}
+              error={null}
+            />
+          </div>
+        ))}
+      </div>
+    </Document>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 export function PdfPreview({ content }: PdfPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [containerWidth, setContainerWidth] = useState(A4_W);
   const [zoom, setZoom] = useState(1);
-  const finalScale = scale * zoom;
+  const pageWidth = Math.min(containerWidth - 40, A4_W) * zoom;
 
   const debouncedContent = useDebouncedContent(content, DEBOUNCE_MS);
 
   // ── A/B slot state ────────────────────────────────────────────────────
-  // Each slot holds a URL. `activeSlot` indicates which is currently visible.
   const [slotA, setSlotA] = useState<string | null>(null);
   const [slotB, setSlotB] = useState<string | null>(null);
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs for unmount cleanup
   const slotARef = useRef<string | null>(null);
   const slotBRef = useRef<string | null>(null);
 
-  // Page state
+  // numPages for the ACTIVE slot (drives visible rendering)
   const [numPages, setNumPages] = useState<number>(1);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  // numPages for the HIDDEN slot (may differ until swap)
+  const [hiddenNumPages, setHiddenNumPages] = useState<number>(1);
 
-  // Track which slot is pending (the hidden one receiving the new URL)
-  const pendingSlot = activeSlot === "A" ? "B" : "A";
+  // How many pages in the hidden slot have finished rendering
+  const hiddenRenderedRef = useRef(0);
+  const hiddenTotalRef = useRef(1);
 
   // ── Generate PDF blob → feed to hidden slot ───────────────────────────
   useEffect(() => {
@@ -115,7 +151,8 @@ export function PdfPreview({ content }: PdfPreviewProps) {
 
         if (!cancelled) {
           urlUsed = true;
-          // Feed to the HIDDEN slot (the one that's not active)
+          hiddenRenderedRef.current = 0;
+
           if (activeSlot === "A") {
             setSlotB(generatedUrl);
             slotBRef.current = generatedUrl;
@@ -141,9 +178,7 @@ export function PdfPreview({ content }: PdfPreviewProps) {
 
     return () => {
       cancelled = true;
-      if (generatedUrl && !urlUsed) {
-        URL.revokeObjectURL(generatedUrl);
-      }
+      if (generatedUrl && !urlUsed) URL.revokeObjectURL(generatedUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedContent]);
@@ -156,40 +191,55 @@ export function PdfPreview({ content }: PdfPreviewProps) {
     };
   }, []);
 
-  // ── Hidden slot render success → swap visibility ──────────────────────
-  const handleHiddenRenderSuccess = useCallback(() => {
-    // The hidden slot's page is fully painted. Swap visibility.
-    setActiveSlot((current) => {
-      const oldSlot = current;
-      const newActive = current === "A" ? "B" : "A";
-
-      // Revoke the old slot's URL after a delay (it's now hidden but
-      // we give it time for any in-flight operations).
-      const oldUrl = oldSlot === "A" ? slotARef.current : slotBRef.current;
-      if (oldUrl) {
-        const urlToRevoke = oldUrl;
-        setTimeout(() => URL.revokeObjectURL(urlToRevoke), 1000);
-      }
-
-      return newActive;
-    });
-    setIsGenerating(false);
-  }, []);
-
-  const handleDocumentLoadSuccess = useCallback(
+  // ── Hidden slot: document loaded → know how many pages to wait for ────
+  const handleHiddenDocumentLoad = useCallback(
     ({ numPages: n }: { numPages: number }) => {
-      setNumPages(n);
-      setCurrentPage((prev) => Math.min(prev, n));
+      hiddenTotalRef.current = n;
+      hiddenRenderedRef.current = 0;
+      setHiddenNumPages(n);
     },
     [],
   );
 
-  // ── Auto-scale ────────────────────────────────────────────────────────
+  // ── Hidden slot: each page rendered → swap when all done ─────────────
+  const handleHiddenPageRender = useCallback(() => {
+    hiddenRenderedRef.current += 1;
+
+    if (hiddenRenderedRef.current >= hiddenTotalRef.current) {
+      setActiveSlot((current) => {
+        const oldSlot = current;
+        const newActive = current === "A" ? "B" : "A";
+
+        const oldUrl =
+          oldSlot === "A" ? slotARef.current : slotBRef.current;
+        if (oldUrl) {
+          const u = oldUrl;
+          setTimeout(() => URL.revokeObjectURL(u), 1000);
+        }
+
+        return newActive;
+      });
+      // Promote hidden page count to active
+      setNumPages(hiddenTotalRef.current);
+      setIsGenerating(false);
+    }
+  }, []);
+
+  // ── Active slot: document loaded (first load only) ────────────────────
+  const handleActiveDocumentLoad = useCallback(
+    ({ numPages: n }: { numPages: number }) => {
+      setNumPages(n);
+      // On first load the hidden slot IS the active slot, so also set hidden
+      hiddenTotalRef.current = n;
+    },
+    [],
+  );
+
+  // ── Container width observer ──────────────────────────────────────────
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver(([entry]) => {
-      const w = entry.contentRect.width - 40;
-      setScale(Math.min(w / A4_W, 1));
+      setContainerWidth(entry.contentRect.width);
     });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
@@ -199,10 +249,6 @@ export function PdfPreview({ content }: PdfPreviewProps) {
   const handleZoomIn = () => setZoom((z) => Math.min(z + 0.25, 3));
   const handleZoomOut = () => setZoom((z) => Math.max(z - 0.25, 0.5));
   const handleResetZoom = () => setZoom(1);
-
-  // ── Page navigation ───────────────────────────────────────────────────
-  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, numPages));
 
   // ── Download ──────────────────────────────────────────────────────────
   const pdfFileName = `${
@@ -219,9 +265,8 @@ export function PdfPreview({ content }: PdfPreviewProps) {
   };
 
   const activeUrl = activeSlot === "A" ? slotA : slotB;
-  const hiddenUrl = activeSlot === "A" ? slotB : slotA;
-  const isFirstLoad = activeUrl === null && hiddenUrl === null;
-  const isWaitingForFirst = activeUrl === null && hiddenUrl !== null;
+  const isFirstLoad = slotA === null && slotB === null;
+  const isWaitingForFirst = activeUrl === null && (slotA !== null || slotB !== null);
 
   // ── Render ────────────────────────────────────────────────────────────
   return (
@@ -234,6 +279,11 @@ export function PdfPreview({ content }: PdfPreviewProps) {
           </h2>
           {isGenerating && (
             <Loader2 className="text-muted-foreground h-3.5 w-3.5 animate-spin" />
+          )}
+          {activeUrl && numPages > 1 && (
+            <span className="text-muted-foreground text-[11px]">
+              {numPages} pages
+            </span>
           )}
         </div>
 
@@ -250,7 +300,7 @@ export function PdfPreview({ content }: PdfPreviewProps) {
               <ZoomOut className="h-3.5 w-3.5" />
             </Button>
             <div className="min-w-[45px] text-center text-[11px] font-bold text-slate-500">
-              {Math.round(finalScale * 100)}%
+              {Math.round(zoom * 100)}%
             </div>
             <Button
               variant="ghost"
@@ -311,130 +361,52 @@ export function PdfPreview({ content }: PdfPreviewProps) {
             <p className="text-destructive text-sm">{error}</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center py-10">
-            <div
-              className="relative"
-              style={{
-                width: A4_W * finalScale,
-                height: A4_H * finalScale,
-              }}
-            >
-              {/* ── SLOT A ── */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  visibility: activeSlot === "A" && slotA ? "visible" : "hidden",
-                  zIndex: activeSlot === "A" ? 2 : 1,
-                }}
-              >
-                {slotA && (
-                  <div
-                    className="origin-top-left shadow-2xl"
-                    style={{
-                      transform: `scale(${finalScale})`,
-                      transformOrigin: "top left",
-                      width: A4_W,
-                      height: A4_H,
-                    }}
-                  >
-                    <Document
-                      file={slotA}
-                      loading={null}
-                      error={null}
-                      onLoadSuccess={
-                        activeSlot === "A" ? handleDocumentLoadSuccess : undefined
-                      }
-                    >
-                      <Page
-                        pageNumber={currentPage}
-                        width={A4_W}
-                        renderTextLayer={activeSlot === "A"}
-                        renderAnnotationLayer={activeSlot === "A"}
-                        onRenderSuccess={
-                          activeSlot !== "A" ? handleHiddenRenderSuccess : undefined
-                        }
-                        loading={null}
-                        error={null}
-                      />
-                    </Document>
-                  </div>
-                )}
-              </div>
+          <div className="flex flex-col items-center py-10 px-5">
+            {/*
+              Each slot is always mounted (so pdfjs keeps its canvas alive)
+              but hidden via display:none when not active.
+              display:none is sufficient — pdfjs renders canvases regardless.
+              ONE <Document> per URL, no duplicates → no ResponseException (0).
+            */}
 
-              {/* ── SLOT B ── */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  visibility: activeSlot === "B" && slotB ? "visible" : "hidden",
-                  zIndex: activeSlot === "B" ? 2 : 1,
-                }}
-              >
-                {slotB && (
-                  <div
-                    className="origin-top-left shadow-2xl"
-                    style={{
-                      transform: `scale(${finalScale})`,
-                      transformOrigin: "top left",
-                      width: A4_W,
-                      height: A4_H,
-                    }}
-                  >
-                    <Document
-                      file={slotB}
-                      loading={null}
-                      error={null}
-                      onLoadSuccess={
-                        activeSlot === "B" ? handleDocumentLoadSuccess : undefined
-                      }
-                    >
-                      <Page
-                        pageNumber={currentPage}
-                        width={A4_W}
-                        renderTextLayer={activeSlot === "B"}
-                        renderAnnotationLayer={activeSlot === "B"}
-                        onRenderSuccess={
-                          activeSlot !== "B" ? handleHiddenRenderSuccess : undefined
-                        }
-                        loading={null}
-                        error={null}
-                      />
-                    </Document>
-                  </div>
-                )}
+            {/* ── SLOT A ── */}
+            {slotA && (
+              <div style={{ display: activeSlot === "A" ? "block" : "none" }}>
+                <SlotPages
+                  url={slotA}
+                  numPages={activeSlot === "A" ? numPages : hiddenNumPages}
+                  pageWidth={pageWidth}
+                  isActive={activeSlot === "A"}
+                  onDocumentLoad={
+                    activeSlot === "A"
+                      ? handleActiveDocumentLoad
+                      : handleHiddenDocumentLoad
+                  }
+                  onPageRenderSuccess={handleHiddenPageRender}
+                />
               </div>
-            </div>
+            )}
+
+            {/* ── SLOT B ── */}
+            {slotB && (
+              <div style={{ display: activeSlot === "B" ? "block" : "none" }}>
+                <SlotPages
+                  url={slotB}
+                  numPages={activeSlot === "B" ? numPages : hiddenNumPages}
+                  pageWidth={pageWidth}
+                  isActive={activeSlot === "B"}
+                  onDocumentLoad={
+                    activeSlot === "B"
+                      ? handleActiveDocumentLoad
+                      : handleHiddenDocumentLoad
+                  }
+                  onPageRenderSuccess={handleHiddenPageRender}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* ── Page navigation ── */}
-      {activeUrl && numPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-          >
-            ← Previous
-          </Button>
-          <span className="text-muted-foreground min-w-[80px] text-center text-xs font-medium">
-            Page {currentPage} / {numPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={handleNextPage}
-            disabled={currentPage >= numPages}
-          >
-            Next →
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
