@@ -11,7 +11,6 @@ import { aiUsageLogs, users } from "@/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
 import type { ActionResult } from "@/types/action-result";
 
-
 import {
   analyzeResumeJobMatchSchema,
   resumeJobMatchResultSchema,

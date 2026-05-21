@@ -66,25 +66,51 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
           <View
             style={
               personalInfo.photoUrl
-                ? { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 20, marginBottom: 10 }
+                ? {
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 20,
+                    marginBottom: 10,
+                  }
                 : {}
             }
           >
             {personalInfo.photoUrl && (
               <Image src={personalInfo.photoUrl} style={styles.photo} />
             )}
-            <View style={personalInfo.photoUrl ? { alignItems: "flex-start", textAlign: "left" } : {}}>
-              <Text style={styles.name}>{personalInfo.fullName || "NAMA LENGKAP"}</Text>
-              {personalInfo.title && <Text style={styles.jobTitle}>{personalInfo.title}</Text>}
+            <View
+              style={
+                personalInfo.photoUrl
+                  ? { alignItems: "flex-start", textAlign: "left" }
+                  : {}
+              }
+            >
+              <Text style={styles.name}>
+                {personalInfo.fullName || "NAMA LENGKAP"}
+              </Text>
+              {personalInfo.title && (
+                <Text style={styles.jobTitle}>{personalInfo.title}</Text>
+              )}
             </View>
           </View>
           <View style={styles.contactInfo}>
-            <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link src={`mailto:${personalInfo.email}`}>{personalInfo.email}</Link>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <Link src={`mailto:${personalInfo.email}`}>
+                {personalInfo.email}
+              </Link>
               {personalInfo.phone && (
                 <>
                   <Text style={{ marginHorizontal: 4 }}>•</Text>
-                  <Link src={`tel:${personalInfo.phone}`}>{personalInfo.phone}</Link>
+                  <Link src={`tel:${personalInfo.phone}`}>
+                    {personalInfo.phone}
+                  </Link>
                 </>
               )}
               {personalInfo.location && (
@@ -96,10 +122,18 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
             </View>
           </View>
           {(personalInfo.website?.url || personalInfo.linkedin?.url) && (
-            <View style={{ ...styles.contactInfo, flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
+            <View
+              style={{
+                ...styles.contactInfo,
+                flexDirection: "row",
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
               {personalInfo.website?.url && (
                 <Link src={personalInfo.website.url}>
-                  {personalInfo.website.label || cleanUrl(personalInfo.website.url)}
+                  {personalInfo.website.label ||
+                    cleanUrl(personalInfo.website.url)}
                 </Link>
               )}
               {personalInfo.website?.url && personalInfo.linkedin?.url && (
@@ -107,7 +141,8 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
               )}
               {personalInfo.linkedin?.url && (
                 <Link src={personalInfo.linkedin.url}>
-                  {personalInfo.linkedin.label || cleanUrl(personalInfo.linkedin.url)}
+                  {personalInfo.linkedin.label ||
+                    cleanUrl(personalInfo.linkedin.url)}
                 </Link>
               )}
             </View>
@@ -123,6 +158,7 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
 export const classicTemplate: TemplateDefinition = {
   id: "classic",
   label: "Classic",
-  description: "Header rapat dengan double border, judul section uppercase. Formal & tradisional.",
+  description:
+    "Header rapat dengan double border, judul section uppercase. Formal & tradisional.",
   Pdf: ClassicPdfTemplate,
 };

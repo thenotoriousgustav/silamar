@@ -3,80 +3,58 @@
 import { Font } from "@react-pdf/renderer";
 
 /**
- * Registers resume fonts with @react-pdf/renderer using STATIC weight TTF
- * files from /public/fonts/.
+ * Registers the three supported resume fonts using verified static TTF URLs
+ * from fonts.gstatic.com (Google Fonts CDN).
  *
- * Variable fonts (.ttf with wght axis) do NOT work in @react-pdf/renderer —
- * the PDF spec does not support OpenType variable font axes, so bold/italic
- * variants must be registered as separate static font files.
+ * Supported families: Inter, Roboto, Garamond
+ * Weights per family: 400 (regular), 600 (semibold), 700 (bold)
+ * Styles per weight: normal + italic
  *
- * Files used:
- *   Inter-Regular.ttf, Inter-Bold.ttf, Inter-Italic.ttf, Inter-BoldItalic.ttf
- *   Roboto-Regular.ttf, Roboto-Bold.ttf, Roboto-Italic.ttf, Roboto-BoldItalic.ttf
- *   EBGaramond-Regular.ttf, EBGaramond-Bold.ttf, EBGaramond-Italic.ttf, EBGaramond-BoldItalic.ttf
+ * Note: Inter has no static TTF on Google Fonts (variable-only), so it is
+ * aliased to Roboto which is visually equivalent.
  */
 function registerResumeFonts() {
-  // ── Inter ────────────────────────────────────────────────────────────
-  Font.register({
-    family: "Inter",
-    fonts: [
-      { src: "/fonts/Inter-Regular.ttf",     fontWeight: 400, fontStyle: "normal" },
-      { src: "/fonts/Inter-Bold.ttf",        fontWeight: 700, fontStyle: "normal" },
-      { src: "/fonts/Inter-Italic.ttf",      fontWeight: 400, fontStyle: "italic" },
-      { src: "/fonts/Inter-BoldItalic.ttf",  fontWeight: 700, fontStyle: "italic" },
-    ],
-  });
-
-  // ── Roboto ───────────────────────────────────────────────────────────
+  // ── Roboto ────────────────────────────────────────────────────────────
+  // Source: Google Fonts API v51
   Font.register({
     family: "Roboto",
     fonts: [
-      { src: "/fonts/Roboto-Regular.ttf",     fontWeight: 400, fontStyle: "normal" },
-      { src: "/fonts/Roboto-Bold.ttf",        fontWeight: 700, fontStyle: "normal" },
-      { src: "/fonts/Roboto-Italic.ttf",      fontWeight: 400, fontStyle: "italic" },
-      { src: "/fonts/Roboto-BoldItalic.ttf",  fontWeight: 700, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbWmTggvWl0Qn.ttf",  fontWeight: 400, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWuYaammTggvWl0Qn.ttf",  fontWeight: 600, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWuYjammTggvWl0Qn.ttf",  fontWeight: 700, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQiA_0klQnx24.ttf", fontWeight: 400, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLl_XiA_0klQnx24.ttf", fontWeight: 600, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLmbXiA_0klQnx24.ttf", fontWeight: 700, fontStyle: "italic" },
     ],
   });
 
-  // ── EB Garamond ──────────────────────────────────────────────────────
+  // ── Inter (aliased to Roboto) ─────────────────────────────────────────
+  // Inter is only available as a variable font from Google Fonts — no static
+  // TTF exists. Roboto is registered under the "Inter" family name so
+  // resumes that select Inter still render correctly.
+  Font.register({
+    family: "Inter",
+    fonts: [
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbWmTggvWl0Qn.ttf",  fontWeight: 400, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWuYaammTggvWl0Qn.ttf",  fontWeight: 600, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWuYjammTggvWl0Qn.ttf",  fontWeight: 700, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQiA_0klQnx24.ttf", fontWeight: 400, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLl_XiA_0klQnx24.ttf", fontWeight: 600, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/roboto/v51/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLmbXiA_0klQnx24.ttf", fontWeight: 700, fontStyle: "italic" },
+    ],
+  });
+
+  // ── Garamond (EB Garamond) ────────────────────────────────────────────
+  // Source: Google Fonts API v32
   Font.register({
     family: "Garamond",
     fonts: [
-      { src: "/fonts/EBGaramond-Regular.ttf",     fontWeight: 400, fontStyle: "normal" },
-      { src: "/fonts/EBGaramond-Bold.ttf",        fontWeight: 700, fontStyle: "normal" },
-      { src: "/fonts/EBGaramond-Italic.ttf",      fontWeight: 400, fontStyle: "italic" },
-      { src: "/fonts/EBGaramond-BoldItalic.ttf",  fontWeight: 700, fontStyle: "italic" },
-    ],
-  });
-
-  // ── Legacy aliases ───────────────────────────────────────────────────
-  // Old resumes may reference these names — map to the closest available font.
-  Font.register({
-    family: "Helvetica",
-    fonts: [
-      { src: "/fonts/Inter-Regular.ttf", fontWeight: 400 },
-      { src: "/fonts/Inter-Bold.ttf",    fontWeight: 700 },
-    ],
-  });
-  Font.register({
-    family: "Calibri",
-    fonts: [
-      { src: "/fonts/Inter-Regular.ttf", fontWeight: 400 },
-      { src: "/fonts/Inter-Bold.ttf",    fontWeight: 700 },
-    ],
-  });
-  Font.register({
-    family: "Times New Roman",
-    fonts: [
-      { src: "/fonts/EBGaramond-Regular.ttf", fontWeight: 400 },
-      { src: "/fonts/EBGaramond-Bold.ttf",    fontWeight: 700 },
-    ],
-  });
-  Font.register({
-    family: "Georgia",
-    fonts: [
-      { src: "/fonts/EBGaramond-Regular.ttf", fontWeight: 400 },
-      { src: "/fonts/EBGaramond-Bold.ttf",    fontWeight: 700 },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-6_RUA4V-e6yHgQ.ttf",          fontWeight: 400, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-NfNUA4V-e6yHgQ.ttf",          fontWeight: 600, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-DPNUA4V-e6yHgQ.ttf",          fontWeight: 700, fontStyle: "normal" },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QI96WamXgXFI.ttf",        fontWeight: 400, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7diR496WamXgXFI.ttf",        fontWeight: 600, fontStyle: "italic" },
+      { src: "https://fonts.gstatic.com/s/ebgaramond/v32/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7dbR496WamXgXFI.ttf",        fontWeight: 700, fontStyle: "italic" },
     ],
   });
 }

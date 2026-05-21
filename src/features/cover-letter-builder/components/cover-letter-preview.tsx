@@ -105,7 +105,7 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
           <PDFDownloadLink
             document={<CoverLetterTemplate data={content} />}
             fileName={pdfFileName}
-            className="inline-flex h-8 items-center gap-2 rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
+            className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center gap-2 rounded-md border px-3 text-xs font-medium shadow-sm"
           >
             {({ loading }) =>
               loading ? (

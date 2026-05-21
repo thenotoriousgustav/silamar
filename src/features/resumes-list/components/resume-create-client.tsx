@@ -12,10 +12,7 @@ import {
   createEmptyResumeAction,
   createResumeAction,
 } from "@/features/resume-builder/actions";
-import type {
-  ResumeContent,
-  ResumeTemplateId,
-} from "@/types/resume";
+import type { ResumeContent, ResumeTemplateId } from "@/types/resume";
 
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { TemplateSelectionDialog } from "./template-selection-dialog";

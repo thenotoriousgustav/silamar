@@ -45,7 +45,12 @@ export function LinkedInImportDialog({
       const data = scrapeResult.data;
 
       // Map LinkedIn type to our enum
-      let jobType: "full-time" | "part-time" | "internship" | "contract" | "freelance" = "full-time";
+      let jobType:
+        | "full-time"
+        | "part-time"
+        | "internship"
+        | "contract"
+        | "freelance" = "full-time";
       if (data.type) {
         const typeMap: Record<string, typeof jobType> = {
           "full-time": "full-time",
@@ -97,11 +102,14 @@ export function LinkedInImportDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => {
-      if (importMutation.isPending) return;
-      onOpenChange(v);
-      if (!v) setUrl("");
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (importMutation.isPending) return;
+        onOpenChange(v);
+        if (!v) setUrl("");
+      }}
+    >
       <DialogContent className="bg-background border-border max-w-md rounded-none">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-bold">
@@ -137,8 +145,12 @@ export function LinkedInImportDialog({
             <div className="border-primary/20 bg-primary/5 flex items-center gap-3 border p-3">
               <Loader2 className="text-primary h-4 w-4 animate-spin" />
               <div>
-                <p className="text-xs font-semibold">Mengambil data dari LinkedIn...</p>
-                <p className="text-muted-foreground text-[10px]">Scraping job title, company, dan deskripsi</p>
+                <p className="text-xs font-semibold">
+                  Mengambil data dari LinkedIn...
+                </p>
+                <p className="text-muted-foreground text-[10px]">
+                  Scraping job title, company, dan deskripsi
+                </p>
               </div>
             </div>
           )}

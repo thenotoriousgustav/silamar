@@ -27,9 +27,7 @@ export async function updateJob(
 
   const processedUpdates: Record<string, unknown> = { ...updates };
   if (appliedDate !== undefined) {
-    processedUpdates.appliedDate = appliedDate
-      ? new Date(appliedDate)
-      : null;
+    processedUpdates.appliedDate = appliedDate ? new Date(appliedDate) : null;
   }
   if (interviewDate !== undefined) {
     processedUpdates.interviewDate = interviewDate
@@ -48,10 +46,7 @@ export async function updateJob(
         updatedAt: new Date(),
       })
       .where(
-        and(
-          eq(jobApplications.id, id),
-          eq(jobApplications.userId, user.id),
-        ),
+        and(eq(jobApplications.id, id), eq(jobApplications.userId, user.id)),
       )
       .returning({
         id: jobApplications.id,

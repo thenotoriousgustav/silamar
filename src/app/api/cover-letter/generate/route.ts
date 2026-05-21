@@ -14,8 +14,6 @@ import {
 } from "@/lib/ai/prompts/cover-letter";
 import { auth } from "@/lib/auth";
 
-
-
 const requestSchema = z.object({
   resumeContent: z.string().min(50),
   jobTitle: z.string().min(1),
@@ -39,10 +37,7 @@ async function verifyAndDeductCredit(userId: string): Promise<{
   if (!user) {
     return {
       isPro: false,
-      error: NextResponse.json(
-        { error: "User not found" },
-        { status: 404 },
-      ),
+      error: NextResponse.json({ error: "User not found" }, { status: 404 }),
     };
   }
 

@@ -5,7 +5,11 @@ import {
   HeaderProvider,
   useHeader,
 } from "@/components/providers/header-provider";
-import { SidebarInset, SidebarProvider , SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 function HeaderContent() {
   const { title, actions } = useHeader();

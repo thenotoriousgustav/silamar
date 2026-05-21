@@ -54,17 +54,29 @@ export function RoastResultDisplay({
         <div className="flex items-center gap-3">
           <div className="bg-muted/50 border-border flex items-center gap-2 border px-3 py-1.5">
             <span className="text-base">{meta.emoji}</span>
-            <span className={`text-xs font-bold tracking-wider uppercase ${meta.color}`}>
+            <span
+              className={`text-xs font-bold tracking-wider uppercase ${meta.color}`}
+            >
               Mode {meta.label}
             </span>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleShare} className="h-8 gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShare}
+            className="h-8 gap-1.5"
+          >
             <Share2 className="h-3.5 w-3.5" />
             <span className="text-xs">Share</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={onRoastAgain} className="h-8 gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onRoastAgain}
+            className="h-8 gap-1.5"
+          >
             <RotateCcw className="h-3.5 w-3.5" />
             <span className="text-xs">Roast Lagi</span>
           </Button>
@@ -135,7 +147,7 @@ export function RoastResultDisplay({
       </div>
 
       {/* Unique Problems */}
-      <div className="border-border bg-amber-500/5 border-l-4 border-l-amber-500 p-5">
+      <div className="border-border border-l-4 border-l-amber-500 bg-amber-500/5 p-5">
         <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold tracking-wider text-amber-600 uppercase">
           <Flame className="h-3 w-3" />
           Masalah Unik yang Terdeteksi
@@ -143,7 +155,7 @@ export function RoastResultDisplay({
         <ul className="space-y-2.5">
           {result.uniqueProblems.map((problem, i) => (
             <li key={i} className="flex gap-3 text-sm leading-relaxed">
-              <span className="text-amber-500 font-bold">{i + 1}.</span>
+              <span className="font-bold text-amber-500">{i + 1}.</span>
               <span className="flex-1">{problem}</span>
             </li>
           ))}
@@ -151,7 +163,7 @@ export function RoastResultDisplay({
       </div>
 
       {/* Silver Lining */}
-      <div className="border-border bg-emerald-500/5 border-l-4 border-l-emerald-500 p-5">
+      <div className="border-border border-l-4 border-l-emerald-500 bg-emerald-500/5 p-5">
         <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase">
           <Sparkles className="h-3 w-3 text-emerald-500" />
           Sisi Positif (Iya, Ada Kok)

@@ -50,9 +50,7 @@ export function renderPdfSections(config: PdfEngineConfig) {
                     <Text style={styles.experienceTitle}>{exp.position}</Text>
                     <Text style={styles.experienceDate}>
                       {exp.startDate} —{" "}
-                      {exp.isCurrentJob
-                        ? t.present
-                        : exp.endDate || ""}
+                      {exp.isCurrentJob ? t.present : exp.endDate || ""}
                     </Text>
                   </View>
                   <View style={styles.experienceCompanyRow}>
@@ -85,9 +83,7 @@ export function renderPdfSections(config: PdfEngineConfig) {
                   </Text>
                   <Text style={styles.experienceDate}>
                     {edu.startYear} —{" "}
-                    {edu.isCurrentlyStudying
-                      ? t.present
-                      : edu.endYear || ""}
+                    {edu.isCurrentlyStudying ? t.present : edu.endYear || ""}
                   </Text>
                 </View>
                 <Text style={styles.educationSchool}>{edu.institution}</Text>
@@ -192,10 +188,7 @@ export function renderPdfSections(config: PdfEngineConfig) {
                     {cleanUrl(item.link)}
                   </Link>
                 )}
-                <PdfBulletList
-                  items={item.description || []}
-                  styles={styles}
-                />
+                <PdfBulletList items={item.description || []} styles={styles} />
               </View>
             ))}
           </View>
@@ -217,9 +210,7 @@ export function renderPdfSections(config: PdfEngineConfig) {
                 {section.items.map((item, iIndex) => {
                   const period = item.startDate
                     ? `${item.startDate} — ${
-                        item.isCurrent
-                          ? t.present
-                          : item.endDate || ""
+                        item.isCurrent ? t.present : item.endDate || ""
                       }`
                     : item.date || "";
                   return (
@@ -266,10 +257,6 @@ export function renderPdfSummary(
   styles: any,
 ) {
   return (
-    <PdfSummary
-      summary={summary}
-      translations={translations}
-      styles={styles}
-    />
+    <PdfSummary summary={summary} translations={translations} styles={styles} />
   );
 }

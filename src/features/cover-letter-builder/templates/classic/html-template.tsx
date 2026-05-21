@@ -12,9 +12,11 @@ export function ClassicHtmlTemplate({ data }: HtmlTemplateProps) {
       buildClassicBlocks(data, {
         // Font sizes use `text-[1em]` so they inherit from the HtmlCoverLetter
         // wrapper which sets fontSize from data.style.fontSize.
-        nameClass: "text-[2em] font-bold tracking-tight text-gray-900 uppercase text-right",
+        nameClass:
+          "text-[2em] font-bold tracking-tight text-gray-900 uppercase text-right",
         metaClass: "text-[0.85em] leading-relaxed text-gray-500 text-right",
-        bodyClass: "text-[1em] leading-loose text-gray-800 text-justify whitespace-pre-wrap",
+        bodyClass:
+          "text-[1em] leading-loose text-gray-800 text-justify whitespace-pre-wrap",
         headingClass: "text-[1em] font-bold text-gray-900",
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

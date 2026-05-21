@@ -111,7 +111,9 @@ function renderNode(node: LexicalNode): string {
       return "<br/>";
 
     case "paragraph": {
-      const inner = renderChildren((node as LexicalParagraphNode).children ?? []);
+      const inner = renderChildren(
+        (node as LexicalParagraphNode).children ?? [],
+      );
       // Empty paragraph → preserve spacing
       return inner.trim() === "" ? "<p>&nbsp;</p>" : `<p>${inner}</p>`;
     }
@@ -244,7 +246,6 @@ export function lexicalJsonToHtml(value: string): string | null {
     return null;
   }
 }
-
 
 /**
  * Extracts plain text lines from an HTML string.

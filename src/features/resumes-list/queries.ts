@@ -21,12 +21,17 @@ type PaginationParams = {
  * Uses column-specific selects and enforces max 50 records per request.
  */
 export const getResumesDTO = cache(
-  async (params?: PaginationParams): Promise<ResumeListItemWithDetailsDTO[]> => {
+  async (
+    params?: PaginationParams,
+  ): Promise<ResumeListItemWithDetailsDTO[]> => {
     const user = await getSessionUser();
     if (!user) return [];
 
     const page = Math.max(1, params?.page ?? 1);
-    const pageSize = Math.min(Math.max(1, params?.pageSize ?? MAX_PAGE_SIZE), MAX_PAGE_SIZE);
+    const pageSize = Math.min(
+      Math.max(1, params?.pageSize ?? MAX_PAGE_SIZE),
+      MAX_PAGE_SIZE,
+    );
     const offset = (page - 1) * pageSize;
 
     const data = await db

@@ -53,7 +53,8 @@ export function CoverLetterForm({
   const [activeTab, setActiveTab] = useState<"content" | "settings">("content");
   const [isOpen, setIsOpen] = useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
-  const [pendingTemplate, setPendingTemplate] = useState<Partial<CoverLetterBuilderData> | null>(null);
+  const [pendingTemplate, setPendingTemplate] =
+    useState<Partial<CoverLetterBuilderData> | null>(null);
   const [expandedItems, setExpandedItems] = useState<string[]>([
     "personal",
     "recipient",
@@ -92,7 +93,9 @@ export function CoverLetterForm({
     },
   });
 
-  const handleTemplateClick = (templateData: Partial<CoverLetterBuilderData>) => {
+  const handleTemplateClick = (
+    templateData: Partial<CoverLetterBuilderData>,
+  ) => {
     // If there's existing content, ask for confirmation first
     const hasContent = content.content && content.content.trim().length > 0;
     if (hasContent) {
@@ -105,8 +108,12 @@ export function CoverLetterForm({
 
   const applyTemplate = (templateData: Partial<CoverLetterBuilderData>) => {
     updateContent({
-      ...(templateData.subject !== undefined && { subject: templateData.subject }),
-      ...(templateData.content !== undefined && { content: templateData.content }),
+      ...(templateData.subject !== undefined && {
+        subject: templateData.subject,
+      }),
+      ...(templateData.content !== undefined && {
+        content: templateData.content,
+      }),
     });
     toast.success("Template berhasil diterapkan! 📝");
     setPendingTemplate(null);
@@ -155,7 +162,9 @@ export function CoverLetterForm({
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8 gap-2">
                     <Layout className="h-3.5 w-3.5" />
-                    <span className="text-[11px] font-semibold">Template Konten</span>
+                    <span className="text-[11px] font-semibold">
+                      Template Konten
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
@@ -195,7 +204,9 @@ export function CoverLetterForm({
                     className="border-primary/50 text-primary hover:bg-primary/10 h-8 gap-2 transition-all"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span className="text-[11px] font-semibold">AI Generate</span>
+                    <span className="text-[11px] font-semibold">
+                      AI Generate
+                    </span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
@@ -236,7 +247,10 @@ export function CoverLetterForm({
                       <Textarea
                         value={aiInput.resumeContent}
                         onChange={(e) =>
-                          setAiInput({ ...aiInput, resumeContent: e.target.value })
+                          setAiInput({
+                            ...aiInput,
+                            resumeContent: e.target.value,
+                          })
                         }
                         placeholder="Tempel isi resume Anda di sini..."
                         rows={5}
@@ -280,7 +294,10 @@ export function CoverLetterForm({
             type="multiple"
             className="w-full space-y-4 border-none"
           >
-            <PersonalInfoSection content={content} updateContent={updateContent} />
+            <PersonalInfoSection
+              content={content}
+              updateContent={updateContent}
+            />
             <RecipientSection content={content} updateContent={updateContent} />
             <ContentSection content={content} updateContent={updateContent} />
           </Accordion>
@@ -298,7 +315,9 @@ export function CoverLetterForm({
               Ganti isi surat?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground text-sm">
-              Template ini akan mengganti <strong>subjek</strong> dan <strong>isi surat</strong> yang sudah kamu tulis. Data personal (nama, email, telepon) tidak akan berubah.
+              Template ini akan mengganti <strong>subjek</strong> dan{" "}
+              <strong>isi surat</strong> yang sudah kamu tulis. Data personal
+              (nama, email, telepon) tidak akan berubah.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

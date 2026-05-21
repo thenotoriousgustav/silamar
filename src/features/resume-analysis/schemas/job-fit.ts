@@ -32,12 +32,7 @@ export const jobFitDecisionEnum = z.enum([
 
 export const jobFitImportanceEnum = z.enum(["must_have", "nice_to_have"]);
 
-export const jobFitSeverityEnum = z.enum([
-  "blocking",
-  "high",
-  "medium",
-  "low",
-]);
+export const jobFitSeverityEnum = z.enum(["blocking", "high", "medium", "low"]);
 
 /**
  * Zod schema for the AI-generated job-fit analysis output.

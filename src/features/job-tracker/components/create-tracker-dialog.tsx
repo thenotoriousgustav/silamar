@@ -27,7 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { createTrackerAction } from "@/features/job-tracker/actions";
 
-
 import { type CreateTrackerFormValues, createTrackerSchema } from "../schemas";
 
 export function CreateTrackerDialog({

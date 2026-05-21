@@ -30,7 +30,11 @@ export function FormalPdfTemplate({ data }: PdfTemplateProps) {
       marginBottom: 5,
       textTransform: "uppercase",
     },
-    senderInfo: { fontSize: fontSize * 0.85, color: "#374151", lineHeight: 1.4 },
+    senderInfo: {
+      fontSize: fontSize * 0.85,
+      color: "#374151",
+      lineHeight: 1.4,
+    },
     date: { fontSize, marginBottom: 20 },
     recipientSection: { marginBottom: 25 },
     recipientName: { fontSize, fontWeight: "bold", marginBottom: 2 },
@@ -74,12 +78,16 @@ export function FormalPdfTemplate({ data }: PdfTemplateProps) {
             {data.department && <Text>{data.department}</Text>}
             {data.companyName && <Text>{data.companyName}</Text>}
             {data.recipientAddress && <Text>{data.recipientAddress}</Text>}
-            {data.recipientCityAndPostal && <Text>{data.recipientCityAndPostal}</Text>}
+            {data.recipientCityAndPostal && (
+              <Text>{data.recipientCityAndPostal}</Text>
+            )}
           </View>
         </View>
 
         {data.subject && (
-          <Text style={styles.subject}>{subjectLabel}: {data.subject}</Text>
+          <Text style={styles.subject}>
+            {subjectLabel}: {data.subject}
+          </Text>
         )}
 
         {renderPdfContent(data.content, styles.content)}

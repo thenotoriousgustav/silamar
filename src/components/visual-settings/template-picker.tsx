@@ -33,7 +33,9 @@ export function TemplatePicker({
       icon={<LayoutTemplate className="h-3.5 w-3.5" />}
       label={label}
     >
-      <div className={`grid gap-2 ${columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
+      <div
+        className={`grid gap-2 ${columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}
+      >
         {templates.map((tpl) => {
           const active = currentId === tpl.id;
           return (

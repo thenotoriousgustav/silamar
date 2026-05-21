@@ -85,7 +85,9 @@ export function CreateCoverLetterDialog({
   const [manualJobTitle, setManualJobTitle] = useState("");
   const [manualCompany, setManualCompany] = useState("");
   const [manualJobDesc, setManualJobDesc] = useState("");
-  const [tone, setTone] = useState<"formal" | "friendly" | "professional">("professional");
+  const [tone, setTone] = useState<"formal" | "friendly" | "professional">(
+    "professional",
+  );
 
   // Fetch jobs for dropdown
   const { data: jobs = [], isLoading: isLoadingJobs } = useQuery({
@@ -125,7 +127,10 @@ export function CreateCoverLetterDialog({
       if (result.success) {
         localStorage.setItem(
           `cover-letter-draft-${result.data.id}`,
-          JSON.stringify({ content: EXAMPLE_CONTENT, updatedAt: new Date().toISOString() }),
+          JSON.stringify({
+            content: EXAMPLE_CONTENT,
+            updatedAt: new Date().toISOString(),
+          }),
         );
         handleClose();
         router.push(`/cover-letter-builder/${result.data.id}`);
@@ -139,12 +144,23 @@ export function CreateCoverLetterDialog({
   // AI generation
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const jobTitle = jobSource === "job-tracker" ? selectedJob?.position ?? "" : manualJobTitle;
-      const company = jobSource === "job-tracker" ? selectedJob?.company ?? "" : manualCompany;
-      const jobDescription = jobSource === "job-tracker" ? selectedJob?.description ?? "" : manualJobDesc;
+      const jobTitle =
+        jobSource === "job-tracker"
+          ? (selectedJob?.position ?? "")
+          : manualJobTitle;
+      const company =
+        jobSource === "job-tracker"
+          ? (selectedJob?.company ?? "")
+          : manualCompany;
+      const jobDescription =
+        jobSource === "job-tracker"
+          ? (selectedJob?.description ?? "")
+          : manualJobDesc;
 
-      if (!jobTitle || !company) throw new Error("Job title dan perusahaan wajib diisi");
-      if (!selectedResume?.content) throw new Error("Pilih resume terlebih dahulu");
+      if (!jobTitle || !company)
+        throw new Error("Job title dan perusahaan wajib diisi");
+      if (!selectedResume?.content)
+        throw new Error("Pilih resume terlebih dahulu");
 
       const resumeContent =
         typeof selectedResume.content === "string"
@@ -169,7 +185,8 @@ export function CreateCoverLetterDialog({
         toast.error(result.error);
       }
     },
-    onError: (error: Error) => toast.error(error.message || "Gagal generate cover letter"),
+    onError: (error: Error) =>
+      toast.error(error.message || "Gagal generate cover letter"),
   });
 
   const isGenerateValid =
@@ -200,8 +217,7 @@ export function CreateCoverLetterDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-background border-border sm:max-w-2xl rounded-none p-0">
-
+      <DialogContent className="bg-background border-border rounded-none p-0 sm:max-w-2xl">
         {/* ── Mode selection ── */}
         {mode === "select" && (
           <>
@@ -353,7 +369,10 @@ export function CreateCoverLetterDialog({
                       </p>
                     </div>
                   ) : (
-                    <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+                    <Select
+                      value={selectedJobId}
+                      onValueChange={setSelectedJobId}
+                    >
                       <SelectTrigger className="border-border rounded-none">
                         <SelectValue placeholder="Pilih lamaran pekerjaan..." />
                       </SelectTrigger>
@@ -361,7 +380,9 @@ export function CreateCoverLetterDialog({
                         {jobs.map((job) => (
                           <SelectItem key={job.id} value={job.id}>
                             <span className="font-medium">{job.position}</span>
-                            <span className="text-muted-foreground ml-1">@ {job.company}</span>
+                            <span className="text-muted-foreground ml-1">
+                              @ {job.company}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -400,7 +421,7 @@ export function CreateCoverLetterDialog({
                         value={manualJobTitle}
                         onChange={(e) => setManualJobTitle(e.target.value)}
                         placeholder="Software Engineer"
-                        className="border-border bg-background placeholder:text-muted-foreground focus:border-primary w-full border px-3 py-2 text-sm outline-none transition-colors"
+                        className="border-border bg-background placeholder:text-muted-foreground focus:border-primary w-full border px-3 py-2 text-sm transition-colors outline-none"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -412,7 +433,7 @@ export function CreateCoverLetterDialog({
                         value={manualCompany}
                         onChange={(e) => setManualCompany(e.target.value)}
                         placeholder="PT. Contoh"
-                        className="border-border bg-background placeholder:text-muted-foreground focus:border-primary w-full border px-3 py-2 text-sm outline-none transition-colors"
+                        className="border-border bg-background placeholder:text-muted-foreground focus:border-primary w-full border px-3 py-2 text-sm transition-colors outline-none"
                       />
                     </div>
                   </div>
@@ -447,14 +468,20 @@ export function CreateCoverLetterDialog({
                   <div className="border-border border border-dashed p-4 text-center">
                     <p className="text-muted-foreground text-xs">
                       Belum ada resume. Buat resume dulu di{" "}
-                      <a href="/documents/resumes" className="text-primary underline">
+                      <a
+                        href="/documents/resumes"
+                        className="text-primary underline"
+                      >
                         halaman Resume
                       </a>
                       .
                     </p>
                   </div>
                 ) : (
-                  <Select value={selectedResumeId} onValueChange={setSelectedResumeId}>
+                  <Select
+                    value={selectedResumeId}
+                    onValueChange={setSelectedResumeId}
+                  >
                     <SelectTrigger className="border-border rounded-none">
                       <SelectValue placeholder="Pilih resume..." />
                     </SelectTrigger>
@@ -476,21 +503,29 @@ export function CreateCoverLetterDialog({
 
               {/* Tone picker */}
               <div className="space-y-2">
-                <Label className="text-xs font-bold tracking-wider uppercase">Tone</Label>
+                <Label className="text-xs font-bold tracking-wider uppercase">
+                  Tone
+                </Label>
                 <div className="border-border grid grid-cols-3 border">
-                  {(["formal", "professional", "friendly"] as const).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setTone(t)}
-                      className={`py-2 text-xs font-semibold capitalize transition-colors ${
-                        tone === t
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-muted"
-                      }`}
-                    >
-                      {t === "formal" ? "Formal" : t === "professional" ? "Profesional" : "Friendly"}
-                    </button>
-                  ))}
+                  {(["formal", "professional", "friendly"] as const).map(
+                    (t) => (
+                      <button
+                        key={t}
+                        onClick={() => setTone(t)}
+                        className={`py-2 text-xs font-semibold capitalize transition-colors ${
+                          tone === t
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {t === "formal"
+                          ? "Formal"
+                          : t === "professional"
+                            ? "Profesional"
+                            : "Friendly"}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -498,7 +533,8 @@ export function CreateCoverLetterDialog({
             {/* Footer */}
             <div className="border-border flex items-center justify-between border-t px-6 py-4">
               <p className="text-muted-foreground text-xs">
-                Menggunakan <span className="text-primary font-bold">1 kredit</span>
+                Menggunakan{" "}
+                <span className="text-primary font-bold">1 kredit</span>
               </p>
               <Button
                 onClick={() => generateMutation.mutate()}

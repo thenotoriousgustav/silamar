@@ -101,7 +101,10 @@ export async function POST(req: NextRequest) {
       transactionStatus as MidtransTransactionStatus,
       fraudStatus,
     );
-    const newStatus = deriveTransactionStatus(transactionStatus, paymentSuccess);
+    const newStatus = deriveTransactionStatus(
+      transactionStatus,
+      paymentSuccess,
+    );
 
     await db
       .update(transactions)

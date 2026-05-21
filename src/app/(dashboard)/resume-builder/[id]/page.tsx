@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import {
-  getResumeById,
-  ResumeBuilderClient,
-} from "@/features/resume-builder";
+import { getResumeById, ResumeBuilderClient } from "@/features/resume-builder";
 import type { ResumeContent } from "@/features/resume-builder";
 import { getSessionUser } from "@/lib/auth/session";
 

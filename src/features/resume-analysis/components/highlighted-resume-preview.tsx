@@ -83,18 +83,13 @@ export function HighlightedResumePreview({
     if (!resumeRef.current || highlights.length === 0) return;
 
     // Remove previous highlights
-    resumeRef.current
-      .querySelectorAll("[data-highlight]")
-      .forEach((el) => {
-        const parent = el.parentNode;
-        if (parent) {
-          parent.replaceChild(
-            document.createTextNode(el.textContent || ""),
-            el,
-          );
-          parent.normalize();
-        }
-      });
+    resumeRef.current.querySelectorAll("[data-highlight]").forEach((el) => {
+      const parent = el.parentNode;
+      if (parent) {
+        parent.replaceChild(document.createTextNode(el.textContent || ""), el);
+        parent.normalize();
+      }
+    });
 
     // Walk text nodes and apply highlights
     const walker = document.createTreeWalker(
@@ -188,9 +183,7 @@ export function HighlightedResumePreview({
     const marks = resumeRef.current.querySelectorAll("[data-highlight]");
     for (const mark of marks) {
       if (
-        mark.textContent
-          ?.toLowerCase()
-          .includes(activeHighlight.toLowerCase())
+        mark.textContent?.toLowerCase().includes(activeHighlight.toLowerCase())
       ) {
         mark.scrollIntoView({ behavior: "smooth", block: "center" });
         // Flash animation
@@ -208,10 +201,22 @@ export function HighlightedResumePreview({
   // Highlight legend
   const legendItems = [
     { type: "red_flag" as const, label: "Red Flag", color: "bg-red-500/30" },
-    { type: "weak_verb" as const, label: "Kata Lemah", color: "bg-amber-500/30" },
+    {
+      type: "weak_verb" as const,
+      label: "Kata Lemah",
+      color: "bg-amber-500/30",
+    },
     { type: "typo" as const, label: "Typo", color: "bg-yellow-500/30" },
-    { type: "keyword_found" as const, label: "Keyword", color: "bg-emerald-500/30" },
-    { type: "overused" as const, label: "Berlebihan", color: "bg-amber-400/30" },
+    {
+      type: "keyword_found" as const,
+      label: "Keyword",
+      color: "bg-emerald-500/30",
+    },
+    {
+      type: "overused" as const,
+      label: "Berlebihan",
+      color: "bg-amber-400/30",
+    },
   ];
 
   return (

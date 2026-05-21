@@ -8,9 +8,7 @@ interface ATSCompatibilityProps {
   data: ATSCompatibility;
 }
 
-export function ATSCompatibility({
-  data,
-}: ATSCompatibilityProps) {
+export function ATSCompatibility({ data }: ATSCompatibilityProps) {
   const statusIcon = {
     pass: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
     warning: <AlertTriangle className="h-4 w-4 text-amber-500" />,

@@ -18,14 +18,20 @@ import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/co
 
 import { CoverLetterForm } from "./cover-letter-form";
 
-const CoverLetterPreview = dynamic(() => import("./cover-letter-preview").then(mod => ({ default: mod.CoverLetterPreview })), {
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="animate-pulse bg-muted h-[600px] w-[420px] rounded-lg" />
-    </div>
-  ),
-  ssr: false,
-});
+const CoverLetterPreview = dynamic(
+  () =>
+    import("./cover-letter-preview").then((mod) => ({
+      default: mod.CoverLetterPreview,
+    })),
+  {
+    loading: () => (
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="bg-muted h-[600px] w-[420px] animate-pulse rounded-lg" />
+      </div>
+    ),
+    ssr: false,
+  },
+);
 
 interface CoverLetterBuilderClientProps {
   id: string;

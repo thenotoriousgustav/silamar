@@ -186,11 +186,14 @@ export function Editor({
           <div className="relative" ref={onRef}>
             <ContentEditable
               placeholder="Tulis deskripsi..."
-              className="px-14 my-4"
+              className="my-4 px-14"
               placeholderClassName="px-14 my-2"
             />
             <TabIndentationPlugin />
-            <DraggableBlockPlugin anchorElem={floatingAnchorElem} baseOptions={blockPickerOptions} />
+            <DraggableBlockPlugin
+              anchorElem={floatingAnchorElem}
+              baseOptions={blockPickerOptions}
+            />
             <FloatingLinkEditorPlugin
               anchorElem={floatingAnchorElem}
               isLinkEditMode={isLinkEditMode}

@@ -40,8 +40,11 @@ interface CoverLetterListClientProps {
 export function CoverLetterListClient({
   initialCoverLetters,
 }: CoverLetterListClientProps) {
-  const [coverLetterToDelete, setCoverLetterToDelete] = useState<string | null>(null);
-  const [selectedLetterForPreview, setSelectedLetterForPreview] = useState<CoverLetter | null>(null);
+  const [coverLetterToDelete, setCoverLetterToDelete] = useState<string | null>(
+    null,
+  );
+  const [selectedLetterForPreview, setSelectedLetterForPreview] =
+    useState<CoverLetter | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 

@@ -63,9 +63,7 @@ export function RegisterFormComponent() {
           }`}
         />
         {errors.name && (
-          <p className="mt-1 text-xs text-red-400">
-            {errors.name.message}
-          </p>
+          <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
         )}
       </div>
 
@@ -83,9 +81,7 @@ export function RegisterFormComponent() {
           }`}
         />
         {errors.email && (
-          <p className="mt-1 text-xs text-red-400">
-            {errors.email.message}
-          </p>
+          <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
         )}
       </div>
 
@@ -116,9 +112,7 @@ export function RegisterFormComponent() {
           </button>
         </div>
         {errors.password && (
-          <p className="mt-1 text-xs text-red-400">
-            {errors.password.message}
-          </p>
+          <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>
         )}
       </div>
 

@@ -1,5 +1,3 @@
-
-
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { DraggableBlockPlugin_EXPERIMENTAL } from "@lexical/react/LexicalDraggableBlockPlugin";
 import {
@@ -267,7 +265,7 @@ export function DraggableBlockPlugin({
               variant="ghost"
               size="icon-xs"
               title="Click to add below (Alt/Ctrl: add above)"
-              className="cursor-pointer rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+              className="text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer rounded-sm"
               onClick={openComponentPicker}
             >
               <PlusIcon />
@@ -275,7 +273,7 @@ export function DraggableBlockPlugin({
             <Button
               variant="ghost"
               size="icon-xs"
-              className="cursor-grab rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
+              className="text-muted-foreground hover:bg-accent hover:text-foreground cursor-grab rounded-sm active:cursor-grabbing"
               tabIndex={-1}
             >
               <GripVerticalIcon className="opacity-60" />

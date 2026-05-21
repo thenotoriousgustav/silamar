@@ -64,9 +64,13 @@ export function buildClassicBlocks(
   // ── Recipient block ───────────────────────────────────────────────────
   const recipientLines = [
     department ? `<div>${escHtml(department)}</div>` : "",
-    companyName ? `<div class="font-semibold">${escHtml(companyName)}</div>` : "",
+    companyName
+      ? `<div class="font-semibold">${escHtml(companyName)}</div>`
+      : "",
     recipientAddress ? `<div>${escHtml(recipientAddress)}</div>` : "",
-    recipientCityAndPostal ? `<div>${escHtml(recipientCityAndPostal)}</div>` : "",
+    recipientCityAndPostal
+      ? `<div>${escHtml(recipientCityAndPostal)}</div>`
+      : "",
   ].join("");
 
   blocks.push({
@@ -103,7 +107,10 @@ export function buildClassicBlocks(
     const paragraphs = contentText.split("\n");
     paragraphs.forEach((paragraph, idx) => {
       if (!paragraph.trim()) {
-        blocks.push({ id: `br-${idx}`, html: `<div style="height:16px"></div>` });
+        blocks.push({
+          id: `br-${idx}`,
+          html: `<div style="height:16px"></div>`,
+        });
         return;
       }
       blocks.push({
@@ -145,11 +152,23 @@ function lexicalJsonToBlockHtml(
 
     for (const node of state.root.children) {
       // Re-serialize each top-level node as a mini Lexical doc and convert
-      const miniDoc = JSON.stringify({ root: { children: [node], direction: null, format: "", indent: 0, type: "root", version: 1 } });
+      const miniDoc = JSON.stringify({
+        root: {
+          children: [node],
+          direction: null,
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      });
       const html = lexicalJsonToHtml(miniDoc);
       if (!html || html.trim() === "<p>&nbsp;</p>") {
         // Empty paragraph → spacer
-        results.push({ html: `<div style="height:12px"></div>`, marginBottom: 0 });
+        results.push({
+          html: `<div style="height:12px"></div>`,
+          marginBottom: 0,
+        });
         continue;
       }
       results.push({

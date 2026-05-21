@@ -1,4 +1,8 @@
-import type { ResumeDensity, ResumeFontFamily, ResumePaperSize } from "@/types/resume";
+import type {
+  ResumeDensity,
+  ResumeFontFamily,
+  ResumePaperSize,
+} from "@/types/resume";
 
 /**
  * Page geometry — TWO coordinate systems matter:
@@ -60,27 +64,14 @@ export const FONT_CLASS_MAP: Record<ResumeFontFamily | string, string> = {
 
 /**
  * Resolves a stored fontFamily to a font name @react-pdf knows about.
- * Old names (Helvetica/Calibri/Times/Georgia) are mapped to the closest
- * supported Google Font so legacy resumes don't break.
+ * Falls back to "Inter" (which renders as Roboto) for unknown values.
  */
-const PDF_FONT_ALIASES: Record<string, ResumeFontFamily> = {
-  Helvetica: "Inter",
-  Calibri: "Inter",
-  "Times New Roman": "Garamond",
-  Georgia: "Garamond",
-};
-
-const VALID_PDF_FONTS: ResumeFontFamily[] = [
-  "Inter",
-  "Roboto",
-  "Garamond",
-];
+const VALID_PDF_FONTS: ResumeFontFamily[] = ["Inter", "Roboto", "Garamond"];
 
 export function resolvePdfFont(fontFamily?: string): ResumeFontFamily {
   if (!fontFamily) return "Inter";
-  const aliased = PDF_FONT_ALIASES[fontFamily] ?? fontFamily;
-  return VALID_PDF_FONTS.includes(aliased as ResumeFontFamily)
-    ? (aliased as ResumeFontFamily)
+  return VALID_PDF_FONTS.includes(fontFamily as ResumeFontFamily)
+    ? (fontFamily as ResumeFontFamily)
     : "Inter";
 }
 

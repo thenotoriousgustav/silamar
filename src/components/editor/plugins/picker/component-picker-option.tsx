@@ -1,4 +1,3 @@
-
 import { MenuOption } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { type LexicalEditor } from "lexical";
 import { type JSX } from "react";

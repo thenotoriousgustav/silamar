@@ -41,11 +41,7 @@ export function ContentQuality({ data }: ContentQualityProps) {
             total={data.bulletPoints.total}
             good
           />
-          <Stat
-            label="Terlalu Pendek"
-            value={data.bulletPoints.tooShort}
-            bad
-          />
+          <Stat label="Terlalu Pendek" value={data.bulletPoints.tooShort} bad />
         </div>
         <p className="text-muted-foreground text-[10px]">
           {data.bulletPoints.feedback}
@@ -172,11 +168,7 @@ function Stat({
       <span className="text-muted-foreground">{label}</span>
       <span
         className={`font-bold ${
-          bad && value > 0
-            ? "text-red-500"
-            : good
-              ? "text-emerald-500"
-              : ""
+          bad && value > 0 ? "text-red-500" : good ? "text-emerald-500" : ""
         }`}
       >
         {value}

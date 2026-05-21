@@ -17,19 +17,8 @@
  */
 
 import { pdf } from "@react-pdf/renderer";
-import {
-  Download,
-  Loader2,
-  RotateCcw,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Download, Loader2, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -210,8 +199,7 @@ export function PdfPreview({ content }: PdfPreviewProps) {
         const oldSlot = current;
         const newActive = current === "A" ? "B" : "A";
 
-        const oldUrl =
-          oldSlot === "A" ? slotARef.current : slotBRef.current;
+        const oldUrl = oldSlot === "A" ? slotARef.current : slotBRef.current;
         if (oldUrl) {
           const u = oldUrl;
           setTimeout(() => URL.revokeObjectURL(u), 1000);
@@ -266,7 +254,8 @@ export function PdfPreview({ content }: PdfPreviewProps) {
 
   const activeUrl = activeSlot === "A" ? slotA : slotB;
   const isFirstLoad = slotA === null && slotB === null;
-  const isWaitingForFirst = activeUrl === null && (slotA !== null || slotB !== null);
+  const isWaitingForFirst =
+    activeUrl === null && (slotA !== null || slotB !== null);
 
   // ── Render ────────────────────────────────────────────────────────────
   return (
@@ -361,7 +350,7 @@ export function PdfPreview({ content }: PdfPreviewProps) {
             <p className="text-destructive text-sm">{error}</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center py-10 px-5">
+          <div className="flex flex-col items-center px-5 py-10">
             {/*
               Each slot is always mounted (so pdfjs keeps its canvas alive)
               but hidden via display:none when not active.

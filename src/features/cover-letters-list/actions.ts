@@ -17,9 +17,7 @@ export async function deleteCoverLetterAction(
   try {
     await db
       .delete(coverLetters)
-      .where(
-        and(eq(coverLetters.id, id), eq(coverLetters.userId, user.id)),
-      );
+      .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, user.id)));
 
     revalidatePath("/documents/cover-letter");
     return { success: true, data: { id } };

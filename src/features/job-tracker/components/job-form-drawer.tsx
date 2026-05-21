@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery , useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
   Briefcase,
@@ -52,11 +52,13 @@ import {
 import { cn } from "@/lib/utils";
 import { triggerSuccessConfetti } from "@/lib/utils/confetti";
 
-import { type JobApplicationFormValues, jobApplicationSchema } from "../schemas";
+import {
+  type JobApplicationFormValues,
+  jobApplicationSchema,
+} from "../schemas";
 
 import { JobAiAssistant } from "./job-ai-assistant";
 import { ResumeSelectorDialog } from "./resume-selector-dialog";
-
 
 interface JobFormDrawerProps {
   job: JobApplication | null;
@@ -88,10 +90,14 @@ export function JobFormDrawer({
         const data = result.data;
         form.setValue("position", data.position, { shouldDirty: true });
         form.setValue("company", data.company, { shouldDirty: true });
-        if (data.description) form.setValue("description", data.description, { shouldDirty: true });
-        if (data.location) form.setValue("location", data.location, { shouldDirty: true });
-        if (data.salary) form.setValue("salary", data.salary, { shouldDirty: true });
-        if (data.jobUrl) form.setValue("jobUrl", data.jobUrl, { shouldDirty: true });
+        if (data.description)
+          form.setValue("description", data.description, { shouldDirty: true });
+        if (data.location)
+          form.setValue("location", data.location, { shouldDirty: true });
+        if (data.salary)
+          form.setValue("salary", data.salary, { shouldDirty: true });
+        if (data.jobUrl)
+          form.setValue("jobUrl", data.jobUrl, { shouldDirty: true });
 
         // Map LinkedIn type to our enum
         if (data.type) {
@@ -319,7 +325,9 @@ export function JobFormDrawer({
                     <div className="border-primary/20 bg-primary/5 space-y-3 border p-4">
                       <div className="flex items-center gap-2">
                         <Link2 className="text-primary h-4 w-4" />
-                        <p className="text-xs font-bold">Import dari LinkedIn</p>
+                        <p className="text-xs font-bold">
+                          Import dari LinkedIn
+                        </p>
                       </div>
                       <div className="flex gap-2">
                         <Input
@@ -339,8 +347,12 @@ export function JobFormDrawer({
                           variant="default"
                           size="sm"
                           className="shrink-0 gap-2 px-4"
-                          disabled={!linkedinUrl.trim() || scrapeMutation.isPending}
-                          onClick={() => scrapeMutation.mutate(linkedinUrl.trim())}
+                          disabled={
+                            !linkedinUrl.trim() || scrapeMutation.isPending
+                          }
+                          onClick={() =>
+                            scrapeMutation.mutate(linkedinUrl.trim())
+                          }
                         >
                           {scrapeMutation.isPending ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -351,7 +363,8 @@ export function JobFormDrawer({
                         </Button>
                       </div>
                       <p className="text-muted-foreground text-[10px]">
-                        Contoh: https://www.linkedin.com/jobs/view/1234567890 atau URL dengan currentJobId
+                        Contoh: https://www.linkedin.com/jobs/view/1234567890
+                        atau URL dengan currentJobId
                       </p>
                     </div>
                   )}
@@ -384,9 +397,7 @@ export function JobFormDrawer({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <FormFieldLabel
-                        icon={<MapPin className="h-3.5 w-3.5" />}
-                      >
+                      <FormFieldLabel icon={<MapPin className="h-3.5 w-3.5" />}>
                         Lokasi
                       </FormFieldLabel>
                       <Input
@@ -448,9 +459,7 @@ export function JobFormDrawer({
                     </div>
 
                     <div className="space-y-2">
-                      <FormFieldLabel
-                        icon={<Globe className="h-3.5 w-3.5" />}
-                      >
+                      <FormFieldLabel icon={<Globe className="h-3.5 w-3.5" />}>
                         Link Lowongan
                       </FormFieldLabel>
                       <div className="flex gap-2">
@@ -480,9 +489,7 @@ export function JobFormDrawer({
                   </div>
 
                   <div className="space-y-2">
-                    <FormFieldLabel
-                      icon={<FileText className="h-3.5 w-3.5" />}
-                    >
+                    <FormFieldLabel icon={<FileText className="h-3.5 w-3.5" />}>
                       Resume yang Digunakan
                     </FormFieldLabel>
                     <Controller

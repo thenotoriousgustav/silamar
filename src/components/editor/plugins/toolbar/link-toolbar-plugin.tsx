@@ -1,4 +1,3 @@
-
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { $isRangeSelection, type BaseSelection } from "lexical";
 import { LinkIcon } from "lucide-react";

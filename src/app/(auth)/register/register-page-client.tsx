@@ -3,10 +3,7 @@
 import { CheckCircle, Zap } from "lucide-react";
 import Link from "next/link";
 
-import {
-  GoogleSignInButton,
-  RegisterFormComponent,
-} from "@/features/auth";
+import { GoogleSignInButton, RegisterFormComponent } from "@/features/auth";
 
 const perks = [
   "3 kredit AI gratis saat daftar",

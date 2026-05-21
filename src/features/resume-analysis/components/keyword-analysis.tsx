@@ -23,14 +23,14 @@ export function KeywordAnalysis({ data }: KeywordAnalysisProps) {
       {/* Found Keywords */}
       {data.found.length > 0 && (
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-emerald-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase">
             ✓ Keyword Ditemukan
           </h4>
           <div className="flex flex-wrap gap-1">
             {data.found.map((item, i) => (
               <span
                 key={i}
-                className="bg-emerald-500/10 border-emerald-500/20 border px-2 py-0.5 text-[10px] font-medium text-emerald-700"
+                className="border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700"
               >
                 {item.keyword}
                 {item.count && item.count > 1 && (
@@ -75,13 +75,13 @@ export function KeywordAnalysis({ data }: KeywordAnalysisProps) {
       {/* Overused Keywords */}
       {data.overused.length > 0 && (
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-amber-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-amber-600 uppercase">
             ⚠️ Terlalu Umum / Berlebihan
           </h4>
           <div className="space-y-1">
             {data.overused.map((item, i) => (
               <div key={i} className="flex items-start gap-2 text-[10px]">
-                <span className="bg-amber-500/10 shrink-0 px-1.5 py-0 font-bold text-amber-700">
+                <span className="shrink-0 bg-amber-500/10 px-1.5 py-0 font-bold text-amber-700">
                   {item.keyword}
                 </span>
                 {item.reason && (

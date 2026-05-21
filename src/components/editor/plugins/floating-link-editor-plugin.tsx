@@ -1,5 +1,3 @@
-
-
 import {
   $createLinkNode,
   $isAutoLinkNode,
@@ -58,7 +56,9 @@ function FloatingLinkEditor({
   const inputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState("");
   const [editedLinkUrl, setEditedLinkUrl] = useState("https://");
-  const [lastSelection, setLastSelection] = useState<BaseSelection | null>(null);
+  const [lastSelection, setLastSelection] = useState<BaseSelection | null>(
+    null,
+  );
 
   // Keep refs in sync so $updateLinkEditor can read latest values
   // without those values appearing in useCallback deps.
@@ -67,10 +67,18 @@ function FloatingLinkEditor({
   const setIsLinkEditModeRef = useRef(setIsLinkEditMode);
   const anchorElemRef = useRef(anchorElem);
 
-  useEffect(() => { isLinkEditModeRef.current = isLinkEditMode; });
-  useEffect(() => { linkUrlRef.current = linkUrl; });
-  useEffect(() => { setIsLinkEditModeRef.current = setIsLinkEditMode; });
-  useEffect(() => { anchorElemRef.current = anchorElem; });
+  useEffect(() => {
+    isLinkEditModeRef.current = isLinkEditMode;
+  });
+  useEffect(() => {
+    linkUrlRef.current = linkUrl;
+  });
+  useEffect(() => {
+    setIsLinkEditModeRef.current = setIsLinkEditMode;
+  });
+  useEffect(() => {
+    anchorElemRef.current = anchorElem;
+  });
 
   // Stable callback — no state/prop values in deps, all read via refs.
   const $updateLinkEditor = useCallback(() => {
@@ -110,19 +118,27 @@ function FloatingLinkEditor({
         nativeSelection.focusNode?.parentElement?.getBoundingClientRect();
       if (domRect) {
         domRect.y += 40;
-        setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElemRef.current);
+        setFloatingElemPositionForLinkEditor(
+          domRect,
+          editorElem,
+          anchorElemRef.current,
+        );
       }
       setLastSelection(selection);
     } else if (!activeElement || activeElement.className !== "link-input") {
       if (rootElement !== null) {
-        setFloatingElemPositionForLinkEditor(null, editorElem, anchorElemRef.current);
+        setFloatingElemPositionForLinkEditor(
+          null,
+          editorElem,
+          anchorElemRef.current,
+        );
       }
-      setLastSelection((prev) => prev === null ? prev : null);
+      setLastSelection((prev) => (prev === null ? prev : null));
       // Only call setState if value is actually changing — prevents infinite loop
       if (isLinkEditModeRef.current) {
         setIsLinkEditModeRef.current(false);
       }
-      setLinkUrl((prev) => prev === "" ? prev : "");
+      setLinkUrl((prev) => (prev === "" ? prev : ""));
     }
   }, [editor]); // only editor — everything else via refs
 
@@ -130,7 +146,9 @@ function FloatingLinkEditor({
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
     const update = () => {
-      editor.getEditorState().read(() => { $updateLinkEditor(); });
+      editor.getEditorState().read(() => {
+        $updateLinkEditor();
+      });
     };
     window.addEventListener("resize", update);
     scrollerElem?.addEventListener("scroll", update);
@@ -143,13 +161,19 @@ function FloatingLinkEditor({
   // Editor update + command listeners
   const isLinkRef = useRef(isLink);
   const setIsLinkRef = useRef(setIsLink);
-  useEffect(() => { isLinkRef.current = isLink; });
-  useEffect(() => { setIsLinkRef.current = setIsLink; });
+  useEffect(() => {
+    isLinkRef.current = isLink;
+  });
+  useEffect(() => {
+    setIsLinkRef.current = setIsLink;
+  });
 
   useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => { $updateLinkEditor(); });
+        editorState.read(() => {
+          $updateLinkEditor();
+        });
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -175,7 +199,9 @@ function FloatingLinkEditor({
 
   // Initial read
   useEffect(() => {
-    editor.getEditorState().read(() => { $updateLinkEditor(); });
+    editor.getEditorState().read(() => {
+      $updateLinkEditor();
+    });
   }, [editor, $updateLinkEditor]);
 
   // Focus input when entering edit mode
@@ -186,7 +212,9 @@ function FloatingLinkEditor({
     }
   }, [isLinkEditMode, setIsLink]);
 
-  const monitorInputInteraction = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const monitorInputInteraction = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleLinkSubmission();
@@ -226,7 +254,7 @@ function FloatingLinkEditor({
       className="absolute top-0 left-0 w-full max-w-sm rounded-md opacity-0 shadow-md"
     >
       {!isLink ? null : isLinkEditMode ? (
-        <div className="flex items-center space-x-2 rounded-md border bg-background p-1 pl-2">
+        <div className="bg-background flex items-center space-x-2 rounded-md border p-1 pl-2">
           <Input
             ref={inputRef}
             value={editedLinkUrl}
@@ -245,12 +273,16 @@ function FloatingLinkEditor({
           >
             <X className="h-4 w-4" />
           </Button>
-          <Button size="icon" onClick={handleLinkSubmission} className="shrink-0">
+          <Button
+            size="icon"
+            onClick={handleLinkSubmission}
+            className="shrink-0"
+          >
             <Check className="h-4 w-4" />
           </Button>
         </div>
       ) : (
-        <div className="flex items-center justify-between rounded-md border bg-background p-1 pl-2">
+        <div className="bg-background flex items-center justify-between rounded-md border p-1 pl-2">
           <a
             href={sanitizeUrl(linkUrl)}
             target="_blank"
@@ -301,7 +333,10 @@ function useFloatingLinkEditorToolbar(
       if ($isRangeSelection(selection)) {
         const focusNode = getSelectedNode(selection);
         const focusLinkNode = $findMatchingParent(focusNode, $isLinkNode);
-        const focusAutoLinkNode = $findMatchingParent(focusNode, $isAutoLinkNode);
+        const focusAutoLinkNode = $findMatchingParent(
+          focusNode,
+          $isAutoLinkNode,
+        );
         if (!(focusLinkNode || focusAutoLinkNode)) {
           setIsLink(false);
           return;
@@ -324,7 +359,10 @@ function useFloatingLinkEditorToolbar(
         setIsLink(!badNode);
       } else if ($isNodeSelection(selection)) {
         const nodes = selection.getNodes();
-        if (nodes.length === 0) { setIsLink(false); return; }
+        if (nodes.length === 0) {
+          setIsLink(false);
+          return;
+        }
         const node = nodes[0];
         const parent = node.getParent();
         setIsLink($isLinkNode(parent) || $isLinkNode(node));
@@ -333,7 +371,9 @@ function useFloatingLinkEditorToolbar(
 
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => { $updateToolbar(); });
+        editorState.read(() => {
+          $updateToolbar();
+        });
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -388,5 +428,10 @@ export function FloatingLinkEditorPlugin({
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingLinkEditorToolbar(editor, anchorElem, isLinkEditMode, setIsLinkEditMode);
+  return useFloatingLinkEditorToolbar(
+    editor,
+    anchorElem,
+    isLinkEditMode,
+    setIsLinkEditMode,
+  );
 }

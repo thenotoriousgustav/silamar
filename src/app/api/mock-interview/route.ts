@@ -18,8 +18,6 @@ import {
 } from "@/lib/ai/prompts/mock-interview";
 import { auth } from "@/lib/auth";
 
-
-
 const generateSchema = z.object({
   action: z.literal("generate"),
   jobTitle: z.string().min(2),
@@ -53,10 +51,7 @@ async function verifyAndDeductCredit(
   if (!user) {
     return {
       isPro: false,
-      error: NextResponse.json(
-        { error: "User not found" },
-        { status: 404 },
-      ),
+      error: NextResponse.json({ error: "User not found" }, { status: 404 }),
     };
   }
 

@@ -10,9 +10,12 @@ export function ModernHtmlTemplate({ data }: HtmlTemplateProps) {
   const blocks = useMemo(
     () =>
       buildClassicBlocks(data, {
-        nameClass: "text-[2.5em] font-extrabold tracking-tighter text-blue-600 uppercase text-center",
-        metaClass: "text-[0.8em] tracking-widest text-gray-500 uppercase text-center",
-        bodyClass: "text-[1em] leading-loose text-gray-800 text-justify whitespace-pre-wrap",
+        nameClass:
+          "text-[2.5em] font-extrabold tracking-tighter text-blue-600 uppercase text-center",
+        metaClass:
+          "text-[0.8em] tracking-widest text-gray-500 uppercase text-center",
+        bodyClass:
+          "text-[1em] leading-loose text-gray-800 text-justify whitespace-pre-wrap",
         headingClass: "text-[1em] font-bold text-gray-900",
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

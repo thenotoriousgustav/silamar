@@ -1,6 +1,12 @@
 "use client";
 
-import { CheckCircle2, ShieldAlert, ShieldX, ThumbsUp, Zap } from "lucide-react";
+import {
+  CheckCircle2,
+  ShieldAlert,
+  ShieldX,
+  ThumbsUp,
+  Zap,
+} from "lucide-react";
 
 import type { JobFitDTO } from "../../schemas/job-fit";
 
@@ -78,17 +84,19 @@ export function JobFitVerdict({ data }: JobFitVerdictProps) {
             <span className={`px-2 py-0.5 text-[10px] font-bold ${cfg.pillBg}`}>
               {cfg.label}
             </span>
-            <span className="bg-muted text-muted-foreground px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+            <span className="bg-muted text-muted-foreground px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase">
               Keyakinan: {data.verdict.confidence}
             </span>
             <span
-              className={`px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+              className={`px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase ${
                 data.verdict.shouldApply
                   ? "bg-emerald-500/10 text-emerald-600"
                   : "bg-red-500/10 text-red-600"
               }`}
             >
-              {data.verdict.shouldApply ? "Direkomendasikan apply" : "Sebaiknya tidak apply"}
+              {data.verdict.shouldApply
+                ? "Direkomendasikan apply"
+                : "Sebaiknya tidak apply"}
             </span>
           </div>
           <h2 className="mt-2 text-lg font-bold">{data.verdict.label}</h2>
@@ -101,10 +109,12 @@ export function JobFitVerdict({ data }: JobFitVerdictProps) {
       {/* Score bar */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+          <span className="text-muted-foreground text-[10px] font-bold tracking-wider uppercase">
             Skor Kecocokan
           </span>
-          <span className={`text-2xl font-black tracking-tighter ${cfg.accent}`}>
+          <span
+            className={`text-2xl font-black tracking-tighter ${cfg.accent}`}
+          >
             {data.matchScore}
             <span className="text-muted-foreground text-xs">/100</span>
           </span>

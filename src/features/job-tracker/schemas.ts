@@ -38,9 +38,7 @@ export const updateJobApplicationSchema = z.object({
   type: z
     .enum(["full-time", "part-time", "internship", "contract", "freelance"])
     .optional(),
-  status: z
-    .enum(["dilamar", "interview", "penawaran", "ditolak"])
-    .optional(),
+  status: z.enum(["dilamar", "interview", "penawaran", "ditolak"]).optional(),
   jobUrl: z.string().url("URL tidak valid").optional().or(z.literal("")),
   salary: z.string().max(100).optional().nullable(),
   appliedDate: z.string().optional(),

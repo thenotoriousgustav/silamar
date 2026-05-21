@@ -8,7 +8,9 @@
  * NOTE: This prompt is INTENTIONALLY job-agnostic. To analyze fit against
  * a specific job, use {@link buildJobFitPrompt} instead.
  */
-export function buildComprehensiveAnalysisPrompt(resumeContent: string): string {
+export function buildComprehensiveAnalysisPrompt(
+  resumeContent: string,
+): string {
   return `
 You are an international AI expert in resume/CV analysis. Your task is to provide a highly comprehensive and in-depth resume analysis.
 

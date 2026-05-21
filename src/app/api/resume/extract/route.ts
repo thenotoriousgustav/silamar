@@ -11,7 +11,11 @@ export const runtime = "nodejs";
 const ExtractionSchema = z.object({
   personalInfo: z.object({
     fullName: z.string(),
-    title: z.string().describe("Job title or professional headline, e.g. 'Senior Frontend Developer'"),
+    title: z
+      .string()
+      .describe(
+        "Job title or professional headline, e.g. 'Senior Frontend Developer'",
+      ),
     email: z.string(),
     phone: z.string(),
     location: z.string(),
@@ -28,7 +32,11 @@ const ExtractionSchema = z.object({
       isCurrentJob: z.boolean(),
       description: z.array(z.string()),
       location: z.string(),
-      employmentType: z.string().describe("Employment type if mentioned: full-time, part-time, internship, contract, freelance. Empty string if not specified."),
+      employmentType: z
+        .string()
+        .describe(
+          "Employment type if mentioned: full-time, part-time, internship, contract, freelance. Empty string if not specified.",
+        ),
     }),
   ),
   education: z.array(
@@ -40,7 +48,11 @@ const ExtractionSchema = z.object({
       endYear: z.string(),
       isCurrentlyStudying: z.boolean(),
       gpa: z.string(),
-      location: z.string().describe("City/location of the institution, or empty string if not mentioned."),
+      location: z
+        .string()
+        .describe(
+          "City/location of the institution, or empty string if not mentioned.",
+        ),
       description: z.array(z.string()),
     }),
   ),

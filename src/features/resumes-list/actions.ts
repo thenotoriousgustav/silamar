@@ -15,7 +15,9 @@ import type { ResumeListItemWithDetailsDTO } from "./types/resume-list-item-dto"
  * Server Actions for Resumes List
  */
 
-export async function getResumesAction(): Promise<ResumeListItemWithDetailsDTO[]> {
+export async function getResumesAction(): Promise<
+  ResumeListItemWithDetailsDTO[]
+> {
   return await getResumesDTO();
 }
 

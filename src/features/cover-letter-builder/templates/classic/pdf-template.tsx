@@ -25,11 +25,19 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
       marginBottom: 5,
       textTransform: "uppercase",
     },
-    senderInfo: { fontSize: fontSize * 0.85, color: "#4b5563", lineHeight: 1.4 },
+    senderInfo: {
+      fontSize: fontSize * 0.85,
+      color: "#4b5563",
+      lineHeight: 1.4,
+    },
     date: { fontSize: fontSize * 0.85, color: "#4b5563", marginBottom: 15 },
     recipientSection: { marginBottom: 20 },
     recipientName: { fontSize, fontWeight: "bold", marginBottom: 2 },
-    recipientInfo: { fontSize: fontSize * 0.85, color: "#4b5563", lineHeight: 1.4 },
+    recipientInfo: {
+      fontSize: fontSize * 0.85,
+      color: "#4b5563",
+      lineHeight: 1.4,
+    },
     subject: {
       fontSize,
       fontWeight: "bold",
@@ -68,12 +76,16 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
             {data.department && <Text>{data.department}</Text>}
             {data.companyName && <Text>{data.companyName}</Text>}
             {data.recipientAddress && <Text>{data.recipientAddress}</Text>}
-            {data.recipientCityAndPostal && <Text>{data.recipientCityAndPostal}</Text>}
+            {data.recipientCityAndPostal && (
+              <Text>{data.recipientCityAndPostal}</Text>
+            )}
           </View>
         </View>
 
         {data.subject && (
-          <Text style={styles.subject}>{subjectLabel}: {data.subject}</Text>
+          <Text style={styles.subject}>
+            {subjectLabel}: {data.subject}
+          </Text>
         )}
 
         {renderPdfContent(data.content, styles.content)}

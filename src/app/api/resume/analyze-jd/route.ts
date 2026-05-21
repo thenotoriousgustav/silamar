@@ -14,8 +14,6 @@ import {
 } from "@/lib/ai/prompts/resume-analyze-jd";
 import { auth } from "@/lib/auth";
 
-
-
 const requestSchema = z.object({
   resumeContent: z.string().min(50, "Resume is too short"),
   jobDescription: z.string().nullable().optional(),
@@ -34,10 +32,7 @@ async function verifyAndDeductCredit(userId: string): Promise<{
   if (!user) {
     return {
       isPro: false,
-      error: NextResponse.json(
-        { error: "User not found" },
-        { status: 404 },
-      ),
+      error: NextResponse.json({ error: "User not found" }, { status: 404 }),
     };
   }
 

@@ -9,7 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatResumeDate(dateStr: string | undefined): string {
   if (!dateStr) return "";
-  if (dateStr.toLowerCase() === "present" || dateStr.toLowerCase() === "sekarang")
+  if (
+    dateStr.toLowerCase() === "present" ||
+    dateStr.toLowerCase() === "sekarang"
+  )
     return dateStr;
 
   try {

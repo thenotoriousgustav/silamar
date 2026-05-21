@@ -274,223 +274,233 @@ export function ResumeForm({
         <div className="flex flex-col gap-6 p-6">
           <Accordion
             value={expandedItems}
-        onValueChange={setExpandedItems}
-        type="multiple"
-        className="w-full space-y-4 border-none"
-      >
-        <div id="section-personal">
-          <PersonalInfoSection
-            content={content}
-            updatePersonalInfo={updatePersonalInfo}
-          />
-        </div>
+            onValueChange={setExpandedItems}
+            type="multiple"
+            className="w-full space-y-4 border-none"
+          >
+            <div id="section-personal">
+              <PersonalInfoSection
+                content={content}
+                updatePersonalInfo={updatePersonalInfo}
+              />
+            </div>
 
-        <Sortable
-          value={
-            content.sectionOrder || [
-              "experience",
-              "education",
-              "projects",
-              "skills",
-              "custom",
-            ]
-          }
-          onValueChange={updateSectionOrder}
-        >
-          <SortableContent className="space-y-4">
-            {(
-              content.sectionOrder || [
-                "experience",
-                "education",
-                "projects",
-                "skills",
-                "custom",
-              ]
-            )
-              .filter(
-                (id) =>
-                  id !== "custom" ||
-                  (content.customSections && content.customSections.length > 0),
-              )
-              .map((sectionId) => (
-                <SortableItem key={sectionId} value={sectionId}>
-                  <div className="group relative">
-                    <SortableItemHandle className="absolute top-7 left-1 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-                      <GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
-                    </SortableItemHandle>
-                    <div id={`section-${sectionId}`}>
-                      {sectionId === "experience" && (
-                        <ExperienceSection
-                          content={content}
-                          addExperience={addExperience}
-                          updateExperience={updateExperience}
-                          updateExperienceList={updateExperienceList}
-                          removeExperience={removeExperience}
-                          handleOptimize={handleOptimize}
-                          optimizingId={optimizingId}
-                        />
-                      )}
-                      {sectionId === "education" && (
-                        <EducationSection
-                          content={content}
-                          addEducation={addEducation}
-                          updateEducation={updateEducation}
-                          updateEducationList={updateEducationList}
-                          removeEducation={removeEducation}
-                        />
-                      )}
-                      {sectionId === "projects" && (
-                        <ProjectSection
-                          content={content}
-                          addProject={addProject}
-                          updateProject={updateProject}
-                          updateProjectList={updateProjectList}
-                          removeProject={removeProject}
-                        />
-                      )}
-                      {sectionId === "skills" && (
-                        <SkillsSection
-                          content={content}
-                          addSkillCategory={addSkillCategory}
-                          updateSkillCategory={updateSkillCategory}
-                          removeSkillCategory={removeSkillCategory}
-                          updateSkills={updateSkills}
-                        />
-                      )}
-                      {sectionId === "certificates" && (
-                        <ItemsListSection
-                          title="Sertifikat"
-                          icon={<CertificateIcon className="h-4 w-4" />}
-                          sectionId="certificates"
-                          items={content.certificates || []}
-                          addItem={addPredefinedSectionItem}
-                          updateItem={updatePredefinedSectionItem}
-                          updateItemList={updatePredefinedSectionItems}
-                          removeItem={removePredefinedSectionItem}
-                          onRemoveSection={(id) => {
-                            updateSectionOrder(
-                              (content.sectionOrder || []).filter(
-                                (s) => s !== id,
-                              ),
-                            );
-                          }}
-                          placeholderTitle="Nama Sertifikat"
-                          placeholderSubtitle="Penerbit Sertifikat"
-                        />
-                      )}
-                      {sectionId === "awards" && (
-                        <ItemsListSection
-                          title="Penghargaan"
-                          icon={<TrophyIcon className="h-4 w-4" />}
-                          sectionId="awards"
-                          items={content.awards || []}
-                          addItem={addPredefinedSectionItem}
-                          updateItem={updatePredefinedSectionItem}
-                          updateItemList={updatePredefinedSectionItems}
-                          removeItem={removePredefinedSectionItem}
-                          onRemoveSection={(id) => {
-                            updateSectionOrder(
-                              (content.sectionOrder || []).filter(
-                                (s) => s !== id,
-                              ),
-                            );
-                          }}
-                          placeholderTitle="Nama Penghargaan"
-                          placeholderSubtitle="Pemberi Penghargaan"
-                        />
-                      )}
-                      {sectionId === "publications" && (
-                        <ItemsListSection
-                          title="Publikasi"
-                          icon={<BookOpenIcon className="h-4 w-4" />}
-                          sectionId="publications"
-                          items={content.publications || []}
-                          addItem={addPredefinedSectionItem}
-                          updateItem={updatePredefinedSectionItem}
-                          updateItemList={updatePredefinedSectionItems}
-                          removeItem={removePredefinedSectionItem}
-                          onRemoveSection={(id) => {
-                            updateSectionOrder(
-                              (content.sectionOrder || []).filter(
-                                (s) => s !== id,
-                              ),
-                            );
-                          }}
-                          placeholderTitle="Judul Publikasi"
-                          placeholderSubtitle="Penerbit / Jurnal"
-                        />
-                      )}
-                      {sectionId === "custom" &&
-                        content.customSections &&
-                        content.customSections.length > 0 && (
-                          <CustomSection
-                            content={content}
-                            addCustomSection={addCustomSection}
-                            updateCustomSection={updateCustomSection}
-                            updateCustomSectionList={updateCustomSectionList}
-                            removeCustomSection={removeCustomSection}
-                            addCustomSectionItem={addCustomSectionItem}
-                            updateCustomSectionItem={updateCustomSectionItem}
-                            updateCustomSectionItemList={
-                              updateCustomSectionItemList
-                            }
-                            removeCustomSectionItem={removeCustomSectionItem}
-                          />
-                        )}
-                    </div>
-                  </div>
-                </SortableItem>
-              ))}
-          </SortableContent>
-        </Sortable>
+            <Sortable
+              value={
+                content.sectionOrder || [
+                  "experience",
+                  "education",
+                  "projects",
+                  "skills",
+                  "custom",
+                ]
+              }
+              onValueChange={updateSectionOrder}
+            >
+              <SortableContent className="space-y-4">
+                {(
+                  content.sectionOrder || [
+                    "experience",
+                    "education",
+                    "projects",
+                    "skills",
+                    "custom",
+                  ]
+                )
+                  .filter(
+                    (id) =>
+                      id !== "custom" ||
+                      (content.customSections &&
+                        content.customSections.length > 0),
+                  )
+                  .map((sectionId) => (
+                    <SortableItem key={sectionId} value={sectionId}>
+                      <div className="group relative">
+                        <SortableItemHandle className="absolute top-7 left-1 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                          <GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
+                        </SortableItemHandle>
+                        <div id={`section-${sectionId}`}>
+                          {sectionId === "experience" && (
+                            <ExperienceSection
+                              content={content}
+                              addExperience={addExperience}
+                              updateExperience={updateExperience}
+                              updateExperienceList={updateExperienceList}
+                              removeExperience={removeExperience}
+                              handleOptimize={handleOptimize}
+                              optimizingId={optimizingId}
+                            />
+                          )}
+                          {sectionId === "education" && (
+                            <EducationSection
+                              content={content}
+                              addEducation={addEducation}
+                              updateEducation={updateEducation}
+                              updateEducationList={updateEducationList}
+                              removeEducation={removeEducation}
+                            />
+                          )}
+                          {sectionId === "projects" && (
+                            <ProjectSection
+                              content={content}
+                              addProject={addProject}
+                              updateProject={updateProject}
+                              updateProjectList={updateProjectList}
+                              removeProject={removeProject}
+                            />
+                          )}
+                          {sectionId === "skills" && (
+                            <SkillsSection
+                              content={content}
+                              addSkillCategory={addSkillCategory}
+                              updateSkillCategory={updateSkillCategory}
+                              removeSkillCategory={removeSkillCategory}
+                              updateSkills={updateSkills}
+                            />
+                          )}
+                          {sectionId === "certificates" && (
+                            <ItemsListSection
+                              title="Sertifikat"
+                              icon={<CertificateIcon className="h-4 w-4" />}
+                              sectionId="certificates"
+                              items={content.certificates || []}
+                              addItem={addPredefinedSectionItem}
+                              updateItem={updatePredefinedSectionItem}
+                              updateItemList={updatePredefinedSectionItems}
+                              removeItem={removePredefinedSectionItem}
+                              onRemoveSection={(id) => {
+                                updateSectionOrder(
+                                  (content.sectionOrder || []).filter(
+                                    (s) => s !== id,
+                                  ),
+                                );
+                              }}
+                              placeholderTitle="Nama Sertifikat"
+                              placeholderSubtitle="Penerbit Sertifikat"
+                            />
+                          )}
+                          {sectionId === "awards" && (
+                            <ItemsListSection
+                              title="Penghargaan"
+                              icon={<TrophyIcon className="h-4 w-4" />}
+                              sectionId="awards"
+                              items={content.awards || []}
+                              addItem={addPredefinedSectionItem}
+                              updateItem={updatePredefinedSectionItem}
+                              updateItemList={updatePredefinedSectionItems}
+                              removeItem={removePredefinedSectionItem}
+                              onRemoveSection={(id) => {
+                                updateSectionOrder(
+                                  (content.sectionOrder || []).filter(
+                                    (s) => s !== id,
+                                  ),
+                                );
+                              }}
+                              placeholderTitle="Nama Penghargaan"
+                              placeholderSubtitle="Pemberi Penghargaan"
+                            />
+                          )}
+                          {sectionId === "publications" && (
+                            <ItemsListSection
+                              title="Publikasi"
+                              icon={<BookOpenIcon className="h-4 w-4" />}
+                              sectionId="publications"
+                              items={content.publications || []}
+                              addItem={addPredefinedSectionItem}
+                              updateItem={updatePredefinedSectionItem}
+                              updateItemList={updatePredefinedSectionItems}
+                              removeItem={removePredefinedSectionItem}
+                              onRemoveSection={(id) => {
+                                updateSectionOrder(
+                                  (content.sectionOrder || []).filter(
+                                    (s) => s !== id,
+                                  ),
+                                );
+                              }}
+                              placeholderTitle="Judul Publikasi"
+                              placeholderSubtitle="Penerbit / Jurnal"
+                            />
+                          )}
+                          {sectionId === "custom" &&
+                            content.customSections &&
+                            content.customSections.length > 0 && (
+                              <CustomSection
+                                content={content}
+                                addCustomSection={addCustomSection}
+                                updateCustomSection={updateCustomSection}
+                                updateCustomSectionList={
+                                  updateCustomSectionList
+                                }
+                                removeCustomSection={removeCustomSection}
+                                addCustomSectionItem={addCustomSectionItem}
+                                updateCustomSectionItem={
+                                  updateCustomSectionItem
+                                }
+                                updateCustomSectionItemList={
+                                  updateCustomSectionItemList
+                                }
+                                removeCustomSectionItem={
+                                  removeCustomSectionItem
+                                }
+                              />
+                            )}
+                        </div>
+                      </div>
+                    </SortableItem>
+                  ))}
+              </SortableContent>
+            </Sortable>
 
-        <div className="pt-4 pb-8">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/50 flex w-full items-center justify-center border-dashed py-6 transition-all"
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Tambah Seksi Resume
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-64 rounded-none">
-              <DropdownMenuItem
-                disabled={content.sectionOrder?.includes("certificates")}
-                onClick={() => addSectionToOrder("certificates")}
-                className="rounded-none py-2.5"
-              >
-                <CertificateIcon className="mr-2 h-4 w-4" />
-                Sertifikat
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={content.sectionOrder?.includes("awards")}
-                onClick={() => addSectionToOrder("awards")}
-                className="rounded-none py-2.5"
-              >
-                <TrophyIcon className="mr-2 h-4 w-4" />
-                Penghargaan
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={content.sectionOrder?.includes("publications")}
-                onClick={() => addSectionToOrder("publications")}
-                className="rounded-none py-2.5"
-              >
-                <BookOpenIcon className="mr-2 h-4 w-4" />
-                Publikasi
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={addCustomSection}
-                className="rounded-none py-2.5"
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Seksi Kustom
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </Accordion>
+            <div className="pt-4 pb-8">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/50 flex w-full items-center justify-center border-dashed py-6 transition-all"
+                  >
+                    <PlusIcon className="mr-2 h-4 w-4" />
+                    Tambah Seksi Resume
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="center"
+                  className="w-64 rounded-none"
+                >
+                  <DropdownMenuItem
+                    disabled={content.sectionOrder?.includes("certificates")}
+                    onClick={() => addSectionToOrder("certificates")}
+                    className="rounded-none py-2.5"
+                  >
+                    <CertificateIcon className="mr-2 h-4 w-4" />
+                    Sertifikat
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    disabled={content.sectionOrder?.includes("awards")}
+                    onClick={() => addSectionToOrder("awards")}
+                    className="rounded-none py-2.5"
+                  >
+                    <TrophyIcon className="mr-2 h-4 w-4" />
+                    Penghargaan
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    disabled={content.sectionOrder?.includes("publications")}
+                    onClick={() => addSectionToOrder("publications")}
+                    className="rounded-none py-2.5"
+                  >
+                    <BookOpenIcon className="mr-2 h-4 w-4" />
+                    Publikasi
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={addCustomSection}
+                    className="rounded-none py-2.5"
+                  >
+                    <PlusIcon className="mr-2 h-4 w-4" />
+                    Seksi Kustom
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </Accordion>
         </div>
       )}
     </div>

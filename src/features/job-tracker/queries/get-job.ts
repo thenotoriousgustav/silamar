@@ -41,10 +41,7 @@ export const getJobById = cache(
       })
       .from(jobApplications)
       .where(
-        and(
-          eq(jobApplications.id, id),
-          eq(jobApplications.userId, user.id),
-        ),
+        and(eq(jobApplications.id, id), eq(jobApplications.userId, user.id)),
       )
       .limit(1);
 

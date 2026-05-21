@@ -28,10 +28,7 @@ export function FontPicker({
   legacyFontWarning,
 }: FontPickerProps) {
   return (
-    <SettingsSection
-      icon={<Type className="h-3.5 w-3.5" />}
-      label="Jenis Font"
-    >
+    <SettingsSection icon={<Type className="h-3.5 w-3.5" />} label="Jenis Font">
       <div className="grid gap-2 sm:grid-cols-2">
         {fonts.map((font) => {
           const active = currentFont === font.id;
@@ -64,7 +61,7 @@ export function FontPicker({
         })}
       </div>
       {legacyFontWarning && (
-        <p className="text-amber-600 text-[10px]">{legacyFontWarning}</p>
+        <p className="text-[10px] text-amber-600">{legacyFontWarning}</p>
       )}
     </SettingsSection>
   );

@@ -36,7 +36,11 @@ function ScorePill({ score }: { score: number }) {
 
 function MiniBar({ value }: { value: number }) {
   const bg =
-    value >= 70 ? "bg-emerald-500" : value >= 40 ? "bg-amber-500" : "bg-red-500";
+    value >= 70
+      ? "bg-emerald-500"
+      : value >= 40
+        ? "bg-amber-500"
+        : "bg-red-500";
   return (
     <div className="bg-muted h-1.5 w-full overflow-hidden">
       <div
@@ -102,7 +106,8 @@ export function JobFitBreakdown({ data }: JobFitBreakdownProps) {
           </p>
           {!domainAlignment.isCompatible && (
             <p className="border-l-2 border-red-500 bg-red-500/10 px-2 py-1 text-[10px] font-medium text-red-700">
-              ⚠️ Domain tidak kompatibel — skor dibatasi maksimal 25 dan apply tidak direkomendasikan.
+              ⚠️ Domain tidak kompatibel — skor dibatasi maksimal 25 dan apply
+              tidak direkomendasikan.
             </p>
           )}
         </div>

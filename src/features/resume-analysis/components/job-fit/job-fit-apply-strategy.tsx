@@ -9,7 +9,10 @@ interface JobFitApplyStrategyProps {
   shouldApply: boolean;
 }
 
-const chanceLabel: Record<JobFitDTO["applyStrategy"]["chanceOfInterview"], string> = {
+const chanceLabel: Record<
+  JobFitDTO["applyStrategy"]["chanceOfInterview"],
+  string
+> = {
   very_high: "Sangat Tinggi",
   high: "Tinggi",
   moderate: "Sedang",
@@ -17,7 +20,10 @@ const chanceLabel: Record<JobFitDTO["applyStrategy"]["chanceOfInterview"], strin
   very_low: "Sangat Rendah",
 };
 
-const chanceBg: Record<JobFitDTO["applyStrategy"]["chanceOfInterview"], string> = {
+const chanceBg: Record<
+  JobFitDTO["applyStrategy"]["chanceOfInterview"],
+  string
+> = {
   very_high: "bg-emerald-500/10 text-emerald-600",
   high: "bg-emerald-500/10 text-emerald-600",
   moderate: "bg-amber-500/10 text-amber-600",
@@ -62,8 +68,8 @@ export function JobFitApplyStrategy({
       <div className="grid grid-cols-2 gap-2">
         <div className="border-border/60 border p-3">
           <div className="flex items-center gap-1.5">
-            <TrendingUp className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[9px] font-bold tracking-wider uppercase text-muted-foreground">
+            <TrendingUp className="text-muted-foreground h-3 w-3" />
+            <span className="text-muted-foreground text-[9px] font-bold tracking-wider uppercase">
               Peluang Interview
             </span>
           </div>
@@ -74,7 +80,7 @@ export function JobFitApplyStrategy({
           </span>
         </div>
         <div className="border-border/60 border p-3">
-          <span className="text-[9px] font-bold tracking-wider uppercase text-muted-foreground">
+          <span className="text-muted-foreground text-[9px] font-bold tracking-wider uppercase">
             Penyesuaian Resume
           </span>
           <span
@@ -95,7 +101,7 @@ export function JobFitApplyStrategy({
             {data.resumeEdits.map((edit, i) => (
               <li
                 key={i}
-                className="border-l-2 border-primary/30 bg-muted/30 px-2.5 py-1.5 text-[11px] leading-relaxed"
+                className="border-primary/30 bg-muted/30 border-l-2 px-2.5 py-1.5 text-[11px] leading-relaxed"
               >
                 {edit}
               </li>

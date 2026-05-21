@@ -17,7 +17,9 @@ export const TEMPLATE_LIST: TemplateDefinition[] = [
   formalTemplate,
 ];
 
-export function getTemplate(id?: CoverLetterTemplateId | string): TemplateDefinition {
+export function getTemplate(
+  id?: CoverLetterTemplateId | string,
+): TemplateDefinition {
   if (id && TEMPLATES[id]) return TEMPLATES[id];
   return classicTemplate;
 }

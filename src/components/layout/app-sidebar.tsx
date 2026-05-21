@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Briefcase, ChevronUp, LogOut, Settings , Zap } from "lucide-react";
+import { Briefcase, ChevronUp, LogOut, Settings, Zap } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -33,9 +33,6 @@ import { CreateTrackerDialog } from "@/features/job-tracker/components/create-tr
 // eslint-disable-next-line import/no-restricted-paths -- Layout component needs feature-specific sidebar items
 import { TrackerActions } from "@/features/job-tracker/components/tracker-actions";
 import { signOut, useSession } from "@/lib/auth/client";
-
-
-
 
 export function AppSidebar() {
   const { data: session } = useSession();

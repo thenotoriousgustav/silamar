@@ -44,7 +44,9 @@ export function VisualSettingsPanel({
         templates={TEMPLATE_LIST}
         currentId={currentTemplate}
         onSelect={(id) =>
-          updateStyle({ templateId: id as CoverLetterBuilderData["style"]["templateId"] })
+          updateStyle({
+            templateId: id as CoverLetterBuilderData["style"]["templateId"],
+          })
         }
         columns={3}
       />

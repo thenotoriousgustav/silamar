@@ -38,7 +38,12 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
       alignItems: "flex-start",
       marginBottom: 30,
     },
-    recipientLabel: { fontSize, fontWeight: "bold", marginBottom: 2, color: "#111827" },
+    recipientLabel: {
+      fontSize,
+      fontWeight: "bold",
+      marginBottom: 2,
+      color: "#111827",
+    },
     recipientName: { fontSize, fontWeight: "bold", color: "#111827" },
     recipientInfo: { fontSize, color: "#4b5563" },
     companyName: { fontSize, color: "#2563eb", fontWeight: "bold" },
@@ -84,10 +89,20 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
             <Text style={styles.recipientName}>
               {data.recipientName || "Nama Penerima"}
             </Text>
-            {data.department && <Text style={styles.recipientInfo}>{data.department}</Text>}
-            {data.companyName && <Text style={styles.companyName}>{data.companyName}</Text>}
-            {data.recipientAddress && <Text style={styles.recipientInfo}>{data.recipientAddress}</Text>}
-            {data.recipientCityAndPostal && <Text style={styles.recipientInfo}>{data.recipientCityAndPostal}</Text>}
+            {data.department && (
+              <Text style={styles.recipientInfo}>{data.department}</Text>
+            )}
+            {data.companyName && (
+              <Text style={styles.companyName}>{data.companyName}</Text>
+            )}
+            {data.recipientAddress && (
+              <Text style={styles.recipientInfo}>{data.recipientAddress}</Text>
+            )}
+            {data.recipientCityAndPostal && (
+              <Text style={styles.recipientInfo}>
+                {data.recipientCityAndPostal}
+              </Text>
+            )}
           </View>
           <Text style={styles.date}>{today}</Text>
         </View>

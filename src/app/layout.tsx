@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Geist, Inter, JetBrains_Mono, Lato, Roboto } from "next/font/google";
+import {
+  EB_Garamond,
+  Geist,
+  Inter,
+  JetBrains_Mono,
+  Lato,
+  Roboto,
+} from "next/font/google";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";

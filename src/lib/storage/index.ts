@@ -9,8 +9,4 @@ export type {
 export { createR2StorageClient } from "./r2";
 
 // Legacy re-exports for backward compatibility
-export {
-  uploadResumePdf,
-  getPresignedResumeUrl,
-  deleteResumePdf,
-} from "./r2";
+export { uploadResumePdf, getPresignedResumeUrl, deleteResumePdf } from "./r2";

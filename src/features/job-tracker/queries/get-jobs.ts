@@ -37,16 +37,8 @@ export const getJobs = cache(
     const user = await getSessionUser();
     if (!user) return [];
 
-    const {
-      trackerId,
-      position,
-      company,
-      type,
-      status,
-      from,
-      to,
-      sort,
-    } = params;
+    const { trackerId, position, company, type, status, from, to, sort } =
+      params;
 
     const filters = [eq(jobApplications.userId, user.id)];
 
@@ -68,7 +60,13 @@ export const getJobs = cache(
           jobApplications.type,
           type as [
             "full-time" | "part-time" | "internship" | "contract" | "freelance",
-            ...("full-time" | "part-time" | "internship" | "contract" | "freelance")[],
+            ...(
+              | "full-time"
+              | "part-time"
+              | "internship"
+              | "contract"
+              | "freelance"
+            )[],
           ],
         ),
       );

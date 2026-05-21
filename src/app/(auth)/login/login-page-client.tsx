@@ -3,10 +3,7 @@
 import { Zap } from "lucide-react";
 import Link from "next/link";
 
-import {
-  GoogleSignInButton,
-  LoginFormComponent,
-} from "@/features/auth";
+import { GoogleSignInButton, LoginFormComponent } from "@/features/auth";
 
 export function LoginPageClient() {
   return (

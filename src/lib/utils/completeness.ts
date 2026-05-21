@@ -10,7 +10,9 @@ export interface CompletenessResult {
   }[];
 }
 
-function getDescriptionLength(desc: string | DescriptionItem[] | undefined): number {
+function getDescriptionLength(
+  desc: string | DescriptionItem[] | undefined,
+): number {
   if (!desc) return 0;
   if (typeof desc === "string") {
     return desc.replace(/<[^>]*>/g, "").length;

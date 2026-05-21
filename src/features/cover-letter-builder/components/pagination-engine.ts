@@ -8,11 +8,11 @@
  *  4. No heuristics — pagination is always accurate.
  */
 
-export const PAGE_WIDTH = 794;   // A4 at 96 DPI
+export const PAGE_WIDTH = 794; // A4 at 96 DPI
 export const PAGE_HEIGHT = 1123; // A4 at 96 DPI
 export const PAGE_PADDING_X = 50;
 export const PAGE_PADDING_Y = 50;
-export const CONTENT_WIDTH = PAGE_WIDTH - PAGE_PADDING_X * 2;   // 694px
+export const CONTENT_WIDTH = PAGE_WIDTH - PAGE_PADDING_X * 2; // 694px
 export const CONTENT_HEIGHT = PAGE_HEIGHT - PAGE_PADDING_Y * 2; // 1023px
 
 export interface Block {

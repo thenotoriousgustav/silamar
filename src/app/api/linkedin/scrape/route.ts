@@ -104,7 +104,10 @@ async function scrapeLinkedInJob(jobId: string): Promise<LinkedInJobData> {
     descriptionEl.find("p").each(function () {
       $(this).append("\n");
     });
-    description = descriptionEl.text().replace(/\n{3,}/g, "\n\n").trim();
+    description = descriptionEl
+      .text()
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
   }
 
   // Extract location
@@ -121,8 +124,7 @@ async function scrapeLinkedInJob(jobId: string): Promise<LinkedInJobData> {
 
   // Extract job type
   const typeText =
-    $(".description__job-criteria-text").first().text().trim() ||
-    null;
+    $(".description__job-criteria-text").first().text().trim() || null;
 
   // Extract company logo
   const logoUrl =
@@ -161,7 +163,10 @@ export async function POST(req: NextRequest) {
     const jobId = extractJobId(parsed.data.url);
     if (!jobId) {
       return NextResponse.json(
-        { error: "Could not extract job ID from the provided URL. Please provide a valid LinkedIn job URL." },
+        {
+          error:
+            "Could not extract job ID from the provided URL. Please provide a valid LinkedIn job URL.",
+        },
         { status: 400 },
       );
     }
@@ -170,7 +175,10 @@ export async function POST(req: NextRequest) {
 
     if (!jobData.position && !jobData.company) {
       return NextResponse.json(
-        { error: "Could not extract job data. The job posting may no longer be available." },
+        {
+          error:
+            "Could not extract job data. The job posting may no longer be available.",
+        },
         { status: 404 },
       );
     }

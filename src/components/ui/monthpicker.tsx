@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 
 import { buttonVariants } from "./button";
 
-
 type Month = {
   number: number;
   name: string;

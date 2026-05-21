@@ -44,14 +44,14 @@ export function JobFitSkills({ data }: JobFitSkillsProps) {
       {/* Matched */}
       {data.matched.length > 0 && (
         <section className="space-y-2">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-emerald-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase">
             ✓ Skill Cocok ({data.matched.length})
           </h4>
           <ul className="space-y-1.5">
             {data.matched.map((m, i) => (
               <li
                 key={i}
-                className="border-emerald-500/20 bg-emerald-500/5 flex items-start gap-2 border p-2"
+                className="flex items-start gap-2 border border-emerald-500/20 bg-emerald-500/5 p-2"
               >
                 <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
                 <div className="min-w-0 flex-1">
@@ -78,14 +78,14 @@ export function JobFitSkills({ data }: JobFitSkillsProps) {
       {/* Missing */}
       {data.missing.length > 0 && (
         <section className="space-y-2">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-red-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-red-600 uppercase">
             ✗ Skill Belum Ada ({data.missing.length})
           </h4>
           <ul className="space-y-1.5">
             {data.missing.map((m, i) => (
               <li
                 key={i}
-                className="border-red-500/20 bg-red-500/5 flex items-start gap-2 border p-2"
+                className="flex items-start gap-2 border border-red-500/20 bg-red-500/5 p-2"
               >
                 <X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-500" />
                 <div className="min-w-0 flex-1">
@@ -110,14 +110,14 @@ export function JobFitSkills({ data }: JobFitSkillsProps) {
       {/* Transferable */}
       {data.transferable.length > 0 && (
         <section className="space-y-2">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-amber-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-amber-600 uppercase">
             ↪ Skill Transferable ({data.transferable.length})
           </h4>
           <ul className="space-y-1.5">
             {data.transferable.map((t, i) => (
               <li
                 key={i}
-                className="border-amber-500/20 bg-amber-500/5 flex items-start gap-2 border p-2"
+                className="flex items-start gap-2 border border-amber-500/20 bg-amber-500/5 p-2"
               >
                 <Minus className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
                 <div className="min-w-0 flex-1">

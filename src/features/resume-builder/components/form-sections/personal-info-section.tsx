@@ -158,9 +158,7 @@ export function PersonalInfoSection({
               <Input
                 type="email"
                 value={personalInfo.email || ""}
-                onChange={(e) =>
-                  updatePersonalInfo({ email: e.target.value })
-                }
+                onChange={(e) => updatePersonalInfo({ email: e.target.value })}
                 placeholder="john@example.com"
                 className="bg-background border-border h-9"
               />
@@ -173,9 +171,7 @@ export function PersonalInfoSection({
               </Label>
               <Input
                 value={personalInfo.phone || ""}
-                onChange={(e) =>
-                  updatePersonalInfo({ phone: e.target.value })
-                }
+                onChange={(e) => updatePersonalInfo({ phone: e.target.value })}
                 placeholder="+62 812 3456 7890"
                 className="bg-background border-border h-9"
               />
@@ -205,8 +201,7 @@ export function PersonalInfoSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const hasLabel =
-                      personalInfo.linkedin?.label !== undefined;
+                    const hasLabel = personalInfo.linkedin?.label !== undefined;
                     updatePersonalInfo({
                       linkedin: {
                         url: personalInfo.linkedin?.url || "",
@@ -260,8 +255,7 @@ export function PersonalInfoSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const hasLabel =
-                      personalInfo.website?.label !== undefined;
+                    const hasLabel = personalInfo.website?.label !== undefined;
                     updatePersonalInfo({
                       website: {
                         url: personalInfo.website?.url || "",

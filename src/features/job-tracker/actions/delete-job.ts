@@ -18,10 +18,7 @@ export async function deleteJob(
     const rows = await db
       .delete(jobApplications)
       .where(
-        and(
-          eq(jobApplications.id, id),
-          eq(jobApplications.userId, user.id),
-        ),
+        and(eq(jobApplications.id, id), eq(jobApplications.userId, user.id)),
       )
       .returning({ id: jobApplications.id });
 

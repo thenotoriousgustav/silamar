@@ -62,9 +62,7 @@ export function LoginFormComponent() {
           }`}
         />
         {errors.email && (
-          <p className="mt-1 text-xs text-red-400">
-            {errors.email.message}
-          </p>
+          <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
         )}
       </div>
 
@@ -95,9 +93,7 @@ export function LoginFormComponent() {
           </button>
         </div>
         {errors.password && (
-          <p className="mt-1 text-xs text-red-400">
-            {errors.password.message}
-          </p>
+          <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>
         )}
       </div>
 

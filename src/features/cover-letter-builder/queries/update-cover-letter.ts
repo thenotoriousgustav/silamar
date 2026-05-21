@@ -33,9 +33,7 @@ export async function updateCoverLetterQuery(
   const rows = await db
     .update(coverLetters)
     .set(updateData)
-    .where(
-      and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)),
-    )
+    .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)))
     .returning({ id: coverLetters.id });
 
   if (rows.length === 0) return null;

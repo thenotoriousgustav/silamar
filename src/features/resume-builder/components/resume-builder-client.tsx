@@ -19,14 +19,18 @@ import type { ResumeContent } from "@/features/resume-builder/types/resume-conte
 import { updateResumeAction } from "../actions";
 import { ResumeForm } from "./resume-form";
 
-const ResumePreview = dynamic(() => import("./resume-preview").then(mod => ({ default: mod.ResumePreview })), {
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="animate-pulse bg-muted h-[600px] w-[420px] rounded-lg" />
-    </div>
-  ),
-  ssr: false,
-});
+const ResumePreview = dynamic(
+  () =>
+    import("./resume-preview").then((mod) => ({ default: mod.ResumePreview })),
+  {
+    loading: () => (
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="bg-muted h-[600px] w-[420px] animate-pulse rounded-lg" />
+      </div>
+    ),
+    ssr: false,
+  },
+);
 
 interface ResumeBuilderClientProps {
   id: string;
@@ -371,11 +375,7 @@ export function ResumeBuilderClient({
           onJumpEnd={() => {}}
         />
       }
-      previewPanel={
-        <ResumePreview
-          content={content}
-        />
-      }
+      previewPanel={<ResumePreview content={content} />}
     />
   );
 }

@@ -1,6 +1,10 @@
 import type { ResumeStyle } from "@/types/resume";
 
-import { LINE_HEIGHT_NUMERIC, parseFontSize, resolvePdfFont } from "./constants";
+import {
+  LINE_HEIGHT_NUMERIC,
+  parseFontSize,
+  resolvePdfFont,
+} from "./constants";
 
 /**
  * Color palette used by the base styles. Templates can override individual

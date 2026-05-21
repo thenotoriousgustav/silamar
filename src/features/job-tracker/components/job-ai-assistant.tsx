@@ -36,7 +36,6 @@ import { type ResumeAnalyzeJdResult } from "@/lib/ai/prompts/resume-analyze-jd";
 import { cn } from "@/lib/utils";
 import { getAnalysisHistory } from "@/features/resume-analysis/actions/get-analysis-history";
 
-
 interface JobAiAssistantProps {
   job: JobApplication;
   selectedResume?: any;
@@ -316,26 +315,36 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
 
             {analysisHistory.length > 0 && (
               <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+                <div className="text-muted-foreground flex items-center gap-2 text-[10px] font-bold tracking-wider uppercase">
                   <History className="h-3 w-3" /> Riwayat Analisa
                 </div>
                 <div className="space-y-1.5">
                   {analysisHistory.slice(0, 3).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between border border-border/50 bg-background/50 p-2 text-[10px]"
+                      className="border-border/50 bg-background/50 flex items-center justify-between border p-2 text-[10px]"
                     >
                       <div className="flex items-center gap-2">
-                        <span className={cn(
-                          "flex h-5 w-8 items-center justify-center font-bold text-white",
-                          item.overallScore >= 80 ? "bg-emerald-500" : item.overallScore >= 60 ? "bg-amber-500" : "bg-red-500"
-                        )}>
+                        <span
+                          className={cn(
+                            "flex h-5 w-8 items-center justify-center font-bold text-white",
+                            item.overallScore >= 80
+                              ? "bg-emerald-500"
+                              : item.overallScore >= 60
+                                ? "bg-amber-500"
+                                : "bg-red-500",
+                          )}
+                        >
                           {item.overallScore}
                         </span>
                         <div className="flex flex-col">
                           <span className="font-bold">Skor Analisa</span>
-                          <span className="text-[9px] text-muted-foreground">
-                            {format(new Date(item.createdAt), "d MMM yyyy HH:mm", { locale: idLocale })}
+                          <span className="text-muted-foreground text-[9px]">
+                            {format(
+                              new Date(item.createdAt),
+                              "d MMM yyyy HH:mm",
+                              { locale: idLocale },
+                            )}
                           </span>
                         </div>
                       </div>
@@ -343,14 +352,18 @@ export function JobAiAssistant({ job, selectedResume }: JobAiAssistantProps) {
                         variant="ghost"
                         size="sm"
                         className="h-6 px-2 text-[9px] font-bold"
-                        onClick={() => router.push(`/resume-analyze?resumeId=${selectedResume.id}&jobId=${job.id}`)}
+                        onClick={() =>
+                          router.push(
+                            `/resume-analyze?resumeId=${selectedResume.id}&jobId=${job.id}`,
+                          )
+                        }
                       >
                         Detail
                       </Button>
                     </div>
                   ))}
                   {analysisHistory.length > 3 && (
-                    <p className="text-center text-[9px] text-muted-foreground">
+                    <p className="text-muted-foreground text-center text-[9px]">
                       +{analysisHistory.length - 3} riwayat lainnya
                     </p>
                   )}

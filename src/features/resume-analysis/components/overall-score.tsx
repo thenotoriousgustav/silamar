@@ -45,7 +45,9 @@ export function OverallScore({ data }: OverallScoreProps) {
           >
             {data.grade}
           </span>
-          <span className={`text-4xl font-black tracking-tighter ${scoreColor}`}>
+          <span
+            className={`text-4xl font-black tracking-tighter ${scoreColor}`}
+          >
             {data.total}
           </span>
         </div>

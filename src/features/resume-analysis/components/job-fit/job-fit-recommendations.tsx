@@ -39,7 +39,7 @@ export function JobFitRecommendations({ data }: JobFitRecommendationsProps) {
               {item.priority}
             </span>
             <div className="min-w-0 flex-1 space-y-1">
-              <p className="text-[12px] font-bold leading-snug">
+              <p className="text-[12px] leading-snug font-bold">
                 {item.action}
               </p>
               <p className="text-muted-foreground flex items-start gap-1 text-[10px] leading-relaxed">

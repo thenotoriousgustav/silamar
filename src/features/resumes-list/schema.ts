@@ -50,7 +50,9 @@ export const ResumeExperienceSchema = z.object({
   employmentType: z
     .string()
     .optional()
-    .describe("Employment type: full-time, part-time, internship, contract, freelance, or empty string"),
+    .describe(
+      "Employment type: full-time, part-time, internship, contract, freelance, or empty string",
+    ),
 });
 
 export const ResumeEducationSchema = z.object({

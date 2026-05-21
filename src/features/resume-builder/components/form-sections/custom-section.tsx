@@ -176,11 +176,7 @@ export function CustomSection({
                             : item.date || "Tanggal";
 
                           return (
-                            <SortableItem
-                              key={item.id}
-                              value={item.id}
-                              asChild
-                            >
+                            <SortableItem key={item.id} value={item.id} asChild>
                               <AccordionItem
                                 id={`custom-${item.id}`}
                                 value={item.id}
@@ -446,10 +442,14 @@ export function CustomSection({
                                           typeof item.description === "string"
                                             ? item.description
                                             : Array.isArray(item.description)
-                                              ? `<ul>${(item.description as Array<{ text?: string } | string>)
+                                              ? `<ul>${(
+                                                  item.description as Array<
+                                                    { text?: string } | string
+                                                  >
+                                                )
                                                   .map(
                                                     (bullet) =>
-                                                      `<li>${typeof bullet === "string" ? bullet : bullet.text ?? ""}</li>`,
+                                                      `<li>${typeof bullet === "string" ? bullet : (bullet.text ?? "")}</li>`,
                                                   )
                                                   .join("")}</ul>`
                                               : undefined

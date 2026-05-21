@@ -37,7 +37,12 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
     ...baseStyles,
     page: { ...baseStyles.page, paddingHorizontal: 50, paddingVertical: 45 },
     header: { alignItems: "center", marginBottom: 8 },
-    name: { fontSize: baseFontSize + 7, fontWeight: 700, color: PDF_BASE_COLORS.primary, marginBottom: 3 },
+    name: {
+      fontSize: baseFontSize + 7,
+      fontWeight: 700,
+      color: PDF_BASE_COLORS.primary,
+      marginBottom: 3,
+    },
     contactRow: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -60,9 +65,24 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
       marginBottom: 5,
       color: PDF_BASE_COLORS.primary,
     },
-    itemRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 8 },
-    itemHeadline: { fontSize: baseFontSize - 1, fontWeight: 700, color: PDF_BASE_COLORS.primary, flexGrow: 1, flexShrink: 1 },
-    itemDate: { fontSize: baseFontSize - 2, fontWeight: 700, color: PDF_BASE_COLORS.primary },
+    itemRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      gap: 8,
+    },
+    itemHeadline: {
+      fontSize: baseFontSize - 1,
+      fontWeight: 700,
+      color: PDF_BASE_COLORS.primary,
+      flexGrow: 1,
+      flexShrink: 1,
+    },
+    itemDate: {
+      fontSize: baseFontSize - 2,
+      fontWeight: 700,
+      color: PDF_BASE_COLORS.primary,
+    },
     itemBody: { fontSize: baseFontSize - 2, color: PDF_BASE_COLORS.primary },
     experienceItem: { marginBottom: 7 },
     skillRow: { marginBottom: 2 },
@@ -72,28 +92,70 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
   const pdfPageSize = paperSize === "letter" ? "LETTER" : "A4";
 
   const contactItems: { key: string; label: string; href?: string }[] = [];
-  if (personalInfo.email) contactItems.push({ key: "email", label: personalInfo.email, href: `mailto:${personalInfo.email}` });
-  if (personalInfo.phone) contactItems.push({ key: "phone", label: personalInfo.phone, href: `tel:${personalInfo.phone}` });
-  if (personalInfo.location) contactItems.push({ key: "loc", label: personalInfo.location });
-  if (personalInfo.linkedin?.url) contactItems.push({ key: "li", label: personalInfo.linkedin.label || cleanUrl(personalInfo.linkedin.url), href: personalInfo.linkedin.url });
-  if (personalInfo.website?.url) contactItems.push({ key: "web", label: personalInfo.website.label || cleanUrl(personalInfo.website.url), href: personalInfo.website.url });
+  if (personalInfo.email)
+    contactItems.push({
+      key: "email",
+      label: personalInfo.email,
+      href: `mailto:${personalInfo.email}`,
+    });
+  if (personalInfo.phone)
+    contactItems.push({
+      key: "phone",
+      label: personalInfo.phone,
+      href: `tel:${personalInfo.phone}`,
+    });
+  if (personalInfo.location)
+    contactItems.push({ key: "loc", label: personalInfo.location });
+  if (personalInfo.linkedin?.url)
+    contactItems.push({
+      key: "li",
+      label: personalInfo.linkedin.label || cleanUrl(personalInfo.linkedin.url),
+      href: personalInfo.linkedin.url,
+    });
+  if (personalInfo.website?.url)
+    contactItems.push({
+      key: "web",
+      label: personalInfo.website.label || cleanUrl(personalInfo.website.url),
+      href: personalInfo.website.url,
+    });
 
-  const order = data.sectionOrder || ["experience", "education", "skills", "projects", "custom"];
+  const order = data.sectionOrder || [
+    "experience",
+    "education",
+    "skills",
+    "projects",
+    "custom",
+  ];
 
   return (
     <Document>
       <Page size={pdfPageSize} style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personalInfo.fullName || "Full Name"}</Text>
+          <Text style={styles.name}>
+            {personalInfo.fullName || "Full Name"}
+          </Text>
           <View style={styles.contactRow}>
             {contactItems.map((item, idx) => (
-              <View key={item.key} style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                key={item.key}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
                 {idx > 0 && <Text style={styles.contactSep}>|</Text>}
                 {item.href ? (
-                  <Link src={item.href} style={{ color: PDF_BASE_COLORS.link, fontSize: baseFontSize - 2 }}>{item.label}</Link>
+                  <Link
+                    src={item.href}
+                    style={{
+                      color: PDF_BASE_COLORS.link,
+                      fontSize: baseFontSize - 2,
+                    }}
+                  >
+                    {item.label}
+                  </Link>
                 ) : (
-                  <Text style={{ fontSize: baseFontSize - 2 }}>{item.label}</Text>
+                  <Text style={{ fontSize: baseFontSize - 2 }}>
+                    {item.label}
+                  </Text>
                 )}
               </View>
             ))}
@@ -105,7 +167,11 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
         <PdfSummary
           summary={personalInfo.summary}
           translations={translations}
-          styles={{ ...styles, section: { marginBottom: 8 }, summary: { ...styles.itemBody, textAlign: "justify" } }}
+          styles={{
+            ...styles,
+            section: { marginBottom: 8 },
+            summary: { ...styles.itemBody, textAlign: "justify" },
+          }}
         />
 
         {/* Sections */}
@@ -113,16 +179,27 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
           if (sectionId === "experience" && data.experience.length > 0) {
             return (
               <View key="experience">
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>{translations.workExperience}</Text>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {translations.workExperience}
+                </Text>
                 {data.experience.map((exp, idx) => {
-                  const dateRange = exp.startDate ? `${exp.startDate}–${exp.isCurrentJob ? translations.present : exp.endDate || ""}` : "";
+                  const dateRange = exp.startDate
+                    ? `${exp.startDate}–${exp.isCurrentJob ? translations.present : exp.endDate || ""}`
+                    : "";
                   return (
                     <View key={idx} style={styles.experienceItem}>
                       <View style={styles.itemRow}>
-                        <Text style={styles.itemHeadline}>{exp.position}{exp.company ? `, ${exp.company}` : ""}</Text>
+                        <Text style={styles.itemHeadline}>
+                          {exp.position}
+                          {exp.company ? `, ${exp.company}` : ""}
+                        </Text>
                         <View style={{ alignItems: "flex-end" }}>
-                          {dateRange ? <Text style={styles.itemDate}>{dateRange}</Text> : null}
-                          {exp.location && <Text style={styles.itemBody}>{exp.location}</Text>}
+                          {dateRange ? (
+                            <Text style={styles.itemDate}>{dateRange}</Text>
+                          ) : null}
+                          {exp.location && (
+                            <Text style={styles.itemBody}>{exp.location}</Text>
+                          )}
                         </View>
                       </View>
                       <PdfBulletList items={exp.description} styles={styles} />
@@ -136,21 +213,43 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
           if (sectionId === "education" && data.education.length > 0) {
             return (
               <View key="education">
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>{translations.education}</Text>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {translations.education}
+                </Text>
                 {data.education.map((edu, idx) => {
-                  const dateRange = edu.startYear ? `${edu.startYear}–${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}` : edu.endYear || "";
-                  const headline = [[edu.degree, edu.major].filter(Boolean).join(" "), edu.institution].filter(Boolean).join(", ");
+                  const dateRange = edu.startYear
+                    ? `${edu.startYear}–${edu.isCurrentlyStudying ? translations.present : edu.endYear || ""}`
+                    : edu.endYear || "";
+                  const headline = [
+                    [edu.degree, edu.major].filter(Boolean).join(" "),
+                    edu.institution,
+                  ]
+                    .filter(Boolean)
+                    .join(", ");
                   return (
                     <View key={idx} style={styles.experienceItem}>
                       <View style={styles.itemRow}>
                         <Text style={styles.itemHeadline}>{headline}</Text>
                         <View style={{ alignItems: "flex-end" }}>
-                          {dateRange ? <Text style={styles.itemDate}>{dateRange}</Text> : null}
-                          {edu.location && <Text style={styles.itemBody}>{edu.location}</Text>}
+                          {dateRange ? (
+                            <Text style={styles.itemDate}>{dateRange}</Text>
+                          ) : null}
+                          {edu.location && (
+                            <Text style={styles.itemBody}>{edu.location}</Text>
+                          )}
                         </View>
                       </View>
-                      {edu.gpa && <Text style={styles.itemBody}>{translations.gpa}: {edu.gpa}</Text>}
-                      {edu.description && <PdfBulletList items={edu.description} styles={styles} />}
+                      {edu.gpa && (
+                        <Text style={styles.itemBody}>
+                          {translations.gpa}: {edu.gpa}
+                        </Text>
+                      )}
+                      {edu.description && (
+                        <PdfBulletList
+                          items={edu.description}
+                          styles={styles}
+                        />
+                      )}
                     </View>
                   );
                 })}
@@ -161,11 +260,15 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
           if (sectionId === "skills" && data.skills.length > 0) {
             return (
               <View key="skills" style={{ marginBottom: 8 }}>
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>{translations.skills}</Text>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {translations.skills}
+                </Text>
                 {data.skills.map((skill, idx) => (
                   <View key={idx} style={styles.skillRow}>
                     <Text style={styles.itemBody}>
-                      <Text style={{ fontWeight: 700 }}>{skill.category}: </Text>
+                      <Text style={{ fontWeight: 700 }}>
+                        {skill.category}:{" "}
+                      </Text>
                       {skill.items.join(", ")}
                     </Text>
                   </View>
@@ -177,17 +280,36 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
           if (sectionId === "projects" && data.projects.length > 0) {
             return (
               <View key="projects" style={{ marginBottom: 8 }}>
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>{translations.projects}</Text>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {translations.projects}
+                </Text>
                 {data.projects.map((project, idx) => {
-                  const dateRange = project.startDate ? `${project.startDate}${project.endDate ? `–${project.endDate}` : ""}` : "";
+                  const dateRange = project.startDate
+                    ? `${project.startDate}${project.endDate ? `–${project.endDate}` : ""}`
+                    : "";
                   return (
                     <View key={idx} style={styles.experienceItem}>
                       <View style={styles.itemRow}>
                         <Text style={styles.itemHeadline}>{project.name}</Text>
-                        {dateRange ? <Text style={styles.itemDate}>{dateRange}</Text> : null}
+                        {dateRange ? (
+                          <Text style={styles.itemDate}>{dateRange}</Text>
+                        ) : null}
                       </View>
-                      {project.link && <Link src={project.link} style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}>{cleanUrl(project.link)}</Link>}
-                      <PdfBulletList items={project.description} styles={styles} />
+                      {project.link && (
+                        <Link
+                          src={project.link}
+                          style={{
+                            fontSize: baseFontSize - 3,
+                            color: PDF_BASE_COLORS.link,
+                          }}
+                        >
+                          {cleanUrl(project.link)}
+                        </Link>
+                      )}
+                      <PdfBulletList
+                        items={project.description}
+                        styles={styles}
+                      />
                     </View>
                   );
                 })}
@@ -195,47 +317,107 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
             );
           }
 
-          const itemList = sectionId === "certificates" ? data.certificates : sectionId === "awards" ? data.awards : sectionId === "publications" ? data.publications : null;
+          const itemList =
+            sectionId === "certificates"
+              ? data.certificates
+              : sectionId === "awards"
+                ? data.awards
+                : sectionId === "publications"
+                  ? data.publications
+                  : null;
           if (itemList && itemList.length > 0) {
-            const titleText = sectionId === "certificates" ? translations.certificates : sectionId === "awards" ? translations.awards : translations.publications;
+            const titleText =
+              sectionId === "certificates"
+                ? translations.certificates
+                : sectionId === "awards"
+                  ? translations.awards
+                  : translations.publications;
             return (
               <View key={sectionId} style={{ marginBottom: 8 }}>
-                <Text style={styles.sectionTitle} minPresenceAhead={20}>{titleText}</Text>
+                <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                  {titleText}
+                </Text>
                 {itemList.map((item, idx) => (
                   <View key={idx} style={styles.experienceItem}>
                     <View style={styles.itemRow}>
-                      <Text style={styles.itemHeadline}>{item.title}{item.subtitle ? `, ${item.subtitle}` : ""}</Text>
-                      {item.date ? <Text style={styles.itemDate}>{item.date}</Text> : null}
+                      <Text style={styles.itemHeadline}>
+                        {item.title}
+                        {item.subtitle ? `, ${item.subtitle}` : ""}
+                      </Text>
+                      {item.date ? (
+                        <Text style={styles.itemDate}>{item.date}</Text>
+                      ) : null}
                     </View>
-                    {item.link && <Link src={item.link} style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}>{cleanUrl(item.link)}</Link>}
-                    <PdfBulletList items={item.description || []} styles={styles} />
+                    {item.link && (
+                      <Link
+                        src={item.link}
+                        style={{
+                          fontSize: baseFontSize - 3,
+                          color: PDF_BASE_COLORS.link,
+                        }}
+                      >
+                        {cleanUrl(item.link)}
+                      </Link>
+                    )}
+                    <PdfBulletList
+                      items={item.description || []}
+                      styles={styles}
+                    />
                   </View>
                 ))}
               </View>
             );
           }
 
-          if (sectionId === "custom" && data.customSections && data.customSections.length > 0) {
+          if (
+            sectionId === "custom" &&
+            data.customSections &&
+            data.customSections.length > 0
+          ) {
             return (
               <View key="custom">
-                {data.customSections.filter((s) => s.items.length > 0).map((section, sIdx) => (
-                  <View key={sIdx} style={{ marginBottom: 8 }}>
-                    <Text style={styles.sectionTitle} minPresenceAhead={20}>{section.title}</Text>
-                    {section.items.map((item, iIdx) => {
-                      const period = item.startDate ? `${item.startDate}–${item.isCurrent ? translations.present : item.endDate || ""}` : item.date || "";
-                      return (
-                        <View key={iIdx} style={styles.experienceItem}>
-                          <View style={styles.itemRow}>
-                            <Text style={styles.itemHeadline}>{item.title}{item.subtitle ? `, ${item.subtitle}` : ""}</Text>
-                            {period ? <Text style={styles.itemDate}>{period}</Text> : null}
+                {data.customSections
+                  .filter((s) => s.items.length > 0)
+                  .map((section, sIdx) => (
+                    <View key={sIdx} style={{ marginBottom: 8 }}>
+                      <Text style={styles.sectionTitle} minPresenceAhead={20}>
+                        {section.title}
+                      </Text>
+                      {section.items.map((item, iIdx) => {
+                        const period = item.startDate
+                          ? `${item.startDate}–${item.isCurrent ? translations.present : item.endDate || ""}`
+                          : item.date || "";
+                        return (
+                          <View key={iIdx} style={styles.experienceItem}>
+                            <View style={styles.itemRow}>
+                              <Text style={styles.itemHeadline}>
+                                {item.title}
+                                {item.subtitle ? `, ${item.subtitle}` : ""}
+                              </Text>
+                              {period ? (
+                                <Text style={styles.itemDate}>{period}</Text>
+                              ) : null}
+                            </View>
+                            {item.link && (
+                              <Link
+                                src={item.link}
+                                style={{
+                                  fontSize: baseFontSize - 3,
+                                  color: PDF_BASE_COLORS.link,
+                                }}
+                              >
+                                {cleanUrl(item.link)}
+                              </Link>
+                            )}
+                            <PdfBulletList
+                              items={item.description || []}
+                              styles={styles}
+                            />
                           </View>
-                          {item.link && <Link src={item.link} style={{ fontSize: baseFontSize - 3, color: PDF_BASE_COLORS.link }}>{cleanUrl(item.link)}</Link>}
-                          <PdfBulletList items={item.description || []} styles={styles} />
-                        </View>
-                      );
-                    })}
-                  </View>
-                ))}
+                        );
+                      })}
+                    </View>
+                  ))}
               </View>
             );
           }
@@ -250,6 +432,7 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
 export const oxfordTemplate: TemplateDefinition = {
   id: "oxford",
   label: "Oxford",
-  description: "Nama biru terpusat, section title uppercase bergaris bawah, info item dalam satu baris bold. Gaya akademis Oxford.",
+  description:
+    "Nama biru terpusat, section title uppercase bergaris bawah, info item dalam satu baris bold. Gaya akademis Oxford.",
   Pdf: OxfordPdfTemplate,
 };

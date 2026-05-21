@@ -7,7 +7,9 @@ import {
   FileText,
   Loader2,
   PencilLine,
- Plus, Sparkles } from "lucide-react";
+  Plus,
+  Sparkles,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -39,10 +41,7 @@ import {
   deleteResumeAction,
   getResumesAction,
 } from "@/features/resumes-list/actions";
-import type {
-  ResumeContent,
-  ResumeTemplateId,
-} from "@/types/resume";
+import type { ResumeContent, ResumeTemplateId } from "@/types/resume";
 import { calculateCompleteness } from "@/features/resumes-list/utils/completeness";
 import { DocumentCard } from "@/shared/document-card";
 import { EmptyState } from "@/shared/empty-state";
@@ -52,7 +51,6 @@ import { PageHeader } from "@/shared/page-header";
 import { ResumeImportDialog } from "./resume-import-dialog";
 import { ResumePreviewDrawer } from "./resume-preview-drawer";
 import { TemplateSelectionDialog } from "./template-selection-dialog";
-
 
 interface Resume {
   id: string;

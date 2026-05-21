@@ -75,7 +75,7 @@ export function SectionScores({ data }: SectionScoresProps) {
                 {section.missing.map((item, j) => (
                   <span
                     key={j}
-                    className="bg-red-500/5 border-red-500/10 border px-1.5 py-0 text-[9px] text-red-600"
+                    className="border border-red-500/10 bg-red-500/5 px-1.5 py-0 text-[9px] text-red-600"
                   >
                     ✗ {item}
                   </span>

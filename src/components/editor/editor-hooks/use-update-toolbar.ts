@@ -6,7 +6,6 @@ import {
 } from "lexical";
 import { useEffect, useRef } from "react";
 
-
 import { useToolbarContext } from "@/components/editor/context/toolbar-context";
 
 export function useUpdateToolbarHandler(

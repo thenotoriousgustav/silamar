@@ -25,9 +25,7 @@ export const getCoverLetterById = cache(
         updatedAt: coverLetters.updatedAt,
       })
       .from(coverLetters)
-      .where(
-        and(eq(coverLetters.id, id), eq(coverLetters.userId, user.id)),
-      )
+      .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, user.id)))
       .limit(1);
 
     if (rows.length === 0) return null;

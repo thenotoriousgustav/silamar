@@ -25,11 +25,7 @@ export function ResumeTextView({ data }: ResumeTextViewProps) {
       <div className="mb-4 text-center">
         <h1 className="text-xl font-bold">{personalInfo.fullName}</h1>
         <p className="text-xs text-gray-600">
-          {[
-            personalInfo.email,
-            personalInfo.phone,
-            personalInfo.location,
-          ]
+          {[personalInfo.email, personalInfo.phone, personalInfo.location]
             .filter(Boolean)
             .join(" · ")}
         </p>
@@ -56,9 +52,7 @@ export function ResumeTextView({ data }: ResumeTextViewProps) {
                   {exp.endDate ? ` – ${exp.endDate}` : ""}
                 </span>
               </div>
-              {exp.location && (
-                <p className="text-gray-500">{exp.location}</p>
-              )}
+              {exp.location && <p className="text-gray-500">{exp.location}</p>}
               {Array.isArray(exp.description) &&
                 exp.description.map((line, j) => (
                   <p key={j} className="ml-2">

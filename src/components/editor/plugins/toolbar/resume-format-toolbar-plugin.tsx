@@ -1,4 +1,3 @@
-
 import {
   $isRangeSelection,
   type BaseSelection,

@@ -33,7 +33,8 @@ const INTENSITY_OPTIONS: {
     id: "lembut",
     emoji: "🥹",
     label: "Lembut",
-    description: "Sahabat yang nge-roast tapi sayang. Sindiran halus, banyak humor.",
+    description:
+      "Sahabat yang nge-roast tapi sayang. Sindiran halus, banyak humor.",
     bgClass: "bg-blue-500/5",
     borderClass: "border-blue-500/30",
   },
@@ -41,7 +42,8 @@ const INTENSITY_OPTIONS: {
     id: "sedang",
     emoji: "😏",
     label: "Sedang",
-    description: "Komika yang roast temannya. Tajam, sarkastik, tapi masih beretika.",
+    description:
+      "Komika yang roast temannya. Tajam, sarkastik, tapi masih beretika.",
     bgClass: "bg-amber-500/5",
     borderClass: "border-amber-500/30",
   },
@@ -136,7 +138,7 @@ export function ResumeRoastClient() {
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-6 py-12 text-center">
         <div className="relative">
           <div className="absolute inset-0 animate-ping rounded-full bg-red-500/20" />
-          <div className="bg-gradient-to-br from-red-500 to-orange-500 relative flex h-24 w-24 items-center justify-center rounded-full shadow-lg shadow-red-500/30">
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/30">
             <Flame className="h-12 w-12 animate-bounce text-white" />
           </div>
         </div>
@@ -148,7 +150,7 @@ export function ResumeRoastClient() {
         </div>
         <div className="bg-muted h-1 w-64 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 animate-pulse"
+            className="h-full animate-pulse bg-gradient-to-r from-red-500 via-orange-500 to-amber-500"
             style={{ width: "70%" }}
           />
         </div>
@@ -161,7 +163,7 @@ export function ResumeRoastClient() {
     <div className="mx-auto max-w-2xl space-y-8 py-8">
       {/* Hero header */}
       <div className="space-y-3 text-center">
-        <div className="bg-gradient-to-br from-red-500 to-orange-500 mx-auto flex h-16 w-16 items-center justify-center rounded-full shadow-lg shadow-red-500/30">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/30">
           <Skull className="h-8 w-8 text-white" />
         </div>
         <div>
@@ -199,7 +201,10 @@ export function ResumeRoastClient() {
               </p>
             </div>
           ) : (
-            <Select value={selectedResumeId} onValueChange={setSelectedResumeId}>
+            <Select
+              value={selectedResumeId}
+              onValueChange={setSelectedResumeId}
+            >
               <SelectTrigger className="border-border rounded-none">
                 <SelectValue placeholder="Pilih resume yang siap di-bully..." />
               </SelectTrigger>
@@ -256,7 +261,7 @@ export function ResumeRoastClient() {
         <Button
           onClick={handleStart}
           disabled={!selectedResumeId || roastMutation.isPending}
-          className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 h-12 w-full gap-2 text-sm font-bold text-white shadow-lg shadow-red-500/20 hover:shadow-red-500/40"
+          className="h-12 w-full gap-2 bg-gradient-to-r from-red-500 to-orange-500 text-sm font-bold text-white shadow-lg shadow-red-500/20 hover:from-red-600 hover:to-orange-600 hover:shadow-red-500/40"
         >
           <Flame className="h-4 w-4" />
           Mulai Roast Resume Saya (1 Kredit)

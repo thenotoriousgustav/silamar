@@ -11,7 +11,11 @@ import { defaultModel } from "@/lib/ai";
 import { getSessionUser } from "@/lib/auth/session";
 import type { ActionResult } from "@/types/action-result";
 
-import { roastResultSchema, type RoastIntensity, type RoastResult } from "../schemas";
+import {
+  roastResultSchema,
+  type RoastIntensity,
+  type RoastResult,
+} from "../schemas";
 import { buildRoastPrompt } from "../utils/roast-prompt";
 
 export interface RoastInput {

@@ -59,7 +59,8 @@ export async function scrapeLinkedInJob(
   if (!jobId) {
     return {
       success: false,
-      error: "Could not extract job ID from the provided URL. Please provide a valid LinkedIn job URL.",
+      error:
+        "Could not extract job ID from the provided URL. Please provide a valid LinkedIn job URL.",
     };
   }
 
@@ -70,7 +71,8 @@ export async function scrapeLinkedInJob(
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
       },
     });
@@ -119,13 +121,15 @@ export async function scrapeLinkedInJob(
       descriptionEl.find("p").each(function () {
         $(this).append("\n");
       });
-      description = descriptionEl.text().replace(/\n{3,}/g, "\n\n").trim();
+      description = descriptionEl
+        .text()
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
     }
 
     // Extract location
     const location =
-      $(".topcard__flavor--bullet").first().text().trim() ||
-      null;
+      $(".topcard__flavor--bullet").first().text().trim() || null;
 
     // Extract salary if available
     const salary =
@@ -135,8 +139,7 @@ export async function scrapeLinkedInJob(
 
     // Extract job type from criteria list
     const typeText =
-      $(".description__job-criteria-text").first().text().trim() ||
-      null;
+      $(".description__job-criteria-text").first().text().trim() || null;
 
     // Extract company logo
     const logoUrl =
@@ -148,7 +151,8 @@ export async function scrapeLinkedInJob(
     if (!position && !company) {
       return {
         success: false,
-        error: "Could not extract job data. The job posting may no longer be available.",
+        error:
+          "Could not extract job data. The job posting may no longer be available.",
       };
     }
 

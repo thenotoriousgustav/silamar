@@ -57,7 +57,9 @@ export function ResumeAnalyzerClient({
   const [result, setResult] = useState<ComprehensiveAnalysisDTO | null>(null);
   const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
   const [hasInitializedResult, setHasInitializedResult] = useState(false);
-  const [viewMode, setViewMode] = useState<"split" | "form" | "preview">("split");
+  const [viewMode, setViewMode] = useState<"split" | "form" | "preview">(
+    "split",
+  );
   const queryClient = useQueryClient();
   const { setTitle, setActions } = useHeaderDispatch();
 
@@ -143,7 +145,9 @@ export function ResumeAnalyzerClient({
         <div className="hidden lg:block">
           <Tabs
             value={viewMode}
-            onValueChange={(v) => setViewMode(v as "split" | "form" | "preview")}
+            onValueChange={(v) =>
+              setViewMode(v as "split" | "form" | "preview")
+            }
             className="w-fit"
           >
             <TabsList className="bg-muted border-border h-9">
@@ -175,7 +179,9 @@ export function ResumeAnalyzerClient({
         <div className="lg:hidden">
           <Tabs
             value={viewMode === "split" ? "form" : viewMode}
-            onValueChange={(v) => setViewMode(v as "split" | "form" | "preview")}
+            onValueChange={(v) =>
+              setViewMode(v as "split" | "form" | "preview")
+            }
             className="w-fit"
           >
             <TabsList className="bg-muted border-border h-9">

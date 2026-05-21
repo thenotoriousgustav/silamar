@@ -196,9 +196,7 @@ export function createMidtransClient(): PaymentClient {
       };
     },
 
-    verifySignature(
-      params: SignatureVerificationParams,
-    ): boolean {
+    verifySignature(params: SignatureVerificationParams): boolean {
       return verifyMidtransSignature(params);
     },
 

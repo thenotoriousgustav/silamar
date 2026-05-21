@@ -35,7 +35,5 @@ export type ResumeTranslations = (typeof RESUME_TRANSLATIONS)[ResumeLanguage];
 export function resolveTranslations(
   lang: string | undefined,
 ): ResumeTranslations {
-  return (
-    RESUME_TRANSLATIONS[lang as ResumeLanguage] ?? RESUME_TRANSLATIONS.id
-  );
+  return RESUME_TRANSLATIONS[lang as ResumeLanguage] ?? RESUME_TRANSLATIONS.id;
 }

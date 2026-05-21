@@ -11,7 +11,7 @@ import { users } from "./auth";
 import { transactions } from "./billing";
 import { jobApplications } from "./job-applications";
 import { jobFitAnalyses } from "./job-fit-analysis";
-import { coverLetters , resumes } from "./resumes";
+import { coverLetters, resumes } from "./resumes";
 import { resumeAnalyses } from "./resume-analysis";
 
 // ─── Type Exports ─────────────────────────────────────────────────────────────

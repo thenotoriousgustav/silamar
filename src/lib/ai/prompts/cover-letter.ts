@@ -26,7 +26,9 @@ type CoverLetterPromptParams = {
   tone?: "formal" | "friendly" | "professional";
 };
 
-export function buildCoverLetterPrompt(params: CoverLetterPromptParams): string {
+export function buildCoverLetterPrompt(
+  params: CoverLetterPromptParams,
+): string {
   const {
     resumeContent,
     jobTitle,

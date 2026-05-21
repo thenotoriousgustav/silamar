@@ -39,7 +39,8 @@ export function VisualSettingsPanel({
   updateStyle,
 }: VisualSettingsPanelProps) {
   const currentFont = (content.style?.fontFamily ?? "Inter") as string;
-  const currentTemplate = (content.style?.templateId ?? "classic") as ResumeTemplateId;
+  const currentTemplate = (content.style?.templateId ??
+    "classic") as ResumeTemplateId;
   const currentPaper = (content.style?.paperSize ?? "A4") as ResumePaperSize;
   const currentSize = content.style?.fontSize ?? "text-[11px]";
   const currentLineHeight = content.style?.lineHeight ?? "relaxed";

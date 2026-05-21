@@ -63,7 +63,9 @@ export function PageRenderer({ blocks, containerClass }: PageRendererProps) {
   }, [blockKey]);
 
   return (
-    <div className={cn("flex flex-col items-center gap-10 pb-10", containerClass)}>
+    <div
+      className={cn("flex flex-col items-center gap-10 pb-10", containerClass)}
+    >
       {/* ── Hidden measurer ── */}
       <div
         ref={measurerRef}
@@ -91,21 +93,24 @@ export function PageRenderer({ blocks, containerClass }: PageRendererProps) {
       </div>
 
       {/* ── Rendered pages ── */}
-      {measured && pages.length > 0
-        ? pages.map((page, pageIdx) => (
-            <A4Page key={pageIdx}>
-              {page.blocks.map((block) => (
-                <div
-                  key={block.id}
-                  style={{ marginBottom: block.marginBottom ?? 0 }}
-                  dangerouslySetInnerHTML={{ __html: block.html }}
-                />
-              ))}
-            </A4Page>
-          ))
-        : // Show a single empty page while measuring
-          <A4Page><div /></A4Page>
-      }
+      {measured && pages.length > 0 ? (
+        pages.map((page, pageIdx) => (
+          <A4Page key={pageIdx}>
+            {page.blocks.map((block) => (
+              <div
+                key={block.id}
+                style={{ marginBottom: block.marginBottom ?? 0 }}
+                dangerouslySetInnerHTML={{ __html: block.html }}
+              />
+            ))}
+          </A4Page>
+        ))
+      ) : (
+        // Show a single empty page while measuring
+        <A4Page>
+          <div />
+        </A4Page>
+      )}
     </div>
   );
 }

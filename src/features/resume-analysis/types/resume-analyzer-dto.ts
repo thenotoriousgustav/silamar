@@ -106,12 +106,7 @@ export type ActionItem = {
 
 export type HighlightAnnotation = {
   text: string;
-  type:
-    | "red_flag"
-    | "weak_verb"
-    | "typo"
-    | "keyword_found"
-    | "overused";
+  type: "red_flag" | "weak_verb" | "typo" | "keyword_found" | "overused";
   tooltip: string;
 };
 

@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowLeft, Briefcase, Clock, History, Sparkles, Target } from "lucide-react";
+import {
+  ArrowLeft,
+  Briefcase,
+  Clock,
+  History,
+  Sparkles,
+  Target,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -149,7 +156,9 @@ export function JobFitLanding({
               <Target className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Analisis Kecocokan Pekerjaan</h1>
+              <h1 className="text-xl font-bold">
+                Analisis Kecocokan Pekerjaan
+              </h1>
               <p className="text-muted-foreground text-sm">
                 Cek apakah resume kamu benar-benar cocok untuk posisi tertentu
               </p>
@@ -205,7 +214,12 @@ export function JobFitLanding({
               <button
                 type="button"
                 onClick={() =>
-                  update({ jobSource: "tracker", jobTitle: "", company: "", jobDescription: "" })
+                  update({
+                    jobSource: "tracker",
+                    jobTitle: "",
+                    company: "",
+                    jobDescription: "",
+                  })
                 }
                 className={`flex flex-1 items-center justify-center gap-2 border px-3 py-2 text-xs font-bold transition-colors ${
                   form.jobSource === "tracker"
@@ -285,7 +299,7 @@ export function JobFitLanding({
               </Select>
 
               {form.selectedJobId && form.jobDescription && (
-                <div className="bg-muted/30 border-border/50 mt-2 max-h-32 overflow-y-auto border p-2 text-[11px] leading-relaxed text-muted-foreground">
+                <div className="bg-muted/30 border-border/50 text-muted-foreground mt-2 max-h-32 overflow-y-auto border p-2 text-[11px] leading-relaxed">
                   {form.jobDescription.slice(0, 600)}
                   {form.jobDescription.length > 600 && "..."}
                 </div>

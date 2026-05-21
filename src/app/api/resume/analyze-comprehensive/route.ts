@@ -20,6 +20,9 @@ export async function POST(req: Request) {
     return Response.json({ data: result.data });
   } catch (error) {
     console.error("Comprehensive analysis API error:", error);
-    return Response.json({ error: "Failed to analyze resume" }, { status: 500 });
+    return Response.json(
+      { error: "Failed to analyze resume" },
+      { status: 500 },
+    );
   }
 }

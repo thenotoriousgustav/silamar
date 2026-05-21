@@ -23,7 +23,9 @@ export const TEMPLATE_LIST: TemplateDefinition[] = [
   oxfordTemplate,
 ];
 
-export function getTemplate(id?: ResumeTemplateId | string): TemplateDefinition {
+export function getTemplate(
+  id?: ResumeTemplateId | string,
+): TemplateDefinition {
   if (id && TEMPLATES[id]) return TEMPLATES[id];
   return classicTemplate;
 }

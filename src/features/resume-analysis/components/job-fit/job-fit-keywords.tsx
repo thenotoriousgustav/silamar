@@ -25,14 +25,14 @@ export function JobFitKeywords({ data }: JobFitKeywordsProps) {
 
       {data.matched.length > 0 && (
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-emerald-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase">
             ✓ Cocok ({data.matched.length})
           </h4>
           <div className="flex flex-wrap gap-1">
             {data.matched.map((k, i) => (
               <span
                 key={i}
-                className="bg-emerald-500/10 border-emerald-500/20 border px-2 py-0.5 text-[10px] font-medium text-emerald-700"
+                className="border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700"
               >
                 {k.keyword}
                 {k.frequency > 1 && (
@@ -46,14 +46,14 @@ export function JobFitKeywords({ data }: JobFitKeywordsProps) {
 
       {data.missingCritical.length > 0 && (
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-red-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-red-600 uppercase">
             ✗ Hilang (Kritis)
           </h4>
           <div className="flex flex-wrap gap-1">
             {data.missingCritical.map((k, i) => (
               <span
                 key={i}
-                className="bg-red-500/10 border-red-500/20 border px-2 py-0.5 text-[10px] font-medium text-red-700"
+                className="border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-[10px] font-medium text-red-700"
               >
                 {k}
               </span>
@@ -64,14 +64,14 @@ export function JobFitKeywords({ data }: JobFitKeywordsProps) {
 
       {data.missingNiceToHave.length > 0 && (
         <div className="space-y-1.5">
-          <h4 className="text-[10px] font-bold tracking-wider uppercase text-amber-600">
+          <h4 className="text-[10px] font-bold tracking-wider text-amber-600 uppercase">
             ◌ Hilang (Nice to Have)
           </h4>
           <div className="flex flex-wrap gap-1">
             {data.missingNiceToHave.map((k, i) => (
               <span
                 key={i}
-                className="bg-amber-500/10 border-amber-500/20 border px-2 py-0.5 text-[10px] font-medium text-amber-700"
+                className="border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-700"
               >
                 {k}
               </span>

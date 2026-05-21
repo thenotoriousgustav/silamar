@@ -102,11 +102,7 @@ export type ResumePaperSize = (typeof RESUME_PAPER_SIZES)[number];
 export const RESUME_DENSITIES = ["compact", "normal", "comfortable"] as const;
 export type ResumeDensity = (typeof RESUME_DENSITIES)[number];
 
-export const RESUME_FONT_FAMILIES = [
-  "Inter",
-  "Roboto",
-  "Garamond",
-] as const;
+export const RESUME_FONT_FAMILIES = ["Inter", "Roboto", "Garamond"] as const;
 export type ResumeFontFamily = (typeof RESUME_FONT_FAMILIES)[number];
 
 export interface ResumeContent {

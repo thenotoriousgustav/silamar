@@ -24,16 +24,16 @@ export default function TestA4Page() {
       <div className="mx-auto mb-6 max-w-2xl rounded-lg bg-white p-4 shadow">
         <h1 className="mb-1 text-lg font-bold">Test: A4 CSS Preview</h1>
         <p className="mb-3 text-sm text-gray-500">
-          Halaman ini menguji pendekatan <code>width: 21cm; height: 29.7cm</code>{" "}
-          untuk preview dokumen A4. Ketik teks di bawah, lalu coba print
-          (Cmd+P) dan bandingkan hasilnya.
+          Halaman ini menguji pendekatan{" "}
+          <code>width: 21cm; height: 29.7cm</code> untuk preview dokumen A4.
+          Ketik teks di bawah, lalu coba print (Cmd+P) dan bandingkan hasilnya.
         </p>
 
         <label className="mb-1 block text-sm font-medium text-gray-700">
           Isi dokumen
         </label>
         <textarea
-          className="w-full rounded border border-gray-300 p-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full rounded border border-gray-300 p-2 font-mono text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
           rows={6}
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -96,16 +96,16 @@ export default function TestA4Page() {
       </div>
 
       {/* ── Catatan observasi ── */}
-      <div className="mx-auto mt-6 max-w-2xl rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-        <p className="font-semibold mb-1">⚠ Keterbatasan pendekatan ini:</p>
-        <ul className="list-disc pl-4 space-y-1">
+      <div className="mx-auto mt-6 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+        <p className="mb-1 font-semibold">⚠ Keterbatasan pendekatan ini:</p>
+        <ul className="list-disc space-y-1 pl-4">
           <li>
             <strong>Overflow terpotong</strong> — konten yang melebihi 29.7cm
             tidak terlihat. Tidak ada paginasi otomatis.
           </li>
           <li>
-            <strong>DPI bergantung browser</strong> — <code>1cm</code> di CSS
-            = 37.8px di 96 DPI, tapi printer bisa berbeda. Hasil print bisa
+            <strong>DPI bergantung browser</strong> — <code>1cm</code> di CSS =
+            37.8px di 96 DPI, tapi printer bisa berbeda. Hasil print bisa
             sedikit bergeser tergantung driver printer.
           </li>
           <li>
@@ -115,8 +115,8 @@ export default function TestA4Page() {
           </li>
           <li>
             <strong>Berbeda dengan react-pdf</strong> — react-pdf menggunakan
-            satuan <em>pt</em> (1pt = 1/72 inch), bukan cm. Konversi:
-            21cm ≈ 595pt, 29.7cm ≈ 842pt.
+            satuan <em>pt</em> (1pt = 1/72 inch), bukan cm. Konversi: 21cm ≈
+            595pt, 29.7cm ≈ 842pt.
           </li>
         </ul>
       </div>
