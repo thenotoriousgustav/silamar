@@ -12,6 +12,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 
 import { QueryProvider } from "@/components/providers/query-provider";
+import { NetworkStatus } from "@/components/shared/network-status";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -135,6 +136,7 @@ export default function RootLayout({
               },
             }}
           />
+          <NetworkStatus />
         </NextThemesProvider>
       </body>
     </html>

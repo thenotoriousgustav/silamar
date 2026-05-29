@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { ChunkErrorBoundary } from "@/components/shared/chunk-error-boundary";
 import { Button } from "@/components/ui/button";
 import { CoverLetterBuilderData } from "@/features/cover-letter-builder/types/cover-letter-content";
 
@@ -92,7 +93,9 @@ export function CoverLetterPreview({ content }: CoverLetterPreviewProps) {
       {/* ── Content area ── */}
       {mode === "pdf" ? (
         <div className="flex-1 overflow-hidden">
-          <PdfPreview content={content} />
+          <ChunkErrorBoundary>
+            <PdfPreview content={content} />
+          </ChunkErrorBoundary>
         </div>
       ) : (
         <div className="bg-muted/30 border-border/50 relative flex-1 overflow-auto border shadow-sm">

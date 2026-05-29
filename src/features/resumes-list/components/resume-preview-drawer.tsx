@@ -71,12 +71,12 @@ export function ResumePreviewDrawer({
           </DrawerHeader>
 
           {/* Job Usages Detail */}
-          {resume.jobUsages && resume.jobUsages.length > 0 && (
-            <div className="border-b px-0 py-3">
-              <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
-                <Briefcase className="h-3.5 w-3.5" />
-                Digunakan di {resume.jobUsages.length} lamaran
-              </div>
+          <div className="border-b px-0 py-3">
+            <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
+              <Briefcase className="h-3.5 w-3.5" />
+              Digunakan di {resume.jobUsages?.length || 0} lamaran
+            </div>
+            {resume.jobUsages && resume.jobUsages.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {resume.jobUsages.map((job) => (
                   <div
@@ -88,8 +88,12 @@ export function ResumePreviewDrawer({
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-muted-foreground/60 text-[11px] italic">
+                Belum digunakan di lamaran mana pun
+              </p>
+            )}
+          </div>
 
           <div className="flex-1 overflow-hidden py-6">
             <ResumePreview content={resume.content} />

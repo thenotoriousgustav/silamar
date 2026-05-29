@@ -394,21 +394,19 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                   />
                 </div>
               </div>
-              {/* Job Usage — compact count only */}
-              {resume.jobUsages && resume.jobUsages.length > 0 && (
-                <div className="border-border/50 mt-4 border-t pt-3">
-                  <div className="text-muted-foreground flex items-center gap-1.5 text-[10px]">
-                    <Briefcase className="h-3 w-3" />
-                    <span>
-                      Digunakan di{" "}
-                      <span className="text-foreground font-semibold">
-                        {resume.jobUsages.length}
-                      </span>{" "}
-                      lamaran
-                    </span>
-                  </div>
+              {/* Job Usage — compact count */}
+              <div className="border-border/50 mt-4 border-t pt-3">
+                <div className="text-muted-foreground flex items-center gap-1.5 text-[10px]">
+                  <Briefcase className="h-3 w-3" />
+                  <span>
+                    Digunakan di{" "}
+                    <span className="text-foreground font-semibold">
+                      {resume.jobUsages?.length || 0}
+                    </span>{" "}
+                    lamaran
+                  </span>
                 </div>
-              )}
+              </div>
             </DocumentCard>
             </div>
           ))}
