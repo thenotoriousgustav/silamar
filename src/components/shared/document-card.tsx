@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Trash2 } from "lucide-react";
+import { ArrowRight, Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
 
@@ -14,6 +14,7 @@ interface DocumentCardProps {
   updatedAt: Date;
   icon: ReactNode;
   onDelete: (e: React.MouseEvent) => void;
+  onDuplicate?: (e: React.MouseEvent) => void;
   onClick?: () => void;
   href: string;
   linkText: string;
@@ -27,6 +28,7 @@ export function DocumentCard({
   updatedAt,
   icon,
   onDelete,
+  onDuplicate,
   onClick,
   href,
   linkText,
@@ -47,18 +49,35 @@ export function DocumentCard({
         <div className="bg-primary/20 flex h-12 w-12 items-center justify-center">
           {icon}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:text-destructive hover:bg-destructive/10 text-muted-foreground -mt-2 -mr-2 h-8 w-8 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onDelete(e);
-          }}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center -mt-2 -mr-2 gap-1">
+          {onDuplicate && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:text-primary hover:bg-primary/10 text-muted-foreground h-8 w-8 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDuplicate(e);
+              }}
+              title="Duplikat"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:text-destructive hover:bg-destructive/10 text-muted-foreground h-8 w-8 transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(e);
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <h3 className="group-hover:text-primary text-foreground truncate font-semibold transition-colors">

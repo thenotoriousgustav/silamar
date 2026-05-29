@@ -50,11 +50,14 @@ export const getResumesDTO = cache(
 
     if (data.length === 0) return [];
 
-    // Fetch trackers for these resumes using column-specific select
+    // Fetch trackers and job details for these resumes
     const resumeIds = data.map((r) => r.id);
     const appsWithTrackers = await db
       .select({
         resumeId: jobApplications.resumeId,
+        applicationId: jobApplications.id,
+        position: jobApplications.position,
+        company: jobApplications.company,
         trackerId: jobTrackers.id,
         trackerName: jobTrackers.name,
       })
@@ -68,26 +71,32 @@ export const getResumesDTO = cache(
       );
 
     return data.map((resume) => {
-      const trackers = appsWithTrackers
-        .filter((app) => app.resumeId === resume.id)
-        .reduce(
-          (acc, curr) => {
-            if (curr.trackerId) {
-              if (!acc.find((t) => t.id === curr.trackerId)) {
-                acc.push({
-                  id: curr.trackerId,
-                  name: curr.trackerName || "Unknown",
-                });
-              }
-            } else {
-              if (!acc.find((t) => t.id === "default")) {
-                acc.push({ id: "default", name: "Job Tracker" });
-              }
+      const apps = appsWithTrackers.filter((app) => app.resumeId === resume.id);
+
+      const trackers = apps.reduce(
+        (acc, curr) => {
+          if (curr.trackerId) {
+            if (!acc.find((t) => t.id === curr.trackerId)) {
+              acc.push({
+                id: curr.trackerId,
+                name: curr.trackerName || "Unknown",
+              });
             }
-            return acc;
-          },
-          [] as { id: string; name: string }[],
-        );
+          } else {
+            if (!acc.find((t) => t.id === "default")) {
+              acc.push({ id: "default", name: "Job Tracker" });
+            }
+          }
+          return acc;
+        },
+        [] as { id: string; name: string }[],
+      );
+
+      const jobUsages = apps.map((app) => ({
+        id: app.applicationId,
+        position: app.position,
+        company: app.company,
+      }));
 
       return {
         id: resume.id,
@@ -96,6 +105,7 @@ export const getResumesDTO = cache(
         updatedAt: resume.updatedAt,
         content: resume.content,
         trackers,
+        jobUsages,
       };
     });
   },

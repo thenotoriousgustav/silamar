@@ -5,6 +5,11 @@ import { modernTemplate } from "./modern";
 import { formalTemplate } from "./formal";
 import type { TemplateDefinition } from "./types";
 
+/**
+ * Registry of every available cover letter template.
+ * To add a new one: create `templates/{id}.tsx` exporting a component and a
+ * `TemplateDefinition`, then add it here.
+ */
 export const TEMPLATES: Record<string, TemplateDefinition> = {
   classic: classicTemplate,
   modern: modernTemplate,

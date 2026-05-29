@@ -1,6 +1,6 @@
 "use client";
 
-import { PencilLine, X } from "lucide-react";
+import { Briefcase, PencilLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ interface Resume {
   id: string;
   title: string;
   content: any;
+  jobUsages?: { id: string; position: string; company: string }[];
 }
 
 interface ResumePreviewDrawerProps {
@@ -42,7 +43,7 @@ export function ResumePreviewDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent className="bg-background border-border flex max-h-[95vh] flex-col overflow-hidden px-4 sm:px-6 data-[vaul-drawer-direction=right]:sm:max-w-2xl">
+      <DrawerContent className="bg-background border-border flex h-full flex-col overflow-hidden px-4 sm:px-6 data-[vaul-drawer-direction=right]:sm:max-w-2xl">
         <div className="mx-auto flex h-full w-full max-w-5xl flex-col overflow-hidden">
           <DrawerHeader className="flex flex-row items-center justify-between border-b px-0 py-4">
             <div>
@@ -68,6 +69,27 @@ export function ResumePreviewDrawer({
               </DrawerClose>
             </div>
           </DrawerHeader>
+
+          {/* Job Usages Detail */}
+          {resume.jobUsages && resume.jobUsages.length > 0 && (
+            <div className="border-b px-0 py-3">
+              <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
+                <Briefcase className="h-3.5 w-3.5" />
+                Digunakan di {resume.jobUsages.length} lamaran
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {resume.jobUsages.map((job) => (
+                  <div
+                    key={job.id}
+                    className="bg-muted border-border rounded-none border px-2.5 py-1 text-[11px]"
+                  >
+                    <span className="font-semibold">{job.position}</span>
+                    <span className="text-muted-foreground"> · {job.company}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex-1 overflow-hidden py-6">
             <ResumePreview content={resume.content} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Eye, Loader2, Monitor, Save } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -16,7 +16,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useResumeBuilder } from "@/features/resume-builder/hooks/use-resume-builder";
 import type { ResumeContent } from "@/features/resume-builder/types/resume-content";
 
-import { updateResumeAction } from "../actions";
 import { ResumeForm } from "./resume-form";
 
 const ResumePreview = dynamic(
@@ -99,20 +98,8 @@ export function ResumeBuilderClient({
   const [viewMode, setViewMode] = useState<"split" | "form" | "preview">(
     "split",
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: { title: string; content: ResumeContent }) =>
-      updateResumeAction(id, data),
-    onSuccess: (updatedResume) => {
-      if (updatedResume) {
-        queryClient.invalidateQueries({ queryKey: ["resumes"] });
-        router.refresh();
-      }
-    },
-  });
 
   // Sync title ref
   useEffect(() => {
@@ -153,9 +140,12 @@ export function ResumeBuilderClient({
     };
   }, [id, isDirtyRef]);
 
-  // Local draft check (only on mount if we have server data)
+  // Local draft check (runs only once, guarded against StrictMode double-invoke)
+  const hasCheckedDraft = useRef(false);
   useEffect(() => {
-    if (id !== "new" && initialData) {
+    if (hasCheckedDraft.current) return;
+    if (initialData) {
+      hasCheckedDraft.current = true;
       const localDraft = localStorage.getItem(`resume-draft-${id}`);
       if (localDraft) {
         try {
@@ -165,6 +155,7 @@ export function ResumeBuilderClient({
 
           if (draftDate > serverDate) {
             toast("Draf lokal ditemukan", {
+              id: `resume-draft-${id}`,
               description:
                 "Kami menemukan draf yang lebih baru di perangkat ini.",
               action: {
@@ -312,24 +303,10 @@ export function ResumeBuilderClient({
     resumeTitle,
     isDirty,
     viewMode,
-    mutation.isPending,
-    mutation.mutate,
+    isSaving,
     setTitle,
     setActions,
   ]);
-
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-100px)] items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="text-primary h-10 w-10 animate-spin" />
-          <p className="text-muted-foreground animate-pulse">
-            Memuat data resume...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <SplitViewLayout

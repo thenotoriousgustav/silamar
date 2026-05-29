@@ -4,11 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Briefcase,
+  Copy,
   FileText,
   Loader2,
   PencilLine,
   Plus,
+  Search,
   Sparkles,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -41,6 +44,8 @@ import {
   deleteResumeAction,
   getResumesAction,
 } from "@/features/resumes-list/actions";
+import { duplicateResumeAction } from "@/features/resumes-list/actions/duplicate-resume";
+import { bulkDeleteResumesAction } from "@/features/resumes-list/actions/bulk-delete-resumes";
 import type { ResumeContent, ResumeTemplateId } from "@/types/resume";
 import { calculateCompleteness } from "@/features/resumes-list/utils/completeness";
 import { DocumentCard } from "@/shared/document-card";
@@ -57,8 +62,9 @@ interface Resume {
   title: string;
   updatedAt: Date;
   atsScore: number | null;
-  content: any; // Add content to calculate completeness
+  content: any;
   trackers?: { id: string; name: string }[];
+  jobUsages?: { id: string; position: string; company: string }[];
 }
 
 interface ResumeListClientProps {
@@ -77,6 +83,13 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<ResumeTemplateId | null>(null);
+
+  // Search & filter
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkMode, setIsBulkMode] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -140,6 +153,38 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
     },
   });
 
+  const duplicateMutation = useMutation({
+    mutationFn: (id: string) => duplicateResumeAction(id),
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Resume berhasil diduplikat");
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+    },
+    onError: () => {
+      toast.error("Gagal menduplikat resume");
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkDeleteResumesAction(ids),
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(`${result.data.deletedCount} resume berhasil dihapus`);
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      setSelectedIds(new Set());
+      setIsBulkMode(false);
+    },
+    onError: () => {
+      toast.error("Gagal menghapus resume");
+    },
+  });
+
   const handleImportComplete = (content: ResumeContent) => {
     setIsImportOpen(false);
 
@@ -184,19 +229,88 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
     }
   };
 
+  // Filter resumes by search query
+  const filteredResumes = searchQuery.trim()
+    ? resumesList.filter((r) =>
+        r.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : resumesList;
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size > 0) {
+      bulkDeleteMutation.mutate(Array.from(selectedIds));
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Resume"
         description="Buat dan kelola resume ATS-friendly kamu"
       >
-        <Button
-          onClick={() => setIsTemplateSelectOpen(true)}
-          className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex items-center gap-2 px-4 py-5 text-sm font-semibold transition-all hover:shadow-md"
-        >
-          <Plus className="h-4 w-4" />
-          Buat Resume Baru
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="border-border bg-background relative flex items-center rounded-none border">
+            <Search className="text-muted-foreground absolute left-3 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Cari resume..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 w-48 bg-transparent pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+
+          {/* Bulk mode toggle */}
+          {resumesList.length > 1 && (
+            <Button
+              variant={isBulkMode ? "secondary" : "outline"}
+              size="sm"
+              className="h-9"
+              onClick={() => {
+                setIsBulkMode(!isBulkMode);
+                setSelectedIds(new Set());
+              }}
+            >
+              {isBulkMode ? "Batal" : "Pilih"}
+            </Button>
+          )}
+
+          {/* Bulk delete button */}
+          {isBulkMode && selectedIds.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="h-9 gap-2"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+            >
+              {bulkDeleteMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5" />
+              )}
+              Hapus ({selectedIds.size})
+            </Button>
+          )}
+
+          <Button
+            onClick={() => setIsTemplateSelectOpen(true)}
+            className="bg-primary hover:bg-primary/90 hover:shadow-primary/30 text-primary-foreground flex items-center gap-2 px-4 py-5 text-sm font-semibold transition-all hover:shadow-md"
+          >
+            <Plus className="h-4 w-4" />
+            Buat Resume Baru
+          </Button>
+        </div>
       </PageHeader>
 
       {resumesList.length === 0 ? (
@@ -216,20 +330,38 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {resumesList.map((resume) => (
-            <DocumentCard
-              key={resume.id}
-              title={resume.title}
-              updatedAt={resume.updatedAt}
-              icon={<FileText className="text-primary h-6 w-6" />}
-              onDelete={() => setResumeToDelete(resume.id)}
-              onClick={() => {
-                setSelectedResumeForPreview(resume);
-                setIsPreviewOpen(true);
-              }}
-              href={`/resume-builder/${resume.id}`}
-              linkText="Edit Resume"
-            >
+          {filteredResumes.map((resume) => (
+            <div key={resume.id} className="relative">
+              {/* Bulk selection checkbox */}
+              {isBulkMode && (
+                <div className="absolute top-3 left-3 z-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(resume.id)}
+                    onChange={() => toggleSelection(resume.id)}
+                    className="h-4 w-4 accent-primary cursor-pointer"
+                  />
+                </div>
+              )}
+
+              <DocumentCard
+                title={resume.title}
+                updatedAt={resume.updatedAt}
+                icon={<FileText className="text-primary h-6 w-6" />}
+                onDelete={() => setResumeToDelete(resume.id)}
+                onDuplicate={() => duplicateMutation.mutate(resume.id)}
+                onClick={() => {
+                  if (isBulkMode) {
+                    toggleSelection(resume.id);
+                    return;
+                  }
+                  setSelectedResumeForPreview(resume);
+                  setIsPreviewOpen(true);
+                }}
+                href={`/resume-builder/${resume.id}`}
+                linkText="Edit Resume"
+                className={selectedIds.has(resume.id) ? "ring-2 ring-primary" : ""}
+              >
               {resume.atsScore !== null && (
                 <div className="mt-3 flex items-center gap-2">
                   <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-none">
@@ -262,36 +394,23 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
                   />
                 </div>
               </div>
-              {/* Trackers Usage */}
-              <div className="border-border/50 mt-4 border-t pt-4">
-                <div className="text-muted-foreground mb-2 flex items-center justify-between text-[10px] font-bold tracking-wider uppercase">
-                  <div className="flex items-center gap-1.5">
+              {/* Job Usage — compact count only */}
+              {resume.jobUsages && resume.jobUsages.length > 0 && (
+                <div className="border-border/50 mt-4 border-t pt-3">
+                  <div className="text-muted-foreground flex items-center gap-1.5 text-[10px]">
                     <Briefcase className="h-3 w-3" />
-                    <span>Tracker Usage</span>
+                    <span>
+                      Digunakan di{" "}
+                      <span className="text-foreground font-semibold">
+                        {resume.jobUsages.length}
+                      </span>{" "}
+                      lamaran
+                    </span>
                   </div>
-                  <span className="text-primary/60">
-                    {resume.trackers?.length || 0}
-                  </span>
                 </div>
-
-                {resume.trackers && resume.trackers.length > 0 ? (
-                  <div className="flex flex-wrap gap-1">
-                    {resume.trackers.map((tracker) => (
-                      <span
-                        key={tracker.id}
-                        className="bg-primary text-primary-foreground px-2 py-0.5 text-[9px] font-bold tracking-tight uppercase"
-                      >
-                        {tracker.name}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground/60 text-[10px] italic">
-                    Belum digunakan di tracker mana pun
-                  </p>
-                )}
-              </div>
+              )}
             </DocumentCard>
+            </div>
           ))}
 
           {/* New resume card */}

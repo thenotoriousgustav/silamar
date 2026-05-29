@@ -106,9 +106,12 @@ export function CoverLetterBuilderClient({
     };
   }, [id, isDirtyRef]);
 
-  // Local draft check
+  // Local draft check (runs only once, guarded against StrictMode double-invoke)
+  const hasCheckedDraft = useRef(false);
   useEffect(() => {
-    if (id !== "new" && initialData) {
+    if (hasCheckedDraft.current) return;
+    if (initialData) {
+      hasCheckedDraft.current = true;
       const localDraft = localStorage.getItem(`cover-letter-draft-${id}`);
       if (localDraft) {
         try {
@@ -118,6 +121,7 @@ export function CoverLetterBuilderClient({
 
           if (draftDate > serverDate) {
             toast("Draf lokal ditemukan", {
+              id: `cover-letter-draft-${id}`,
               description:
                 "Kami menemukan draf yang lebih baru di perangkat ini.",
               action: {
@@ -241,12 +245,7 @@ export function CoverLetterBuilderClient({
             if (result) {
               toast.success("Cover letter berhasil disimpan");
               queryClient.invalidateQueries({ queryKey: ["cover-letters"] });
-
-              if (id === "new" && result.id) {
-                router.push(`/cover-letter-builder/${result.id}`);
-              } else {
-                router.refresh();
-              }
+              router.refresh();
             }
           }}
           disabled={!isDirty || isSaving}

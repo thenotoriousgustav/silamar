@@ -1,4 +1,4 @@
-import type { CoverLetterBuilderData } from "../types/cover-letter-content";
+import type { CoverLetterBuilderData } from "../../types/cover-letter-content";
 
 const LINE_HEIGHT_MAP: Record<string, number> = {
   tight: 1.3,

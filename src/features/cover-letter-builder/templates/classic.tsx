@@ -1,10 +1,10 @@
 import React from "react";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-import "../../resume-builder-fonts";
-import { renderPdfContent } from "../../utils/pdf-content-renderer";
-import { resolveCoverLetterPdfStyle } from "../../utils/pdf-styles";
-import type { PdfTemplateProps } from "../types";
+import "./shared/pdf-fonts";
+import { renderPdfContent } from "./shared/pdf-content-renderer";
+import { resolveCoverLetterPdfStyle } from "./shared/pdf-styles";
+import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
   const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders } =
@@ -93,3 +93,10 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
     </Document>
   );
 }
+
+export const classicTemplate: TemplateDefinition = {
+  id: "classic",
+  label: "Classic",
+  description: "A clean and professional traditional cover letter template.",
+  Pdf: ClassicPdfTemplate,
+};

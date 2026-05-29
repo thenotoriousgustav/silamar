@@ -1,13 +1,21 @@
 "use client";
 
 import { Braces, Check, Copy, FileText } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import type { ResumeContent } from "@/types/resume";
 
-import { PdfPreview } from "./pdf-preview";
+const PdfPreview = dynamic(() => import("./pdf-preview").then((m) => ({ default: m.PdfPreview })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full items-center justify-center">
+      <div className="bg-muted h-[600px] w-[420px] animate-pulse rounded-lg" />
+    </div>
+  ),
+});
 
 interface ResumePreviewProps {
   content: ResumeContent;

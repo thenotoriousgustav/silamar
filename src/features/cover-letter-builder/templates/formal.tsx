@@ -1,10 +1,10 @@
 import React from "react";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-import "../../resume-builder-fonts";
-import { renderPdfContent } from "../../utils/pdf-content-renderer";
-import { resolveCoverLetterPdfStyle } from "../../utils/pdf-styles";
-import type { PdfTemplateProps } from "../types";
+import "./shared/pdf-fonts";
+import { renderPdfContent } from "./shared/pdf-content-renderer";
+import { resolveCoverLetterPdfStyle } from "./shared/pdf-styles";
+import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 export function FormalPdfTemplate({ data }: PdfTemplateProps) {
   const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders } =
@@ -95,3 +95,10 @@ export function FormalPdfTemplate({ data }: PdfTemplateProps) {
     </Document>
   );
 }
+
+export const formalTemplate: TemplateDefinition = {
+  id: "formal",
+  label: "Formal",
+  description: "A strictly professional and structured cover letter template.",
+  Pdf: FormalPdfTemplate,
+};
