@@ -36,9 +36,14 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
     LINE_HEIGHT_NUMERIC[style?.lineHeight ?? "relaxed"] ?? 1.55;
   const colors = PDF_BASE_COLORS;
 
-  // Bold variants reuse the same family — Google Fonts Inter/Roboto/Lato/
-  // Garamond all ship a 700 weight, so @react-pdf picks it up automatically
-  // when fontWeight is set on a Text.
+  // Density controls spacing between sections and items
+  const densitySpacing = {
+    compact: { sectionMargin: 8, itemMargin: 6, sectionTitleMarginTop: 10 },
+    normal: { sectionMargin: 12, itemMargin: 10, sectionTitleMarginTop: 14 },
+    comfortable: { sectionMargin: 16, itemMargin: 14, sectionTitleMarginTop: 18 },
+  };
+  const spacing = densitySpacing[style?.density ?? "normal"] ?? densitySpacing.normal;
+
   const boldFont = fontFamily;
 
   return {
@@ -50,7 +55,7 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       lineHeight,
     },
     header: {
-      marginBottom: 12,
+      marginBottom: spacing.sectionMargin,
     },
     headerContentLeft: { flex: 1 },
     headerContentRight: { textAlign: "right" },
@@ -71,12 +76,12 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       marginBottom: 2,
     },
     contactSeparator: { marginHorizontal: 6 },
-    section: { marginBottom: 12 },
+    section: { marginBottom: spacing.sectionMargin },
     sectionTitle: {
       fontSize: baseFontSize,
       fontFamily: boldFont,
       fontWeight: 700,
-      marginTop: 14,
+      marginTop: spacing.sectionTitleMarginTop,
       marginBottom: 6,
     },
     summary: {
@@ -85,7 +90,7 @@ export function buildBasePdfStyles(style?: ResumeStyle): PdfStyleSheet {
       lineHeight,
       textAlign: "justify",
     },
-    experienceItem: { marginBottom: 10 },
+    experienceItem: { marginBottom: spacing.itemMargin },
     experienceHeader: { marginBottom: 2 },
     experienceTitleRow: {
       flexDirection: "row",

@@ -37,6 +37,7 @@ import {
 import type { ResumeContent, ResumeExperience } from "@/types/resume";
 import { formatResumeDate } from "@/lib/utils";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
 import { EmptyState } from "./empty-state";
 
 interface ExperienceSectionProps {
@@ -64,8 +65,10 @@ export function ExperienceSection({
   optimizingId: _optimizingId,
 }: ExperienceSectionProps) {
   const lang = content.style?.language || "id";
+  const { confirmDelete, dialogProps } = useConfirmDelete();
 
   return (
+    <>
     <AccordionItem
       value="experience"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
@@ -161,7 +164,7 @@ export function ExperienceSection({
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeExperience(exp.id);
+                                  confirmDelete(() => removeExperience(exp.id));
                                 }}
                                 className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                                 title="Hapus Pengalaman"
@@ -415,5 +418,7 @@ export function ExperienceSection({
         </div>
       </AccordionContent>
     </AccordionItem>
+    <ConfirmDeleteDialog {...dialogProps} title="Hapus pengalaman kerja?" />
+    </>
   );
 }

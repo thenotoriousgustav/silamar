@@ -11,6 +11,7 @@ export type JobApplicationDTO = {
   id: string;
   trackerId: string | null;
   resumeId: string | null;
+  coverLetterId: string | null;
   company: string;
   position: string;
   location: string | null;

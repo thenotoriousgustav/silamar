@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/sortable";
 import type { ResumeContent, ResumeProject } from "@/types/resume";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
 import { EmptyState } from "./empty-state";
 
 interface ProjectSectionProps {
@@ -53,7 +54,10 @@ export function ProjectSection({
   updateProjectList,
   removeProject,
 }: ProjectSectionProps) {
+  const { confirmDelete, dialogProps } = useConfirmDelete();
+
   return (
+    <>
     <AccordionItem
       value="projects"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
@@ -134,7 +138,7 @@ export function ProjectSection({
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeProject(project.id);
+                                  confirmDelete(() => removeProject(project.id));
                                 }}
                                 className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                                 title="Hapus Projek"
@@ -336,5 +340,7 @@ export function ProjectSection({
         </div>
       </AccordionContent>
     </AccordionItem>
+    <ConfirmDeleteDialog {...dialogProps} title="Hapus proyek?" />
+    </>
   );
 }

@@ -7,7 +7,7 @@ import { resolveCoverLetterPdfStyle } from "./shared/pdf-styles";
 import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 export function FormalPdfTemplate({ data }: PdfTemplateProps) {
-  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders } =
+  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders, sectionGap, contentGap } =
     resolveCoverLetterPdfStyle(data.style);
 
   const styles = StyleSheet.create({
@@ -19,7 +19,7 @@ export function FormalPdfTemplate({ data }: PdfTemplateProps) {
       lineHeight,
     },
     header: {
-      marginBottom: 40,
+      marginBottom: sectionGap * 1.5,
       borderBottomWidth: 1,
       borderBottomColor: "#000000",
       paddingBottom: 10,
@@ -35,17 +35,17 @@ export function FormalPdfTemplate({ data }: PdfTemplateProps) {
       color: "#374151",
       lineHeight: 1.4,
     },
-    date: { fontSize, marginBottom: 20 },
-    recipientSection: { marginBottom: 25 },
+    date: { fontSize, marginBottom: sectionGap * 0.8 },
+    recipientSection: { marginBottom: sectionGap },
     recipientName: { fontSize, fontWeight: "bold", marginBottom: 2 },
     recipientInfo: { fontSize, color: "#374151", lineHeight: 1.4 },
     subject: {
       fontSize,
       fontWeight: "bold",
       textTransform: uppercaseHeaders ? "uppercase" : "none",
-      marginBottom: 20,
+      marginBottom: sectionGap * 0.8,
     },
-    content: { fontSize, color: "#000000", textAlign: "justify", lineHeight },
+    content: { fontSize, color: "#000000", textAlign: "justify", lineHeight, marginBottom: contentGap },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
 

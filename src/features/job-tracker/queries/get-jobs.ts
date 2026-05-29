@@ -124,6 +124,7 @@ export const getJobs = cache(
         id: jobApplications.id,
         trackerId: jobApplications.trackerId,
         resumeId: jobApplications.resumeId,
+        coverLetterId: jobApplications.coverLetterId,
         company: jobApplications.company,
         position: jobApplications.position,
         location: jobApplications.location,

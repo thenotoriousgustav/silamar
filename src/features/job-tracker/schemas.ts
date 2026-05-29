@@ -21,6 +21,7 @@ export const createJobApplicationSchema = z.object({
   interviewDate: z.string().optional(),
   offerDate: z.string().optional(),
   resumeId: z.string().optional().nullable(),
+  coverLetterId: z.string().optional().nullable(),
   description: z.string().max(5000).optional(),
   notes: z.string().max(2000).optional(),
   logoUrl: z.string().url().optional().or(z.literal("")),
@@ -45,6 +46,7 @@ export const updateJobApplicationSchema = z.object({
   interviewDate: z.string().optional().nullable(),
   offerDate: z.string().optional().nullable(),
   resumeId: z.string().optional().nullable(),
+  coverLetterId: z.string().optional().nullable(),
   description: z.string().max(5000).optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),
   logoUrl: z.string().url().optional().or(z.literal("")).nullable(),
@@ -91,6 +93,7 @@ export const jobApplicationFormSchema = z.object({
   appliedDate: z.date().optional(),
   interviewDate: z.date().optional(),
   resumeId: z.string().optional().nullable(),
+  coverLetterId: z.string().optional().nullable(),
   description: z.string().max(5000).optional(),
 });
 

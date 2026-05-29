@@ -102,8 +102,8 @@ export const ResumeSkillSchema = z.object({
 });
 
 export const ResumeStyleSchema = z.object({
-  fontFamily: z.string().default("Helvetica"),
-  fontSize: z.string().default("text-sm"),
+  fontFamily: z.string().default("Inter"),
+  fontSize: z.string().default("text-[11px]"),
   lineHeight: z.string().default("relaxed"),
   language: z.enum(["id", "en"]).default("id"),
   templateId: z.string().default("classic"),

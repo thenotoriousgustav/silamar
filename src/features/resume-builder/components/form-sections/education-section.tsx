@@ -38,6 +38,7 @@ import {
 import type { ResumeContent, ResumeEducation } from "@/types/resume";
 import { cn, formatResumeDate } from "@/lib/utils";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
 import { EmptyState } from "./empty-state";
 
 interface EducationSectionProps {
@@ -55,7 +56,10 @@ export function EducationSection({
   updateEducationList,
   removeEducation,
 }: EducationSectionProps) {
+  const { confirmDelete, dialogProps } = useConfirmDelete();
+
   return (
+    <>
     <AccordionItem
       value="education"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
@@ -138,7 +142,7 @@ export function EducationSection({
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeEducation(edu.id);
+                                  confirmDelete(() => removeEducation(edu.id));
                                 }}
                                 className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                                 title="Hapus Edukasi"
@@ -411,5 +415,7 @@ export function EducationSection({
         </div>
       </AccordionContent>
     </AccordionItem>
+    <ConfirmDeleteDialog {...dialogProps} title="Hapus pendidikan?" />
+    </>
   );
 }

@@ -149,9 +149,14 @@ CRITICAL RULES:
 - For personalInfo.title: extract the professional headline/job title if present (e.g. "Senior Frontend Developer", "Fresh Graduate"). If not explicitly stated, infer from the most recent position or leave empty string.
 - For dates: use format "MMM yyyy" (e.g. "Jan 2023", "Dec 2021"). If only year is available, use just the year.
 - For location: extract city/country if mentioned, otherwise empty string.
-- For employmentType: extract if mentioned (full-time, part-time, internship, contract, freelance), otherwise empty string.
+- For employmentType: extract if explicitly mentioned (full-time, part-time, internship, contract, freelance). Also INFER from context: if position contains "Intern" or "Magang" → "internship", if "Freelance" → "freelance", if "Contract" → "contract". Default to "full-time" if none can be determined.
 - If a field is not found in the CV, return an empty string "" (never null or undefined).
-- Extract ALL sections including certificates, awards, publications if present.`,
+- Extract ALL sections including certificates, awards, publications if present.
+- Classify optional sections correctly:
+  • certificates → professional certifications, licenses, online course completions (e.g. AWS Certified, Coursera).
+  • awards → competition wins, scholarships, honors, recognitions (e.g. "1st Place Hackathon", "Dean's List").
+  • publications → papers, articles, journals, books authored.
+- Only populate these arrays when the CV genuinely contains such items; otherwise return an empty array.`,
         },
         {
           role: "user",
@@ -187,7 +192,18 @@ CRITICAL RULES:
       publications: mapWithIds(rawData.publications || []),
     };
 
-    return Response.json(ResumeContentSchema.parse(resumeData));
+    // Build sectionOrder dynamically: always include the core sections,
+    // then append optional sections only when the CV actually contains them
+    // so their form panels appear automatically after import.
+    const sectionOrder = ["experience", "education", "skills", "projects"];
+    if (resumeData.certificates.length > 0) sectionOrder.push("certificates");
+    if (resumeData.awards.length > 0) sectionOrder.push("awards");
+    if (resumeData.publications.length > 0) sectionOrder.push("publications");
+    sectionOrder.push("custom");
+
+    return Response.json(
+      ResumeContentSchema.parse({ ...resumeData, sectionOrder }),
+    );
   } catch (error) {
     console.error("Extraction error:", error);
     return Response.json(

@@ -197,7 +197,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
           ...content,
           style: {
             ...content.style,
-            fontFamily: content.style?.fontFamily || "Helvetica",
+            fontFamily: content.style?.fontFamily || "Inter",
             fontSize: content.style?.fontSize || "text-[11px]",
             language: content.style?.language || "id",
             lineHeight: content.style?.lineHeight || "relaxed",
@@ -471,7 +471,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
 
       {/* Choice Dialog */}
       <Dialog open={isChoiceOpen} onOpenChange={setIsChoiceOpen}>
-        <DialogContent className="bg-background border-border sm:max-w-180">
+        <DialogContent className="bg-background border-border sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               Lengkapi Data Resume
@@ -481,7 +481,7 @@ export function ResumeListClient({ initialResumes }: ResumeListClientProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
             <button
               onClick={() => {
                 setIsChoiceOpen(false);

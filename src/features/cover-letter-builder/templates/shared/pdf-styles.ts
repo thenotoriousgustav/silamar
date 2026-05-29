@@ -12,6 +12,13 @@ const FONT_FAMILY_MAP: Record<string, string> = {
   Garamond: "Garamond",
 };
 
+/** Spacing multiplier per density level. Applied to margins between sections. */
+const DENSITY_SPACING: Record<string, { sectionGap: number; contentGap: number }> = {
+  compact: { sectionGap: 15, contentGap: 4 },
+  normal: { sectionGap: 25, contentGap: 6 },
+  comfortable: { sectionGap: 35, contentGap: 8 },
+};
+
 /**
  * Resolves cover letter style settings into concrete values for PDF rendering.
  */
@@ -24,6 +31,7 @@ export function resolveCoverLetterPdfStyle(
   const paperSize = style?.paperSize === "letter" ? "LETTER" : "A4";
   const uppercaseHeaders = style?.uppercaseHeaders ?? false;
   const language = style?.language ?? "id";
+  const density = DENSITY_SPACING[style?.density ?? "normal"] ?? DENSITY_SPACING.normal;
 
   return {
     fontSize,
@@ -32,5 +40,9 @@ export function resolveCoverLetterPdfStyle(
     paperSize,
     uppercaseHeaders,
     language,
+    /** Gap between major sections (header, recipient, subject, content) */
+    sectionGap: density.sectionGap,
+    /** Gap between paragraphs within content */
+    contentGap: density.contentGap,
   };
 }

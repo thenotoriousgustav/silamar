@@ -7,7 +7,7 @@ import { resolveCoverLetterPdfStyle } from "./shared/pdf-styles";
 import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
-  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders } =
+  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders, sectionGap, contentGap } =
     resolveCoverLetterPdfStyle(data.style);
 
   const styles = StyleSheet.create({
@@ -18,7 +18,7 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
       color: "#000000",
       lineHeight,
     },
-    header: { marginBottom: 30, textAlign: "right" },
+    header: { marginBottom: sectionGap, textAlign: "right" },
     senderName: {
       fontSize: fontSize * 1.7,
       fontWeight: "bold",
@@ -30,8 +30,8 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
       color: "#4b5563",
       lineHeight: 1.4,
     },
-    date: { fontSize: fontSize * 0.85, color: "#4b5563", marginBottom: 15 },
-    recipientSection: { marginBottom: 20 },
+    date: { fontSize: fontSize * 0.85, color: "#4b5563", marginBottom: sectionGap * 0.6 },
+    recipientSection: { marginBottom: sectionGap * 0.8 },
     recipientName: { fontSize, fontWeight: "bold", marginBottom: 2 },
     recipientInfo: {
       fontSize: fontSize * 0.85,
@@ -42,9 +42,9 @@ export function ClassicPdfTemplate({ data }: PdfTemplateProps) {
       fontSize,
       fontWeight: "bold",
       textTransform: uppercaseHeaders ? "uppercase" : "none",
-      marginBottom: 20,
+      marginBottom: sectionGap * 0.8,
     },
-    content: { fontSize, color: "#1f2937", textAlign: "justify", lineHeight },
+    content: { fontSize, color: "#1f2937", textAlign: "justify", lineHeight, marginBottom: contentGap },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
 

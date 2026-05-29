@@ -7,7 +7,7 @@ import { resolveCoverLetterPdfStyle } from "./shared/pdf-styles";
 import type { PdfTemplateProps, TemplateDefinition } from "./types";
 
 export function ModernPdfTemplate({ data }: PdfTemplateProps) {
-  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders } =
+  const { fontSize, lineHeight, fontFamily, paperSize, uppercaseHeaders, sectionGap, contentGap } =
     resolveCoverLetterPdfStyle(data.style);
 
   const styles = StyleSheet.create({
@@ -18,7 +18,7 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
       color: "#000000",
       lineHeight,
     },
-    header: { marginBottom: 40, textAlign: "center" },
+    header: { marginBottom: sectionGap * 1.5, textAlign: "center" },
     senderName: {
       fontSize: fontSize * 2.2,
       fontWeight: "bold",
@@ -36,7 +36,7 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-start",
-      marginBottom: 30,
+      marginBottom: sectionGap,
     },
     recipientLabel: {
       fontSize,
@@ -53,7 +53,7 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
       padding: 8,
       borderLeftWidth: 4,
       borderLeftColor: "#2563eb",
-      marginBottom: 25,
+      marginBottom: sectionGap,
     },
     subject: {
       fontSize,
@@ -61,7 +61,7 @@ export function ModernPdfTemplate({ data }: PdfTemplateProps) {
       color: "#1e3a8a",
       textTransform: uppercaseHeaders ? "uppercase" : "none",
     },
-    content: { fontSize, color: "#1f2937", textAlign: "justify", lineHeight },
+    content: { fontSize, color: "#1f2937", textAlign: "justify", lineHeight, marginBottom: contentGap },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
 

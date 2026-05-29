@@ -37,6 +37,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   createJobAction,
+  getUserCoverLettersAction,
   getUserResumesAction,
   scrapeLinkedInJobAction,
   updateJobAction,
@@ -58,6 +59,7 @@ import {
 } from "../schemas";
 
 import { JobAiAssistant } from "./job-ai-assistant";
+import { CoverLetterSelectorDialog } from "./cover-letter-selector-dialog";
 import { ResumeSelectorDialog } from "./resume-selector-dialog";
 
 interface JobFormDrawerProps {
@@ -79,6 +81,8 @@ export function JobFormDrawer({
 }: JobFormDrawerProps) {
   const _queryClient = useQueryClient();
   const [isResumeSelectorOpen, setIsResumeSelectorOpen] = useState(false);
+  const [isCoverLetterSelectorOpen, setIsCoverLetterSelectorOpen] =
+    useState(false);
   const [activeTab, setActiveTab] = useState("detail");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const isEdit = !!job;
@@ -185,6 +189,12 @@ export function JobFormDrawer({
     enabled: open,
   });
 
+  const { data: userCoverLetters = [] } = useQuery({
+    queryKey: ["user-cover-letters"],
+    queryFn: () => getUserCoverLettersAction(),
+    enabled: open,
+  });
+
   useEffect(() => {
     if (job) {
       form.reset({
@@ -196,6 +206,7 @@ export function JobFormDrawer({
         jobUrl: job.jobUrl || "",
         salary: job.salary || "",
         resumeId: job.resumeId || null,
+        coverLetterId: job.coverLetterId || null,
         appliedDate: job.appliedDate ? new Date(job.appliedDate) : new Date(),
         interviewDate: job.interviewDate
           ? new Date(job.interviewDate)
@@ -212,6 +223,7 @@ export function JobFormDrawer({
         jobUrl: "",
         salary: "",
         resumeId: null,
+        coverLetterId: null,
         appliedDate: new Date(),
         interviewDate: undefined,
         description: "",
@@ -230,8 +242,9 @@ export function JobFormDrawer({
       <Drawer
         open={open}
         onOpenChange={(newOpen) => {
-          // Prevent drawer from closing if resume selector is open
-          if (!newOpen && isResumeSelectorOpen) return;
+          // Prevent drawer from closing if a selector dialog is open
+          if (!newOpen && (isResumeSelectorOpen || isCoverLetterSelectorOpen))
+            return;
           onOpenChange(newOpen);
         }}
         direction="right"
@@ -554,6 +567,70 @@ export function JobFormDrawer({
                     )}
                   </div>
 
+                  <div className="space-y-2">
+                    <FormFieldLabel icon={<FileText className="h-3.5 w-3.5" />}>
+                      Cover Letter yang Digunakan
+                    </FormFieldLabel>
+                    <Controller
+                      control={form.control}
+                      name="coverLetterId"
+                      render={({ field }) => {
+                        const selectedCoverLetter = userCoverLetters.find(
+                          (c: any) => c.id === field.value,
+                        );
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => setIsCoverLetterSelectorOpen(true)}
+                            className={cn(
+                              "bg-background hover:border-primary/50 flex w-full items-center justify-between border px-4 py-3 text-left transition-all",
+                              !field.value &&
+                                "text-muted-foreground border-dashed",
+                            )}
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <div
+                                className={cn(
+                                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-none",
+                                  field.value
+                                    ? "bg-primary/10 text-primary"
+                                    : "bg-muted text-muted-foreground",
+                                )}
+                              >
+                                <FileText className="h-5 w-5" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-bold">
+                                  {selectedCoverLetter?.title ||
+                                    "Pilih Cover Letter"}
+                                </p>
+                                {selectedCoverLetter?.company && (
+                                  <p className="text-muted-foreground truncate text-[10px] font-bold tracking-wider uppercase">
+                                    {selectedCoverLetter.company}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-muted-foreground border-muted-foreground/30 hover:bg-muted shrink-0 border px-2 py-1 text-[10px] font-bold tracking-tighter uppercase transition-colors">
+                              {field.value ? "Ganti" : "Pilih"}
+                            </div>
+                          </button>
+                        );
+                      }}
+                    />
+                    {userCoverLetters.length === 0 && (
+                      <p className="text-muted-foreground text-[10px]">
+                        Kamu belum memiliki cover letter.{" "}
+                        <a
+                          href="/documents/cover-letter"
+                          className="text-primary font-bold hover:underline"
+                        >
+                          Buat sekarang?
+                        </a>
+                      </p>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <FormFieldLabel
@@ -650,6 +727,16 @@ export function JobFormDrawer({
           onOpenChange={setIsResumeSelectorOpen}
           selectedId={form.watch("resumeId")}
           onSelect={(id) => form.setValue("resumeId", id)}
+        />
+      )}
+
+      {isCoverLetterSelectorOpen && (
+        <CoverLetterSelectorDialog
+          coverLetters={userCoverLetters}
+          open={isCoverLetterSelectorOpen}
+          onOpenChange={setIsCoverLetterSelectorOpen}
+          selectedId={form.watch("coverLetterId")}
+          onSelect={(id) => form.setValue("coverLetterId", id)}
         />
       )}
     </>

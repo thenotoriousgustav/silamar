@@ -28,6 +28,8 @@ import {
 import { ResumeContent, ResumeCustomSectionItem } from "@/types/resume";
 import { cn } from "@/lib/utils";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
+
 interface ItemsListSectionProps {
   title: string;
   icon: React.ReactNode;
@@ -65,7 +67,10 @@ export function ItemsListSection({
   placeholderTitle = "Judul / Nama",
   placeholderSubtitle = "Penerbit / Penyelenggara",
 }: ItemsListSectionProps) {
+  const { confirmDelete, dialogProps } = useConfirmDelete();
+
   return (
+    <>
     <AccordionItem
       value={sectionId}
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
@@ -100,7 +105,7 @@ export function ItemsListSection({
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
-                onRemoveSection(sectionId);
+                confirmDelete(() => onRemoveSection(sectionId));
               }}
               className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 transition-all"
             >
@@ -155,7 +160,7 @@ export function ItemsListSection({
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeItem(sectionId, item.id);
+                                  confirmDelete(() => removeItem(sectionId, item.id));
                                 }}
                                 className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                               >
@@ -267,5 +272,7 @@ export function ItemsListSection({
         </div>
       </AccordionContent>
     </AccordionItem>
+    <ConfirmDeleteDialog {...dialogProps} />
+    </>
   );
 }

@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/tags-input";
 import type { ResumeContent, ResumeSkill } from "@/types/resume";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
+
 interface SkillsSectionProps {
   content: ResumeContent;
   addSkillCategory: () => void;
@@ -37,12 +39,14 @@ interface SortableSkillItemProps {
   skill: ResumeSkill;
   updateSkillCategory: (id: string, data: Partial<ResumeSkill>) => void;
   removeSkillCategory: (id: string) => void;
+  confirmDelete: (action: () => void) => void;
 }
 
 function SortableSkillItem({
   skill,
   updateSkillCategory,
   removeSkillCategory,
+  confirmDelete,
 }: SortableSkillItemProps) {
   return (
     <SortableItem value={skill.id} asChild>
@@ -77,7 +81,7 @@ function SortableSkillItem({
                   tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
-                    removeSkillCategory(skill.id);
+                    confirmDelete(() => removeSkillCategory(skill.id));
                   }}
                   className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                   title="Hapus Kategori"
@@ -147,7 +151,10 @@ export function SkillsSection({
   removeSkillCategory,
   updateSkills,
 }: SkillsSectionProps) {
+  const { confirmDelete, dialogProps } = useConfirmDelete();
+
   return (
+    <>
     <AccordionItem
       value="skills"
       className="bg-card border-border hover:border-primary/20 overflow-hidden rounded-none border shadow-sm transition-all"
@@ -197,6 +204,7 @@ export function SkillsSection({
                     skill={skill}
                     updateSkillCategory={updateSkillCategory}
                     removeSkillCategory={removeSkillCategory}
+                    confirmDelete={confirmDelete}
                   />
                 ))}
               </Accordion>
@@ -221,5 +229,7 @@ export function SkillsSection({
         </div>
       </AccordionContent>
     </AccordionItem>
+    <ConfirmDeleteDialog {...dialogProps} title="Hapus kategori skill?" />
+    </>
   );
 }

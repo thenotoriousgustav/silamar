@@ -42,6 +42,8 @@ import {
   ResumeCustomSectionItem,
 } from "@/types/resume";
 
+import { ConfirmDeleteDialog, useConfirmDelete } from "./confirm-delete-dialog";
+
 interface CustomSectionProps {
   content: ResumeContent;
   addCustomSection: () => void;
@@ -85,8 +87,10 @@ export function CustomSection({
   removeCustomSectionItem,
 }: CustomSectionProps) {
   const sections = content.customSections || [];
+  const { confirmDelete, dialogProps } = useConfirmDelete();
 
   return (
+    <>
     <Sortable
       value={sections}
       onValueChange={updateCustomSectionList}
@@ -140,7 +144,7 @@ export function CustomSection({
                       tabIndex={0}
                       onClick={(e) => {
                         e.stopPropagation();
-                        removeCustomSection(section.id);
+                        confirmDelete(() => removeCustomSection(section.id));
                       }}
                       className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center rounded-none transition-colors"
                       title="Hapus Seksi"
@@ -212,10 +216,10 @@ export function CustomSection({
                                           tabIndex={0}
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            removeCustomSectionItem(
+                                            confirmDelete(() => removeCustomSectionItem(
                                               section.id,
                                               item.id,
-                                            );
+                                            ));
                                           }}
                                           className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground flex h-8 w-8 items-center justify-center transition-colors"
                                           title="Hapus Item"
@@ -489,5 +493,7 @@ export function CustomSection({
         ))}
       </SortableContent>
     </Sortable>
+    <ConfirmDeleteDialog {...dialogProps} />
+    </>
   );
 }

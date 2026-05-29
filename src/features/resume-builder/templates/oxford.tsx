@@ -58,10 +58,10 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
       fontSize: baseFontSize,
       fontWeight: 700,
       textTransform: uppercaseHeaders ? "uppercase" : "none",
-      borderTopWidth: 1,
-      borderTopColor: PDF_BASE_COLORS.primary,
-      paddingTop: 3,
-      marginTop: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: PDF_BASE_COLORS.primary,
+      paddingBottom: 3,
+      marginTop: (baseStyles.sectionTitle as any).marginTop,
       marginBottom: 5,
       color: PDF_BASE_COLORS.primary,
     },
@@ -84,7 +84,7 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
       color: PDF_BASE_COLORS.primary,
     },
     itemBody: { fontSize: baseFontSize - 2, color: PDF_BASE_COLORS.primary },
-    experienceItem: { marginBottom: 7 },
+    experienceItem: { marginBottom: (baseStyles.experienceItem as any).marginBottom ?? 7 },
     skillRow: { marginBottom: 2 },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any) as any;
@@ -188,19 +188,24 @@ export function OxfordPdfTemplate({ data }: PdfTemplateProps) {
                     : "";
                   return (
                     <View key={idx} style={styles.experienceItem}>
+                      {/* Row 1: Company — Date */}
                       <View style={styles.itemRow}>
                         <Text style={styles.itemHeadline}>
-                          {exp.position}
-                          {exp.company ? `, ${exp.company}` : ""}
+                          {exp.company || ""}
                         </Text>
-                        <View style={{ alignItems: "flex-end" }}>
-                          {dateRange ? (
-                            <Text style={styles.itemDate}>{dateRange}</Text>
-                          ) : null}
-                          {exp.location && (
-                            <Text style={styles.itemBody}>{exp.location}</Text>
-                          )}
-                        </View>
+                        {dateRange ? (
+                          <Text style={styles.itemDate}>{dateRange}</Text>
+                        ) : null}
+                      </View>
+                      {/* Row 2: Position, Employment Type — Location */}
+                      <View style={styles.itemRow}>
+                        <Text style={styles.itemBody}>
+                          {exp.position}
+                          {exp.employmentType ? `, ${exp.employmentType}` : ""}
+                        </Text>
+                        {exp.location && (
+                          <Text style={styles.itemBody}>{exp.location}</Text>
+                        )}
                       </View>
                       <PdfBulletList items={exp.description} styles={styles} />
                     </View>

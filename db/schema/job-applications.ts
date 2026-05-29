@@ -1,7 +1,7 @@
 import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { users } from "./auth";
-import { resumes } from "./resumes";
+import { coverLetters, resumes } from "./resumes";
 
 export const jobTypeEnum = pgEnum("job_type", [
   "full-time",
@@ -38,6 +38,9 @@ export const jobApplications = pgTable("job_applications", {
     onDelete: "cascade",
   }),
   resumeId: text("resume_id").references(() => resumes.id, {
+    onDelete: "set null",
+  }),
+  coverLetterId: text("cover_letter_id").references(() => coverLetters.id, {
     onDelete: "set null",
   }),
   company: text("company").notNull(),
