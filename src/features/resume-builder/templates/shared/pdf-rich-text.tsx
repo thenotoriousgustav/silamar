@@ -39,7 +39,8 @@ type LexicalRoot = { root: { children: LexicalNode[] } };
 
 function renderInlineNode(
   node: LexicalNode,
-  baseStyle: Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  baseStyle: any,
   key: string,
 ): React.ReactNode {
   if (node.type === "linebreak") {
@@ -51,7 +52,8 @@ function renderInlineNode(
     if (!t.text) return null;
 
     const fmt = t.format ?? 0;
-    const style: Record<string, unknown> = { ...baseStyle };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const style: any = { ...baseStyle };
 
     if (fmt & 1) style.fontWeight = 700;
     if (fmt & 2) style.fontStyle = "italic";
@@ -86,7 +88,8 @@ function renderInlineNode(
 
 function renderBlock(
   node: LexicalNode,
-  baseStyle: Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  baseStyle: any,
   key: string,
 ): React.ReactNode {
   const n = node as { children?: LexicalNode[]; type: string };

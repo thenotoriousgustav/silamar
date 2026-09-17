@@ -17,14 +17,12 @@ export function useCredits() {
 
   const user = session?.user as ExtendedUser | undefined;
 
-  const credits = user?.credits ?? 0;
-  const plan = user?.plan ?? "free";
-  const isPro = plan === "pro";
-  const hasCredits = isPro || credits > 0;
+  const credits = user?.credits ?? 999999;
+  const plan = "pro";
+  const isPro = true;
+  const hasCredits = true;
 
   const checkCredits = (): boolean => {
-    if (isPro) return true;
-    if (credits <= 0) return false;
     return true;
   };
 

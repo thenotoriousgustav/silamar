@@ -6,7 +6,7 @@ import Link from "next/link";
 import { GoogleSignInButton, RegisterFormComponent } from "@/features/auth";
 
 const perks = [
-  "3 kredit AI gratis saat daftar",
+  "Akses semua fitur AI gratis & unlimited",
   "Akses semua fitur dashboard",
   "Template resume ATS-friendly",
 ];

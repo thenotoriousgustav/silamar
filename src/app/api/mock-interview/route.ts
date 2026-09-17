@@ -38,42 +38,24 @@ const requestSchema = z.discriminatedUnion("action", [
   feedbackSchema,
 ]);
 
-/** Verifies user has credits and deducts one if not on Pro plan. */
+/** Verifies user exists. All features are free. */
 async function verifyAndDeductCredit(
   userId: string,
-  shouldDeduct: boolean,
+  _shouldDeduct: boolean,
 ): Promise<{ isPro: boolean; error?: NextResponse }> {
   const [user] = await db
-    .select({ credits: users.credits, plan: users.plan })
+    .select({ id: users.id })
     .from(users)
     .where(eq(users.id, userId));
 
   if (!user) {
     return {
-      isPro: false,
+      isPro: true,
       error: NextResponse.json({ error: "User not found" }, { status: 404 }),
     };
   }
 
-  const isPro = user.plan === "pro";
-  if (shouldDeduct && !isPro && user.credits <= 0) {
-    return {
-      isPro,
-      error: NextResponse.json(
-        { error: "Insufficient credits. Purchase credits to continue." },
-        { status: 402 },
-      ),
-    };
-  }
-
-  if (shouldDeduct && !isPro) {
-    await db
-      .update(users)
-      .set({ credits: sql`${users.credits} - 1` })
-      .where(eq(users.id, userId));
-  }
-
-  return { isPro };
+  return { isPro: true };
 }
 
 /** Generates interview questions using AI. */
@@ -145,7 +127,7 @@ export async function POST(req: NextRequest) {
         id: randomUUID(),
         userId: session.user.id,
         featureType: "mock_interview",
-        creditsUsed: isPro ? 0 : 1,
+        creditsUsed: 0,
         inputData: { jobTitle: parsed.data.jobTitle, action: "generate" },
         outputData: {},
       });

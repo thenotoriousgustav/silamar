@@ -1,14 +1,12 @@
-import { Bell, CreditCard, User } from "lucide-react";
+import { Bell, CheckCircle2, ShieldCheck, Sparkles, User } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { getSessionUser } from "@/lib/auth/session";
-import { CREDIT_PACKAGES, PRO_SUBSCRIPTION } from "@/lib/payment/midtrans";
-import { formatCurrency, formatDate } from "@/lib/utils/format";
 
 export const metadata: Metadata = {
   title: "Pengaturan",
-  description: "Kelola akun, langganan, dan preferensi kamu",
+  description: "Kelola akun dan preferensi kamu",
 };
 
 export default async function SettingsPage() {
@@ -20,7 +18,7 @@ export default async function SettingsPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Pengaturan</h1>
         <p className="text-surface-300 mt-1 text-sm">
-          Kelola profil dan langganan kamu
+          Kelola profil dan akun kamu
         </p>
       </div>
 
@@ -30,7 +28,7 @@ export default async function SettingsPage() {
           <ul className="space-y-1">
             {[
               { icon: User, label: "Profil", active: true },
-              { icon: CreditCard, label: "Billing & Kredit" },
+              { icon: ShieldCheck, label: "Status Langganan" },
               { icon: Bell, label: "Notifikasi" },
             ].map((item) => (
               <li key={item.label}>
@@ -105,88 +103,60 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          {/* Billing */}
+          {/* Subscription / Plan Status */}
           <div className="glass rounded-none p-6">
             <h2 className="mb-6 flex items-center gap-2 text-sm font-semibold text-white">
-              <CreditCard className="text-brand-400 h-4 w-4" />
-              Billing & Kredit
+              <ShieldCheck className="text-emerald-400 h-4 w-4" />
+              Status Akun & Fitur
             </h2>
 
-            {/* Current Plan */}
-            <div className="bg-surface-800 mb-6 rounded-none p-4">
+            <div className="bg-surface-800 mb-6 rounded-none p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-semibold text-white">
-                    {user.plan === "pro" ? "Pro Plan" : "Free Plan"}
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-white">Paket Gratis Selamanya</span>
+                    <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-0.5 font-semibold">
+                      Aktif
+                    </span>
                   </div>
-                  <div className="text-surface-300 mt-0.5 text-xs">
-                    {user.plan === "pro"
-                      ? `Aktif hingga ${formatDate(user.planExpiresAt)}`
-                      : "Upgrade untuk akses unlimited AI"}
-                  </div>
+                  <p className="text-surface-300 mt-1.5 text-sm">
+                    Kamu memiliki akses tak terbatas (unlimited) ke seluruh fitur AI tanpa biaya dan tanpa sistem kredit.
+                  </p>
                 </div>
-                {user.plan !== "pro" && (
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-white">
-                      {user.credits ?? 0}
-                    </div>
-                    <div className="text-surface-300 text-xs">kredit</div>
-                  </div>
-                )}
               </div>
             </div>
 
-            {/* Pro Subscription */}
-            <div className="border-brand-500/30 bg-brand-500/5 mb-4 rounded-none border p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-semibold text-white">
-                    {PRO_SUBSCRIPTION.name}
-                  </div>
-                  <div className="text-brand-400 text-sm">
-                    Unlimited semua fitur AI
-                  </div>
+            <div className="border border-white/10 bg-surface-900/50 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-semibold text-white mb-2">
+                <Sparkles className="h-4 w-4 text-brand-400" />
+                Semua Fitur Tersedia Gratis:
+              </div>
+              <div className="grid gap-2.5 sm:grid-cols-2 text-xs text-surface-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>Resume Builder ATS-Friendly</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-white">
-                    {formatCurrency(PRO_SUBSCRIPTION.price)}
-                  </div>
-                  <div className="text-surface-300 text-xs">/bulan</div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>AI Resume & ATS Analyzer (Unlimited)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>AI Cover Letter Generator (Unlimited)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>Mock Interview AI (Unlimited)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>Job Tracker Kanban Board</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span>Resume Roast AI (Unlimited)</span>
                 </div>
               </div>
-              <button
-                id="btn-buy-pro"
-                className="bg-brand-600 hover:bg-brand-500 mt-4 w-full rounded-none py-2.5 text-sm font-bold text-white transition-all"
-              >
-                {user.plan === "pro" ? "Perpanjang Pro" : "Upgrade ke Pro"}
-              </button>
-            </div>
-
-            {/* Credit Packages */}
-            <h3 className="text-surface-300 mb-3 text-xs font-semibold tracking-wider uppercase">
-              Beli Kredit Satuan
-            </h3>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {CREDIT_PACKAGES.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className="bg-surface-800 rounded-none border border-white/10 p-4 text-center"
-                >
-                  <div className="text-xl font-bold text-white">
-                    {pkg.credits}
-                  </div>
-                  <div className="text-surface-300 mb-2 text-xs">kredit</div>
-                  <div className="text-brand-400 text-sm font-semibold">
-                    {formatCurrency(pkg.price)}
-                  </div>
-                  <button
-                    id={`btn-buy-${pkg.id}`}
-                    className="bg-surface-700 hover:bg-surface-600 mt-3 w-full rounded-none py-1.5 text-xs font-semibold text-white transition-colors"
-                  >
-                    Beli
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
         </div>

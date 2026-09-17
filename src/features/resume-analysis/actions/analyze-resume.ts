@@ -33,30 +33,6 @@ export async function analyzeResume(
   }
 
   try {
-    const [dbUser] = await db
-      .select({ credits: users.credits, plan: users.plan })
-      .from(users)
-      .where(eq(users.id, user.id));
-
-    if (!dbUser) {
-      return { success: false, error: "User tidak ditemukan" };
-    }
-
-    const isPro = dbUser.plan === "pro";
-    if (!isPro && dbUser.credits <= 0) {
-      return {
-        success: false,
-        error: "Kredit tidak cukup. Beli kredit untuk melanjutkan.",
-      };
-    }
-
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} - 1` })
-        .where(eq(users.id, user.id));
-    }
-
     const prompt = buildResumeAnalyzePrompt(parsed.data.resumeContent);
 
     const { output: result } = await generateText({
@@ -69,7 +45,7 @@ export async function analyzeResume(
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: {},
       outputData: { atsScore: result.atsScore },
     });

@@ -54,23 +54,6 @@ export async function analyzeJobFit(
   const data: AnalyzeJobFitInput = parsed.data;
 
   try {
-    const [dbUser] = await db
-      .select({ credits: users.credits, plan: users.plan })
-      .from(users)
-      .where(eq(users.id, user.id));
-
-    if (!dbUser) {
-      return { success: false, error: "User tidak ditemukan" };
-    }
-
-    const isPro = dbUser.plan === "pro";
-    if (!isPro && dbUser.credits <= 0) {
-      return {
-        success: false,
-        error: "Kredit tidak cukup. Beli kredit untuk melanjutkan.",
-      };
-    }
-
     const [resume] = await db
       .select({ content: resumes.content })
       .from(resumes)
@@ -85,13 +68,6 @@ export async function analyzeJobFit(
       typeof resume.content === "string"
         ? resume.content
         : JSON.stringify(resume.content);
-
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} - 1` })
-        .where(eq(users.id, user.id));
-    }
 
     const prompt = buildJobFitPrompt(resumeContent, {
       jobTitle: data.jobTitle,
@@ -138,7 +114,7 @@ export async function analyzeJobFit(
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze_jd",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: {
         resumeId: data.resumeId,
         jobId: data.jobId ?? null,

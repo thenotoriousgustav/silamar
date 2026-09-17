@@ -34,23 +34,6 @@ export async function analyzeComprehensive(input: {
   }
 
   try {
-    const [dbUser] = await db
-      .select({ credits: users.credits, plan: users.plan })
-      .from(users)
-      .where(eq(users.id, user.id));
-
-    if (!dbUser) {
-      return { success: false, error: "User not found" };
-    }
-
-    const isPro = dbUser.plan === "pro";
-    if (!isPro && dbUser.credits <= 0) {
-      return {
-        success: false,
-        error: "Insufficient credits. Purchase credits to continue.",
-      };
-    }
-
     const [resume] = await db
       .select({ content: resumes.content })
       .from(resumes)
@@ -66,13 +49,6 @@ export async function analyzeComprehensive(input: {
         ? resume.content
         : JSON.stringify(resume.content);
 
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} - 1` })
-        .where(eq(users.id, user.id));
-    }
-
     const prompt = buildComprehensiveAnalysisPrompt(resumeContent);
 
     const { output: result } = await generateText({
@@ -85,7 +61,7 @@ export async function analyzeComprehensive(input: {
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: { resumeId: input.resumeId },
       outputData: result,
     });

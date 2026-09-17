@@ -36,30 +36,6 @@ export async function analyzeResumeJobMatch(
   }
 
   try {
-    const [dbUser] = await db
-      .select({ credits: users.credits, plan: users.plan })
-      .from(users)
-      .where(eq(users.id, user.id));
-
-    if (!dbUser) {
-      return { success: false, error: "User tidak ditemukan" };
-    }
-
-    const isPro = dbUser.plan === "pro";
-    if (!isPro && dbUser.credits <= 0) {
-      return {
-        success: false,
-        error: "Kredit tidak cukup. Beli kredit untuk melanjutkan.",
-      };
-    }
-
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} - 1` })
-        .where(eq(users.id, user.id));
-    }
-
     const prompt = buildResumeAnalyzeJdPrompt(
       parsed.data.resumeContent,
       parsed.data.jobDescription,
@@ -75,7 +51,7 @@ export async function analyzeResumeJobMatch(
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze_jd",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: {},
       outputData: { matchScore: result.matchScore },
     });

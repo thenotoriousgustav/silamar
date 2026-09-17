@@ -57,7 +57,8 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
   --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -166,7 +167,7 @@
   }
 
   body {
-    @apply antialiased bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     line-height: 1.6;
     min-height: 100dvh;
   }
@@ -185,7 +186,8 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 }

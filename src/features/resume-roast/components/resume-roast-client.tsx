@@ -264,7 +264,7 @@ export function ResumeRoastClient() {
           className="h-12 w-full gap-2 bg-gradient-to-r from-red-500 to-orange-500 text-sm font-bold text-white shadow-lg shadow-red-500/20 hover:from-red-600 hover:to-orange-600 hover:shadow-red-500/40"
         >
           <Flame className="h-4 w-4" />
-          Mulai Roast Resume Saya (1 Kredit)
+          Mulai Roast Resume Saya
         </Button>
       </div>
     </div>

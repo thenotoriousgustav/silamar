@@ -3,12 +3,12 @@ import {
   BarChart3,
   Brain,
   Briefcase,
-  Coins,
   FileText,
   Mail,
   Plus,
   Target,
   TrendingUp,
+  Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -130,25 +130,18 @@ export default async function DashboardPage() {
 
         <div className="glass p-5">
           <div className="mb-3 flex items-center justify-between">
-            <div
-              className={`p-2 ${user.plan === "pro" ? "bg-primary/20" : "bg-amber-500/20"}`}
-            >
-              <Coins
-                className={`h-4 w-4 ${user.plan === "pro" ? "text-primary" : "text-amber-400"}`}
-              />
+            <div className="bg-primary/20 p-2">
+              <Zap className="text-primary h-4 w-4" />
             </div>
-            <Link
-              href="/settings?tab=billing"
-              className="text-surface-300 text-xs hover:text-white"
-            >
-              Beli →
-            </Link>
+            <span className="text-primary text-xs font-medium">
+              Aktif
+            </span>
           </div>
           <div className="text-foreground text-2xl font-bold">
-            {user.plan === "pro" ? "∞" : user.credits}
+            Unlimited
           </div>
           <div className="text-muted-foreground text-xs">
-            {user.plan === "pro" ? "Pro subscription" : "Kredit tersisa"}
+            Akses Semua Fitur AI Gratis
           </div>
         </div>
 
@@ -282,8 +275,8 @@ export default async function DashboardPage() {
                       {formatRelativeTime(log.createdAt)}
                     </div>
                   </div>
-                  <span className="text-muted-foreground shrink-0 text-xs">
-                    -{log.creditsUsed} kr
+                  <span className="text-emerald-400 shrink-0 text-xs font-medium">
+                    Gratis
                   </span>
                 </li>
               ))}

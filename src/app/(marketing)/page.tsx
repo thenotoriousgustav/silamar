@@ -12,8 +12,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { formatCurrency } from "@/lib/utils/format";
-
 const features = [
   {
     icon: FileText,
@@ -36,75 +34,33 @@ const features = [
     title: "AI Resume Analyzer",
     description:
       "Dapatkan skor ATS dan saran perbaikan spesifik dari AI untuk resume kamu.",
-    tag: "1 Kredit",
-    tagColor: "purple",
+    tag: "Gratis",
+    tagColor: "green",
   },
   {
     icon: Target,
     title: "Resume vs Job Description",
     description:
       "Bandingkan resume kamu dengan JD dan temukan keyword yang kurang.",
-    tag: "1 Kredit",
-    tagColor: "purple",
+    tag: "Gratis",
+    tagColor: "green",
   },
   {
     icon: Mail,
     title: "AI Cover Letter Generator",
     description:
       "Generate surat lamaran yang personal dan menarik dalam hitungan detik.",
-    tag: "1 Kredit",
-    tagColor: "purple",
+    tag: "Gratis",
+    tagColor: "green",
   },
   {
     icon: Brain,
     title: "Mock Interview AI",
     description:
       "Latihan interview dengan AI. Dapatkan pertanyaan dan feedback jawaban kamu.",
-    tag: "1 Kredit",
-    tagColor: "purple",
+    tag: "Gratis",
+    tagColor: "green",
   },
-];
-
-const plans = [
-  {
-    name: "Gratis",
-    price: 0,
-    description: "Untuk kamu yang baru mulai",
-    credits: "Resume Builder + Job Tracker",
-    features: [
-      "Resume Builder ATS-friendly",
-      "Job Application Tracker (Kanban)",
-      "Export PDF resume",
-      "3 kredit AI saat daftar",
-    ],
-    cta: "Mulai Gratis",
-    href: "/register",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: 99000,
-    description: "Untuk kamu yang serius cari kerja",
-    credits: "Unlimited AI",
-    features: [
-      "Semua fitur Gratis",
-      "AI Resume Analyzer unlimited",
-      "Resume vs JD unlimited",
-      "Cover Letter Generator unlimited",
-      "Mock Interview AI unlimited",
-      "Skill Gap Analysis unlimited",
-      "Priority support",
-    ],
-    cta: "Mulai Pro",
-    href: "/register?plan=pro",
-    highlighted: true,
-  },
-];
-
-const creditPacks = [
-  { name: "Starter Pack", credits: 5, price: 15000 },
-  { name: "Standard Pack", credits: 15, price: 35000 },
-  { name: "Pro Pack", credits: 30, price: 60000 },
 ];
 
 const testimonials = [
@@ -181,7 +137,7 @@ export default function HomePage() {
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <p className="text-surface-300 text-sm">
-            ✓ Gratis · ✓ 3 kredit AI · ✓ Tanpa kartu kredit
+            ✓ 100% Gratis · ✓ Akses Semua Fitur AI · ✓ Tanpa Biaya
           </p>
         </div>
 
@@ -288,106 +244,61 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="text-4xl font-extrabold">
-              Harga yang <span className="gradient-text">terjangkau</span>
+              100% <span className="gradient-text">Gratis</span> untuk Semua
             </h2>
-            <p className="text-surface-300 mt-4">
-              Mulai gratis, upgrade kapan saja.
+            <p className="text-surface-300 mt-4 max-w-xl mx-auto">
+              Semua fitur premium kini dapat diakses secara cuma-cuma tanpa langganan ataupun batasan kredit.
             </p>
           </div>
 
-          <div className="mx-auto mb-12 grid max-w-3xl gap-8 lg:grid-cols-2">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-none p-8 ${
-                  plan.highlighted
-                    ? "gradient-border bg-surface-900 glow"
-                    : "glass"
-                }`}
-              >
-                {plan.highlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-brand-600 rounded-none px-4 py-1 font-mono text-xs font-bold text-white shadow-lg">
-                      PALING POPULER
-                    </span>
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-                  <p className="text-surface-300 mt-1 text-sm">
-                    {plan.description}
-                  </p>
-                  <div className="mt-4 flex items-baseline gap-2">
-                    <span className="font-mono text-4xl font-extrabold text-white">
-                      {plan.price === 0 ? "Gratis" : formatCurrency(plan.price)}
-                    </span>
-                    {plan.price > 0 && (
-                      <span className="text-surface-300">/bulan</span>
-                    )}
-                  </div>
-                  <p className="text-brand-400 mt-1 text-xs font-medium">
-                    {plan.credits}
-                  </p>
-                </div>
-
-                <ul className="mb-8 space-y-3">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm">
-                      <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
-                      <span className="text-surface-200">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={plan.href}
-                  id={`cta-plan-${plan.name.toLowerCase()}`}
-                  className={`block w-full rounded-none py-3 text-center text-sm font-bold transition-all ${
-                    plan.highlighted
-                      ? "bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 text-white hover:shadow-lg"
-                      : "hover:bg-surface-800 border border-white/10 text-white"
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
+          <div className="mx-auto max-w-2xl">
+            <div className="relative rounded-none p-8 gradient-border bg-surface-900 glow">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-brand-600 rounded-none px-4 py-1 font-mono text-xs font-bold text-white shadow-lg">
+                  AKSES PENUH & GRATIS
+                </span>
               </div>
-            ))}
-          </div>
-
-          {/* Credit Packs */}
-          <div className="mb-8 text-center">
-            <h3 className="text-xl font-bold text-white">
-              Atau beli kredit satuan
-            </h3>
-            <p className="text-surface-300 mt-2 text-sm">
-              Bayar sesuai kebutuhan. Tidak perlu berlangganan.
-            </p>
-          </div>
-          <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-3">
-            {creditPacks.map((pack) => (
-              <div
-                key={pack.name}
-                className="glass rounded-none p-5 text-center"
-              >
-                <div className="font-mono text-2xl font-extrabold text-white">
-                  {pack.credits}
+              <div className="mb-6 text-center">
+                <h3 className="text-2xl font-bold text-white">Full Access</h3>
+                <p className="text-surface-300 mt-1 text-sm">
+                  Didedikasikan untuk membantu fresh graduate Indonesia
+                </p>
+                <div className="mt-4 flex items-baseline justify-center gap-2">
+                  <span className="font-mono text-5xl font-extrabold text-white">
+                    Rp 0
+                  </span>
+                  <span className="text-surface-300">/ selamanya</span>
                 </div>
-                <div className="text-surface-300 mb-3 text-sm">kredit</div>
-                <div className="text-brand-400 mb-1 font-mono text-lg font-bold">
-                  {formatCurrency(pack.price)}
-                </div>
-                <div className="text-surface-300 mb-4 text-xs">
-                  ~{formatCurrency(Math.round(pack.price / pack.credits))}
-                  /kredit
-                </div>
-                <Link
-                  href="/register"
-                  className="bg-surface-800 hover:bg-surface-700 block rounded-none py-2 text-sm font-semibold text-white transition-colors"
-                >
-                  {pack.name}
-                </Link>
+                <p className="text-emerald-400 mt-2 text-sm font-semibold">
+                  Semua Fitur AI Bebas Digunakan Sepuasnya
+                </p>
               </div>
-            ))}
+
+              <ul className="mb-8 space-y-3 max-w-md mx-auto">
+                {[
+                  "Resume Builder ATS-Friendly + Export PDF",
+                  "AI Resume Analyzer tanpa batasan",
+                  "Resume vs Job Description Match Score",
+                  "AI Cover Letter Generator otomatis",
+                  "Mock Interview AI & Feedback Latihan",
+                  "Job Application Tracker Kanban Board",
+                  "Resume Roast AI Interaktif",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2.5 text-sm">
+                    <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span className="text-surface-200">{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href="/register"
+                id="cta-plan-free"
+                className="block w-full rounded-none py-3 text-center text-sm font-bold bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 text-white hover:shadow-lg transition-all"
+              >
+                Daftar & Mulai Sekarang — Gratis
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -409,7 +320,7 @@ export default function HomePage() {
               id="cta-register-bottom"
               className="group bg-brand-600 shadow-brand-600/30 hover:bg-brand-500 flex items-center gap-2 rounded-none px-8 py-4 text-base font-bold text-white shadow-xl transition-all hover:scale-105"
             >
-              Mulai Gratis — Dapat 3 Kredit AI
+              Mulai Gratis — Akses Penuh Semua Fitur
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

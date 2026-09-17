@@ -374,7 +374,7 @@ export function ResumeAnalyzerClient({
             disabled={!selectedResume}
           >
             <Sparkles className="mr-2 h-4 w-4" />
-            Mulai Analisis Mendalam (1 Kredit)
+            Mulai Analisis Mendalam
           </Button>
         </div>
       </div>

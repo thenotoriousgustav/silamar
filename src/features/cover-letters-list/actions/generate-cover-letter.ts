@@ -35,29 +35,6 @@ export async function generateAndCreateCoverLetterAction(
   const user = await getSessionUser();
   if (!user) return { success: false, error: "Unauthorized" };
 
-  // Verify and deduct credit
-  const [dbUser] = await db
-    .select({ credits: users.credits, plan: users.plan })
-    .from(users)
-    .where(eq(users.id, user.id));
-
-  if (!dbUser) return { success: false, error: "User not found" };
-
-  const isPro = dbUser.plan === "pro";
-  if (!isPro && dbUser.credits <= 0) {
-    return {
-      success: false,
-      error: "Insufficient credits. Purchase credits to continue.",
-    };
-  }
-
-  if (!isPro) {
-    await db
-      .update(users)
-      .set({ credits: sql`${users.credits} - 1` })
-      .where(eq(users.id, user.id));
-  }
-
   try {
     const prompt = buildCoverLetterPrompt({
       resumeContent: input.resumeContent,
@@ -92,7 +69,7 @@ export async function generateAndCreateCoverLetterAction(
       id: randomUUID(),
       userId: user.id,
       featureType: "cover_letter",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: { jobTitle: input.jobTitle, company: input.company },
       outputData: {},
     });
@@ -102,13 +79,6 @@ export async function generateAndCreateCoverLetterAction(
     return { success: true, data: { id } };
   } catch (error) {
     console.error("[generateAndCreateCoverLetterAction]", error);
-    // Refund credit on failure
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} + 1` })
-        .where(eq(users.id, user.id));
-    }
     return { success: false, error: "Failed to generate cover letter" };
   }
 }

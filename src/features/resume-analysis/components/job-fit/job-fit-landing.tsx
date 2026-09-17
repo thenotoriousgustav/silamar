@@ -385,7 +385,7 @@ export function JobFitLanding({
             className="h-12 w-full text-sm font-bold"
           >
             <Target className="mr-2 h-4 w-4" />
-            Mulai Analisis Kecocokan (1 Kredit)
+            Mulai Analisis Kecocokan
           </Button>
         </div>
       </div>

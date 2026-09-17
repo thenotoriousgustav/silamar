@@ -33,22 +33,6 @@ export async function roastResumeAction(
   const user = await getSessionUser();
   if (!user) return { success: false, error: "Unauthorized" };
 
-  // Verify and deduct credit
-  const [dbUser] = await db
-    .select({ credits: users.credits, plan: users.plan })
-    .from(users)
-    .where(eq(users.id, user.id));
-
-  if (!dbUser) return { success: false, error: "User not found" };
-
-  const isPro = dbUser.plan === "pro";
-  if (!isPro && dbUser.credits <= 0) {
-    return {
-      success: false,
-      error: "Kredit tidak cukup. Beli kredit untuk melanjutkan.",
-    };
-  }
-
   // Fetch resume
   const [resume] = await db
     .select({ content: resumes.content, title: resumes.title })
@@ -58,14 +42,6 @@ export async function roastResumeAction(
 
   if (!resume) {
     return { success: false, error: "Resume tidak ditemukan" };
-  }
-
-  // Deduct credit
-  if (!isPro) {
-    await db
-      .update(users)
-      .set({ credits: sql`${users.credits} - 1` })
-      .where(eq(users.id, user.id));
   }
 
   try {
@@ -87,7 +63,7 @@ export async function roastResumeAction(
       id: randomUUID(),
       userId: user.id,
       featureType: "resume_analyze",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: {
         resumeId: input.resumeId,
         feature: "roast",
@@ -99,13 +75,6 @@ export async function roastResumeAction(
     return { success: true, data: result };
   } catch (error) {
     console.error("[roastResumeAction] error:", error);
-    // Refund on failure
-    if (!isPro) {
-      await db
-        .update(users)
-        .set({ credits: sql`${users.credits} + 1` })
-        .where(eq(users.id, user.id));
-    }
     return { success: false, error: "Gagal me-roast resume. Coba lagi." };
   }
 }

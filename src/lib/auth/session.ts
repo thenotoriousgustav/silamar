@@ -27,8 +27,8 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     email: session.user.email,
     name: session.user.name,
     image: session.user.image ?? null,
-    credits: session.user.credits,
-    plan: session.user.plan,
-    planExpiresAt: session.user.planExpiresAt ?? null,
+    credits: session.user.credits ?? 999999,
+    plan: "pro",
+    planExpiresAt: null,
   };
 });

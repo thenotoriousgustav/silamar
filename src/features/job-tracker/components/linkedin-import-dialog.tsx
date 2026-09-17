@@ -44,15 +44,15 @@ export function LinkedInImportDialog({
       // Step 2: Create job application with scraped data
       const data = scrapeResult.data;
 
-      // Map LinkedIn type to our enum
-      let jobType:
+      type JobType =
         | "full-time"
         | "part-time"
         | "internship"
         | "contract"
-        | "freelance" = "full-time";
+        | "freelance";
+      let jobType: JobType = "full-time";
       if (data.type) {
-        const typeMap: Record<string, typeof jobType> = {
+        const typeMap: Record<string, JobType> = {
           "full-time": "full-time",
           "part-time": "part-time",
           internship: "internship",

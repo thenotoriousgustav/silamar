@@ -244,8 +244,8 @@ export function CreateCoverLetterDialog({
                   <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
                     AI membuat cover letter personal dari resume & lowongan kamu
                   </p>
-                  <span className="text-primary mt-2.5 inline-block text-[10px] font-bold tracking-wider uppercase">
-                    1 Kredit
+                  <span className="text-emerald-500 mt-2.5 inline-block text-[10px] font-bold tracking-wider uppercase">
+                    Gratis
                   </span>
                 </div>
               </button>
@@ -533,8 +533,7 @@ export function CreateCoverLetterDialog({
             {/* Footer */}
             <div className="border-border flex items-center justify-between border-t px-6 py-4">
               <p className="text-muted-foreground text-xs">
-                Menggunakan{" "}
-                <span className="text-primary font-bold">1 kredit</span>
+                <span className="text-emerald-500 font-medium">100% Gratis</span>
               </p>
               <Button
                 onClick={() => generateMutation.mutate()}

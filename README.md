@@ -2,18 +2,16 @@
 
 Platform AI-powered untuk fresh graduate Indonesia. Buat CV ATS-friendly, analisis resume, generate cover letter, dan track semua lamaran kerja dalam satu platform.
 
-## ✨ Fitur
+## ✨ Fitur (100% Gratis Tanpa Batas)
 
-### Gratis
 - **CV Builder** — Buat resume ATS-friendly dengan export PDF
 - **Job Tracker** — Kanban board untuk track semua lamaran
-
-### Berbayar (Kredit / Pro)
 - **AI Resume Analyzer** — Skor ATS + saran perbaikan
 - **Resume vs Job Description** — Match score + keyword gap
 - **AI Cover Letter Generator** — Surat lamaran personal
 - **Skill Gap Analysis** — Learning path yang dipersonalisasi
 - **Mock Interview AI** — Pertanyaan + feedback jawaban
+- **Resume Roast AI** — Evaluasi resume interaktif
 
 ## 🛠 Tech Stack
 

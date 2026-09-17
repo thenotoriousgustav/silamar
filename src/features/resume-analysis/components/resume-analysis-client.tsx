@@ -55,7 +55,7 @@ export function ResumeAnalysisClient() {
         <h1 className="text-2xl font-bold text-white">Analisis Resume AI</h1>
         <p className="text-surface-300 mt-1 text-sm">
           Dapatkan skor ATS dan saran perbaikan dari AI ·{" "}
-          <span className="text-brand-400">1 kredit</span>
+          <span className="text-brand-400">Gratis</span>
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export function ResumeAnalysisClient() {
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Analisis Resume (1 Kredit)
+                  Analisis Resume
                 </>
               )}
             </button>

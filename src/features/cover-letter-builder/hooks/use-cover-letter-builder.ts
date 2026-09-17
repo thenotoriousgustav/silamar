@@ -19,6 +19,11 @@ const DEFAULT_CONTENT: CoverLetterBuilderData = {
   recipientCityAndPostal: "",
   subject: "",
   content: "",
+  style: {
+    fontFamily: "Inter",
+    fontSize: "11px",
+    templateId: "classic",
+  },
 };
 
 export function useCoverLetterBuilder(

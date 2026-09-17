@@ -9,7 +9,7 @@ import { signOut, useSession } from "@/lib/auth/client";
 
 const navLinks = [
   { href: "#fitur", label: "Fitur" },
-  { href: "#harga", label: "Harga" },
+  { href: "#harga", label: "Gratis" },
   { href: "#tentang", label: "Tentang" },
 ];
 

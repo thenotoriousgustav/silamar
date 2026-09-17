@@ -19,42 +19,24 @@ const requestSchema = z.object({
   jobDescription: z.string().nullable().optional(),
 });
 
-/** Verifies user has credits and deducts one if not on Pro plan. */
+/** Verifies user exists. All features are free. */
 async function verifyAndDeductCredit(userId: string): Promise<{
   isPro: boolean;
   error?: NextResponse;
 }> {
   const [user] = await db
-    .select({ credits: users.credits, plan: users.plan })
+    .select({ id: users.id })
     .from(users)
     .where(eq(users.id, userId));
 
   if (!user) {
     return {
-      isPro: false,
+      isPro: true,
       error: NextResponse.json({ error: "User not found" }, { status: 404 }),
     };
   }
 
-  const isPro = user.plan === "pro";
-  if (!isPro && user.credits <= 0) {
-    return {
-      isPro,
-      error: NextResponse.json(
-        { error: "Insufficient credits. Purchase credits to continue." },
-        { status: 402 },
-      ),
-    };
-  }
-
-  if (!isPro) {
-    await db
-      .update(users)
-      .set({ credits: sql`${users.credits} - 1` })
-      .where(eq(users.id, userId));
-  }
-
-  return { isPro };
+  return { isPro: true };
 }
 
 export async function POST(req: NextRequest) {
@@ -91,7 +73,7 @@ export async function POST(req: NextRequest) {
       id: randomUUID(),
       userId: session.user.id,
       featureType: "resume_analyze_jd",
-      creditsUsed: isPro ? 0 : 1,
+      creditsUsed: 0,
       inputData: {},
       outputData: { matchScore: result.matchScore },
     });
