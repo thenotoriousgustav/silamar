@@ -9,8 +9,8 @@ import { signOut, useSession } from "@/lib/auth/client";
 
 const navLinks = [
   { href: "#fitur", label: "Fitur" },
-  { href: "#harga", label: "Gratis" },
-  { href: "#tentang", label: "Tentang" },
+  { href: "#simulator", label: "ATS Simulator" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export function Navbar() {
@@ -19,17 +19,22 @@ export function Navbar() {
   const router = useRouter();
 
   return (
-    <nav className="bg-surface-950/80 sticky top-0 z-50 border-b border-white/5 backdrop-blur-xl">
+    <nav className="bg-background/85 sticky top-0 z-50 border-b border-border backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="bg-brand-600 shadow-brand-600/30 flex h-8 w-8 items-center justify-center rounded-none shadow-lg transition-transform group-hover:scale-110">
-              <Zap className="h-4 w-4 text-white" />
+          <Link href="/" className="group flex items-center gap-2.5">
+            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-none transition-transform group-hover:scale-105">
+              <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="gradient-text text-lg font-bold tracking-tight">
-              SiLamar
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-foreground text-base font-bold tracking-tight">
+                SiLamar
+              </span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 text-xs font-bold tracking-widest uppercase">
+                OPEN ACCESS
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -38,7 +43,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-surface-300 text-sm font-medium transition-colors hover:text-white"
+                className="text-muted-foreground hover:text-foreground text-xs font-semibold tracking-wider uppercase transition-colors"
               >
                 {link.label}
               </Link>
@@ -51,13 +56,13 @@ export function Navbar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-none px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all"
                 >
-                  Dashboard
+                  Buka Dashboard →
                 </Link>
                 <button
                   onClick={() => signOut().then(() => router.push("/"))}
-                  className="text-surface-300 text-sm font-medium transition-colors hover:text-white"
+                  className="text-muted-foreground hover:text-foreground text-xs font-medium transition-colors"
                 >
                   Keluar
                 </button>
@@ -66,15 +71,15 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="text-surface-300 text-sm font-medium transition-colors hover:text-white"
+                  className="border border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-none px-3.5 py-1.5 text-xs font-semibold transition-colors"
                 >
                   Masuk
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-brand-600 hover:bg-brand-500 hover:shadow-brand-600/30 rounded-none px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all"
                 >
-                  Daftar Gratis
+                  Mulai Gratis
                 </Link>
               </>
             )}
@@ -82,7 +87,7 @@ export function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="text-surface-300 hover:bg-surface-800 rounded-none p-2 hover:text-white md:hidden"
+            className="text-muted-foreground hover:bg-muted rounded-none p-2 hover:text-foreground md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -96,37 +101,40 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="border-t border-white/5 py-4 md:hidden">
+          <div className="border-t border-border py-4 md:hidden">
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-surface-300 text-sm font-medium hover:text-white"
+                  className="text-muted-foreground hover:text-foreground text-xs font-semibold uppercase tracking-wider"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
-              <hr className="border-white/5" />
+              <hr className="border-border" />
               {session ? (
                 <Link
                   href="/dashboard"
-                  className="bg-brand-600 rounded-none px-4 py-2 text-center text-sm font-semibold text-white"
+                  className="bg-primary text-primary-foreground rounded-none px-4 py-2 text-center text-xs font-bold uppercase tracking-wider"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Dashboard
+                  Buka Dashboard
                 </Link>
               ) : (
                 <>
                   <Link
                     href="/login"
-                    className="text-surface-300 text-sm font-medium"
+                    className="border border-border text-center text-xs font-semibold py-2 rounded-none"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     Masuk
                   </Link>
                   <Link
                     href="/register"
-                    className="bg-brand-600 rounded-none px-4 py-2 text-center text-sm font-semibold text-white"
+                    className="bg-primary text-primary-foreground text-center text-xs font-bold uppercase tracking-wider py-2 rounded-none"
+                    onClick={() => setIsMenuOpen(false)}
                   >
                     Daftar Gratis
                   </Link>

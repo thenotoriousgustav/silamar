@@ -178,21 +178,47 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
   }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
+  15% {
+    opacity: 0.8;
   }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(650%);
+    opacity: 0;
   }
 }
 
 @layer components {
+  .awwwards-laser {
+    animation: awwwards-laser-sweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes awwwards-laser-sweep {
+    0% {
+      top: 0;
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+
   .glass {
     @apply bg-card/60 border-border border backdrop-blur-md;
   }
